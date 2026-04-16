@@ -97,6 +97,11 @@
     .retry {
       background: linear-gradient(135deg, #00c6ff, #ff0055);
     }
+    .btn.retry {
+     cursor: pointer;
+     border: none;
+    }
+
 
     .home {
       background: rgba(255,255,255,0.1);
@@ -137,12 +142,16 @@
 
     <!-- BUTTONS -->
     <div class="btn-group">
-      <a href="/" class="btn home">Back to Vault</a>
-      <a href="/licence-page.html" <button id="retryBtn">Try Again</button>
+  <a href="/" class="btn home">Back to Vault</a>
 
-    </div>
+  <!-- ✅ REAL retry button -->
+  <button id="retryBtn" class="btn retry">
+    Try Again
+  </button>
+</div>
 
   </div>
+<script>
 const params = new URLSearchParams(window.location.search);
 
 const beat = params.get("beat");
@@ -182,6 +191,7 @@ retryBtn.addEventListener("click", async () => {
     console.error("Retry failed:", err);
   }
 });
+</script>
 
 </body>
 </html>

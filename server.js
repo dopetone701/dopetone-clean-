@@ -38,43 +38,43 @@ app.get("/test-stripe", async (req, res) => {
 // ===================== CREATE CHECKOUT =====================
 app.post("/create-checkout-session", async (req, res) => {
   try {
-    const { price, name } = req.body;
+    const { name, price } = req.body;
 
-    console.log("Incoming:", req.body);
-
+    // Safety check
     if (!price || !name) {
       return res.status(400).json({ error: "Missing price or name" });
     }
 
-   const session = await stripe.checkout.sessions.create({
-  payment_method_types: ['card'],
-  mode: 'payment',
-  line_items: [
-    {
-      price_data: {
-        currency: 'usd',
-        product_data: {
-          name: name,
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      mode: "payment",
+
+      line_items: [
+        {
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: name,
+            },
+            unit_amount: Math.round(price * 100), // 💰 cents (safe)
+          },
+          quantity: 1,
         },
-        unit_amount: price * 100,
-      },
-      quantity: 1,
-    },
-  ],
+      ],
 
+      // ✅ IMPORTANT: pass beat data through URL
+      success_url: `https://dopetone-clean.onrender.com/success.html?beat=${encodeURIComponent(name)}&price=${price}`,
 
-      success_url:
-        "https://dopetone-clean.onrender.com/success.html",
-      cancel_url:
-        "https://dopetone-clean.onrender.com/cancel.html",
+      cancel_url: `https://dopetone-clean.onrender.com/cancel.html?beat=${encodeURIComponent(name)}&price=${price}`,
     });
 
     console.log("✅ Session created:", session.id);
 
     res.json({ id: session.id });
+
   } catch (err) {
-    console.error("❌ Stripe error:", err.message);
-    res.status(500).json({ error: err.message });
+    console.error("❌ Stripe error:", err);
+    res.status(500).json({ error: "Stripe session failed" });
   }
 });
 
