@@ -46,22 +46,22 @@ app.post("/create-checkout-session", async (req, res) => {
       return res.status(400).json({ error: "Missing price or name" });
     }
 
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
-      mode: "payment",
-
-      line_items: [
-        {
-          price_data: {
-            currency: "usd",
-            product_data: {
-              name: name,
-            },
-            unit_amount: price * 100, // cents
-          },
-          quantity: 1,
+   const session = await stripe.checkout.sessions.create({
+  payment_method_types: ['card'],
+  mode: 'payment',
+  line_items: [
+    {
+      price_data: {
+        currency: 'usd',
+        product_data: {
+          name: name,
         },
-      ],
+        unit_amount: price * 100,
+      },
+      quantity: 1,
+    },
+  ],
+
 
       success_url:
         "https://dopetone-clean.onrender.com/success.html",

@@ -138,10 +138,50 @@
     <!-- BUTTONS -->
     <div class="btn-group">
       <a href="/" class="btn home">Back to Vault</a>
-      <a href="/licence-page.html" class="btn retry">Try Again</a>
+      <a href="/licence-page.html" <button id="retryBtn">Try Again</button>
+
     </div>
 
   </div>
+const params = new URLSearchParams(window.location.search);
+
+const beat = params.get("beat");
+const price = params.get("price");
+
+console.log("Cancel page data:", beat, price);
+
+const retryBtn = document.getElementById("retryBtn");
+
+retryBtn.addEventListener("click", async () => {
+  if (!beat || !price) {
+    alert("Missing beat info. Reload from vault.");
+    return;
+  }
+
+  try {
+    const res = await fetch("/create-checkout-session", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: beat,
+        price: Number(price),
+      }),
+    });
+
+    const data = await res.json();
+
+    const stripe = Stripe("YOUR_PUBLIC_KEY");
+
+    await stripe.redirectToCheckout({
+      sessionId: data.id,
+    });
+
+  } catch (err) {
+    console.error("Retry failed:", err);
+  }
+});
 
 </body>
 </html>
