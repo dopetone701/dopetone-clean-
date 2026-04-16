@@ -6,20 +6,25 @@ const Stripe = require("stripe");
 
 const app = express();
 
-// ================= MIDDLEWARE =================
+// ===================== MIDDLEWARE =====================
 app.use(express.json());
 app.use(cors());
 app.use(express.static("public"));
 
-// ================= STRIPE INIT =================
+// ===================== STRIPE INIT =====================
+if (!process.env.STRIPE_SECRET_KEY) {
+  console.error("❌ Missing STRIPE_SECRET_KEY");
+  process.exit(1); // stop app if key missing
+}
+
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
-// ================= TEST ROUTE =================
+// ===================== TEST ROUTE =====================
 app.get("/", (req, res) => {
   res.send("🔥 Server is working");
 });
 
-// ================= STRIPE TEST =================
+// ===================== STRIPE TEST =====================
 app.get("/test-stripe", async (req, res) => {
   try {
     const products = await stripe.products.list({ limit: 1 });
@@ -30,12 +35,16 @@ app.get("/test-stripe", async (req, res) => {
   }
 });
 
-// ================= CREATE CHECKOUT =================
+// ===================== CREATE CHECKOUT =====================
 app.post("/create-checkout-session", async (req, res) => {
   try {
     const { price, name } = req.body;
 
     console.log("Incoming:", req.body);
+
+    if (!price || !name) {
+      return res.status(400).json({ error: "Missing price or name" });
+    }
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
@@ -48,24 +57,30 @@ app.post("/create-checkout-session", async (req, res) => {
             product_data: {
               name: name,
             },
-            unit_amount: price * 100, // 🔥 MUST be cents
+            unit_amount: price * 100, // cents
           },
           quantity: 1,
         },
       ],
 
-      success_url: "https://your-site.onrender.com/success.html",
-
-      cancel_url: "https://your-site.onrender.com/cancel.html",
-
+      success_url:
+        "https://dopetone-clean.onrender.com/success.html",
+      cancel_url:
+        "https://dopetone-clean.onrender.com/cancel.html",
     });
 
-    console.log("Session created:", session.id);
+    console.log("✅ Session created:", session.id);
 
     res.json({ id: session.id });
-
   } catch (err) {
     console.error("❌ Stripe error:", err.message);
     res.status(500).json({ error: err.message });
   }
+});
+
+// ===================== START SERVER =====================
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log("🔥 Server running on port " + PORT);
 });
