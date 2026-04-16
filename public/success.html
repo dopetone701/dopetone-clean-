@@ -1,54 +1,151 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Payment Successful</title>
+
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
     body {
-      background: #0f0f0f;
-      color: white;
-      font-family: Arial;
-      display: flex;
-      justify-content: center;
-      align-items: center;
       height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      background: url("/images/vault-image.png") no-repeat center center fixed;
+      background-size: cover;
     }
 
-    .box {
-      text-align: center;
-      padding: 40px;
+    /* DARK GLASS OVERLAY */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+
+      background: linear-gradient(
+        135deg,
+        rgba(8, 15, 40, 0.9),
+        rgba(40, 0, 10, 0.85)
+      );
+
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+
+      z-index: -1;
+    }
+
+    /* LIGHT GLOW */
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+
+      background:
+        radial-gradient(circle at 30% 20%, rgba(0, 200, 255, 0.15), transparent),
+        radial-gradient(circle at 70% 80%, rgba(255, 0, 80, 0.15), transparent);
+
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .success-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+
       border-radius: 20px;
-      background: rgba(255,255,255,0.05);
-      box-shadow: 0 0 40px rgba(0,255,200,0.2);
+      padding: 40px;
+      width: 90%;
+      max-width: 420px;
+
+      text-align: center;
+
+      border: 1px solid rgba(255,255,255,0.1);
+
+      box-shadow:
+        0 0 60px rgba(0, 200, 255, 0.2),
+        0 0 100px rgba(255, 0, 80, 0.1);
+
+      animation: float 4s ease-in-out infinite;
     }
 
-    h1 {
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .logo {
+      width: 80px;
+      margin-bottom: 20px;
+      opacity: 0.95;
+    }
+
+    .success-icon {
+      font-size: 60px;
+      margin-bottom: 15px;
+    }
+
+    .success-title {
+      font-size: 26px;
       color: #00ffcc;
-      font-size: 32px;
+      margin-bottom: 10px;
     }
 
-    p {
-      margin-top: 10px;
-      opacity: 0.7;
+    .success-text {
+      color: #ccc;
+      margin-bottom: 30px;
+      font-size: 14px;
     }
 
-    a {
+    .btn {
       display: inline-block;
-      margin-top: 20px;
-      padding: 12px 20px;
-      background: #00ffcc;
-      color: black;
-      text-decoration: none;
+      padding: 12px 25px;
       border-radius: 10px;
+      text-decoration: none;
       font-weight: bold;
+
+      background: linear-gradient(135deg, #00c6ff, #ff0055);
+      color: white;
+
+      transition: 0.3s;
     }
+
+    .btn:hover {
+      transform: scale(1.07);
+      box-shadow:
+        0 0 20px rgba(0,200,255,0.6),
+        0 0 30px rgba(255,0,85,0.6);
+    }
+
   </style>
 </head>
+
 <body>
-  <div class="box">
-    <h1>✅ Payment Successful</h1>
-    <p>Your license is ready.</p>
-    <a href="/">Back to Store</a>
+
+  <div class="success-card">
+
+    <!-- FIXED LOGO -->
+    <img src="/images/logo.png" class="logo" />
+
+    <div class="success-icon">✅</div>
+
+    <div class="success-title">Payment Successful</div>
+
+    <div class="success-text">
+      Your sound has been unlocked.<br/>
+      Welcome to the vault.
+    </div>
+
+    <a href="/" class="btn">Enter Vault</a>
+
   </div>
+
 </body>
 </html>
-
