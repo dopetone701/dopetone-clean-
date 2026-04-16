@@ -296,3 +296,51 @@ document.addEventListener("click", (e) => {
     link.click()
   }
 })
+import { beats } from "./data.js";
+
+const featuredContainer = document.getElementById("featured");
+const popularContainer = document.getElementById("popular");
+const playlistContainer = document.getElementById("playlist");
+
+// FEATURED
+beats
+  .filter(b => b.featured)
+  .slice(0, 8)
+  .forEach(beat => {
+    featuredContainer.innerHTML += `
+      <div class="card-large" style="background-image:url('${beat.image}')"
+        onclick="openBeat('${beat.name}', ${beat.price})">
+        <div class="card-overlay">${beat.name}</div>
+      </div>
+    `;
+  });
+
+// POPULAR (sorted by plays)
+beats
+  .sort((a,b) => b.plays - a.plays)
+  .slice(0, 8)
+  .forEach(beat => {
+    popularContainer.innerHTML += `
+      <div class="card-large" style="background-image:url('${beat.image}')"
+        onclick="openBeat('${beat.name}', ${beat.price})">
+        <div class="card-overlay">${beat.name}</div>
+      </div>
+    `;
+  });
+
+// PLAYLIST (random 10)
+beats
+  .sort(() => 0.5 - Math.random())
+  .slice(0, 10)
+  .forEach(beat => {
+    playlistContainer.innerHTML += `
+      <div class="card-small" style="background-image:url('${beat.image}')"
+        onclick="openBeat('${beat.name}', ${beat.price})">
+      </div>
+    `;
+  });
+
+// OPEN LICENCE PAGE
+window.openBeat = (name, price) => {
+  window.location.href = `/licence-page.html?beat=${name}&price=${price}`;
+};

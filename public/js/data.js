@@ -17,3 +17,21 @@ window.beats = [
     mp3_url: "images/audio/free_fall.mp3"
   }
 ]
+export const beats = [
+  {
+    id: "beat1",
+    name: "Dark Trap",
+    price: 19,
+    image: "/images/studio.jpg",
+    featured: true,
+    plays: 120
+  },
+  {
+    id: "beat2",
+    name: "Drill Energy",
+    price: 29,
+    image: "/images/metal.jpg",
+    featured: false,
+    plays: 300
+  }
+];

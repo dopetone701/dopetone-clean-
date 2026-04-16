@@ -1745,3 +1745,72 @@ body {
   object-fit: cover;
 }
 
+.section {
+  margin: 40px 20px;
+  color: white;
+}
+
+.scroll-row {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding: 10px 0;
+}
+
+.scroll-row::-webkit-scrollbar {
+  display: none;
+}
+
+/* BIG CARDS (Featured + Popular) */
+.card-large {
+  min-width: 220px;
+  height: 140px;
+  border-radius: 16px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.card-large:hover {
+  transform: scale(1.05);
+}
+
+/* SMALL GRID CARDS */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 15px;
+}
+
+.card-small {
+  height: 120px;
+  border-radius: 12px;
+  background-size: cover;
+  background-position: center;
+  cursor: pointer;
+}
+
+/* overlay */
+.card-overlay {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 10px;
+  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+  font-size: 14px;
+}
+
+.explore {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.explore button {
+  padding: 10px 25px;
+  border-radius: 20px;
+  background: linear-gradient(45deg, #0f0f2f, #7a0000);
+  color: white;
+  border: none;
+}
