@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Beat Licence</title>
+
+  <!-- YOUR CSS (UNCHANGED) -->
+  <link rel="stylesheet" href="styles/licence.css" />
+</head>
+
+<body>
+
+<div class="licence-page">
+  <div class="licence-layout">
+
+    <!-- LEFT -->
+    <div class="licence-side left">
+
+      <!-- FREE -->
+      <div class="licence-card free">
+        <h3>Free</h3>
+        <p>Tagged • Non-profit use only</p>
+
+        <ul class="licence-features">
+          <li>MP3 (tagged)</li>
+          <li>For demo / practice only</li>
+          <li>No monetization</li>
+          <li>No streaming platforms</li>
+        </ul>
+
+        <button class="free-btn">Download</button>
+      </div>
+
+      <!-- BASIC -->
+      <div class="licence-card basic">
+        <h3>Basic</h3>
+        <p>MP3 + WAV • Limited use</p>
+
+        <ul class="licence-features">
+          <li>MP3 + WAV files</li>
+          <li>Up to 5,000 streams</li>
+          <li>Limited commercial use</li>
+          <li>No project files</li>
+        </ul>
+
+        <div class="price">
+          <span class="old">$29</span>
+          <span class="new">$19</span>
+        </div>
+
+        <div class="pay-area">
+          <button class="pay-btn" data-price="19" data-name="Basic License">
+            Pay Now
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- CENTER (UNCHANGED UI) -->
+    <div class="beat-center">
+
+      <div class="beat-card">
+        <div class="cover-wrapper">
+          <img id="cover" src="" />
+          <button id="playBtn">▶</button>
+        </div>
+
+        <h2 id="title">Loading...</h2>
+
+        <div class="beat-actions">
+          <div class="action like" id="likeBtn">
+            <span id="heartIcon">♡</span>
+            <span id="likeCount">0</span>
+          </div>
+
+          <div class="action add" id="addBtn">+</div>
+          <div class="action share" id="shareBtn">⤴</div>
+        </div>
+
+        <div class="meta">
+          <div class="meta-row">
+            <span class="label">Type Beat</span>
+            <span id="type"></span>
+          </div>
+
+          <div class="meta-row">
+            <span class="label">Genre</span>
+            <span id="genre"></span>
+          </div>
+
+          <div class="meta-row">
+            <span class="label">Mood</span>
+            <span id="mood"></span>
+          </div>
+
+          <div class="meta-row">
+            <span class="label">BPM</span>
+            <span id="bpm"></span>
+          </div>
+
+          <div class="meta-row">
+            <span class="label">Key</span>
+            <span id="key"></span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT -->
+    <div class="licence-side right">
+
+      <!-- PRO -->
+      <div class="licence-card pro">
+        <h3>🔥 Pro</h3>
+        <p>WAV + Project • Advanced use</p>
+
+        <ul class="licence-features">
+          <li>WAV + Project file</li>
+          <li>Up to 50,000 streams</li>
+          <li>Monetization allowed</li>
+          <li>No full ownership</li>
+        </ul>
+
+        <div class="price">
+          <span class="old">$79</span>
+          <span class="new">$49</span>
+        </div>
+
+        <div class="pay-area">
+          <button class="pay-btn" data-price="49" data-name="Pro License">
+            Pay Now
+          </button>
+        </div>
+      </div>
+
+      <!-- EXCLUSIVE -->
+      <div class="licence-card exclusive">
+        <h3>👑 Exclusive</h3>
+        <p>Full rights • Own the beat</p>
+
+        <ul class="licence-features">
+          <li>WAV + Project files</li>
+          <li>Unlimited streams</li>
+          <li>Full commercial rights</li>
+          <li>Beat removed from store</li>
+          <li>You own the sound</li>
+        </ul>
+
+        <div class="price">
+          <span class="old">$299</span>
+          <span class="new">$199</span>
+        </div>
+
+        <div class="pay-area">
+          <button class="pay-btn" data-price="199" data-name="Exclusive License">
+            Pay Now
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<!-- SCRIPTS (ORDER IS IMPORTANT) -->
+<script src="https://js.stripe.com/v3/"></script>
+<script src="js/licence/licence-page.js"></script>
+
+</body>
+</html>

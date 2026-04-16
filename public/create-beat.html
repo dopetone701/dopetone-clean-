@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Upload Beat</title>
+  <link rel="stylesheet" href="styles/main.css">
+</head>
+
+<body>
+
+<div class="form-page">
+  <div class="create-form">
+
+    <form id="beatForm">
+      <h2>Upload Beat</h2>
+
+      <!-- MP3 PREVIEW -->
+      <label>Preview (MP3)</label>
+      <input type="file" id="mp3Input" accept="audio/mp3,audio/*">
+
+      <audio id="mp3Preview" controls style="display:none; width:100%; margin-top:10px;"></audio>
+
+      <!-- WAV -->
+      <label>Full Beat (WAV)</label>
+      <input type="file" id="wavInput" accept=".wav,audio/wav">
+
+      <!-- ZIP -->
+      <label>Project File (ZIP)</label>
+      <input type="file" accept=".zip">
+
+      <!-- COVER -->
+      <label>Cover Art</label>
+      <input type="file" id="coverInput" accept="image/*">
+
+      <img id="coverPreview" src="images/logo.png" style="width:100%; margin-top:10px;">
+
+      <!-- 🟩 BEAT INFO -->
+<label>Beat Name</label>
+<input type="text" id="title" required>
+
+<label>Genre</label>
+<input type="text" id="genre">
+
+<label>Mood</label>
+<input type="text" id="mood">
+
+<label>Type Beat</label>
+<input type="text" id="type">
+
+<label>BPM</label>
+<input type="number" id="bpm">
+
+<label>Key</label>
+<input type="text" id="key">
+
+      <button type="submit">Upload Beat</button>
+    </form>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+<script>
+const db = supabase.createClient(
+  "https://puscryqnudgxjlzhrqrf.supabase.co",
+  "sb_publishable_Ji4XS2HywMG57NefOBEzYw_c4TPF-kf"
+);
+
+const form = document.getElementById("beatForm");
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  // =========================
+  // 🧠 GET FORM DATA
+  // =========================
+  const title = document.getElementById("title").value;
+  const genre = document.getElementById("genre").value;
+  const mood = document.getElementById("mood").value;
+  const type = document.getElementById("type").value;
+  const bpm = document.getElementById("bpm").value;
+  const key = document.getElementById("key").value;
+
+  const mp3File = document.getElementById("mp3Input").files[0];
+  const coverFile = document.getElementById("coverInput").files[0];
+  const zipInput = document.querySelector('input[accept=".zip"]');
+  const zipFile = zipInput?.files[0] || null;
+
+  if (!mp3File || !coverFile) {
+    alert("MP3 and Cover are required ❌");
+    return;
+  }
+
+  try {
+    const time = Date.now();
+
+    // =========================
+    // 🎵 MP3 UPLOAD
+    // =========================
+    const mp3Path = `${time}-${mp3File.name}`;
+
+    const { error: mp3Error } = await db.storage
+      .from("beats")
+      .upload(mp3Path, mp3File, { upsert: true });
+
+    if (mp3Error) throw mp3Error;
+
+    const mp3Url = db.storage
+      .from("beats")
+      .getPublicUrl(mp3Path).data.publicUrl;
+
+    // =========================
+    // 🖼 COVER UPLOAD
+    // =========================
+    const coverPath = `${time}-${coverFile.name}`;
+
+    const { error: coverError } = await db.storage
+      .from("covers")
+      .upload(coverPath, coverFile, { upsert: true });
+
+    if (coverError) throw coverError;
+
+    const coverUrl = db.storage
+      .from("covers")
+      .getPublicUrl(coverPath).data.publicUrl;
+
+    // =========================
+    // 📦 ZIP (OPTIONAL)
+    // =========================
+    let zipUrl = null;
+
+    if (zipFile) {
+      const zipPath = `${time}-${zipFile.name}`;
+
+      const { error: zipError } = await db.storage
+        .from("projects")
+        .upload(zipPath, zipFile, { upsert: true });
+
+      if (zipError) throw zipError;
+
+      zipUrl = db.storage
+        .from("projects")
+        .getPublicUrl(zipPath).data.publicUrl;
+    }
+
+    // =========================
+    // 💾 SAVE TO DATABASE
+    // =========================
+    const { error: dbError } = await db.from("beats").insert([
+      {
+        title,
+        genre,
+        mood,
+        type,
+        bpm,
+        key,
+        mp3_url: mp3Url,
+        cover_url: coverUrl,
+        zip_url: zipUrl,
+      },
+    ]);
+
+    if (dbError) throw dbError;
+
+    alert("🔥 Beat uploaded successfully!");
+    form.reset();
+
+  } catch (err) {
+    console.error(err);
+    alert("Upload failed 💀: " + err.message);
+  }
+});
+</script>

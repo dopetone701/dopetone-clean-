@@ -1,0 +1,139 @@
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dope Tone</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <!-- THIS MUST MATCH YOUR FOLDER -->
+  <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+
+<header class="navbar">
+ 
+  <div class="cart">🛒</div>
+
+  <div class="logo">
+    <img src="images/logo.png" alt="">
+    <span>DOPE TONE</span>
+  </div>
+<section id="beats"></section>
+<section id="samples"></section>
+<section id="packs"></section>
+<section id="tools"></section>
+
+  <div class="menu-toggle">☰</div>
+
+  <nav class="nav-links">
+    <a>Beats</a>
+    <a>Samples</a>
+    <a>Packs</a>
+    <a>Free Tools</a>
+  </nav>
+
+  <div class="auth-buttons">
+    <button>Login</button>
+    <button>Sign Up</button>
+  </div>
+
+</header>
+<div class="mobile-panel">
+<div class="panel-top">
+  <img src="images/logo.png" alt="logo">
+  
+</div>
+
+  <a href="#beats">Beats</a>
+  <a href="#samples">Samples</a>
+  <a href="#packs">Packs</a>
+  <a href="#tools">Free Tools</a>
+  <a href="#contact">Contact</a>
+<a href="#" class="profile-link">👤</a>
+
+</div>
+
+<!-- 
+================= HERO =================
+========================================
+-->
+<!-- 
+================= HERO =================
+SAFE ZONE — BUILD HERE ONLY
+========================================
+-->
+<!-- ================= HERO ================= -->
+
+<section class="hero">
+
+  <div class="hero-overlay"></div>
+
+  <div class="hero-content">
+
+    <h1 class="hero-title glass-title">
+      <span class="top-line">DOPE   TONE</span>
+      <span class="bottom-line">VAULT</span>
+    </h1>
+
+    <p class="hero-subtext">Premium Sound Arsenal For Next-Level Creators</p>
+
+
+    <div class="hero-buttons">
+      <button class="cta-btn primary">Explore Beats</button>
+<button class="cta-btn secondary">Sample Packs</button>
+  </div>
+</div> <!-- close hero-content -->
+</section> <!-- close hero -->
+
+  
+
+
+<!-- 🟥🟥🟥 CREATE SYSTEM HTML 🟥🟥🟥 -->
+
+<button id="createBtn" class="create-btn" style="display:none;">+</button>
+
+<div id="createPanel" class="create-panel">
+
+ <!-- 🟥🟥🟥 NAV BUTTONS 🟥🟥🟥 -->
+
+<a href="create-beat.html">
+  <button>Upload Beats</button>
+</a>
+
+<a href="create-pack.html">
+  <button>Sample Packs</button>
+</a>
+<a href="create-sample.html">
+  <button>Upload Sample</button>
+</a>
+
+</div>
+<!-- 🟥 BEATS CONTAINER -->
+<div id="beatsContainer"></div>
+
+<script>
+// 🔐 OWNER CONTROL
+const isOwner = localStorage.getItem("isOwner");
+
+if (isOwner === "true") {
+  document.getElementById("createBtn").style.display = "block";
+  document.getElementById("createPanel").style.display = "block";
+}
+</script>
+
+<script type="module" src="js/app.js"></script>
+<script src="js/shared/data.js"></script>
+<script src="js/shared/ui.js"></script>
+<script src="js/home/home.js"></script>
+<!-- 🟥 LOAD GLOBAL STORE FIRST -->
+
+
+<!-- 🟩 THEN PAGE LOGIC -->
+<script src="js/licence/licence-page.js"></script>
+
+
+</body>
+

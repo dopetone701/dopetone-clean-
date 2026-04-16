@@ -1,0 +1,134 @@
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Upload Pack</title>
+  <link rel="stylesheet" href="styles/main.css">
+</head>
+
+<body>
+
+<div class="form-page">
+
+  <div class="create-form">
+    <h2>Upload Pack</h2>
+
+    <!-- 🟢 PACK NAME -->
+    <label>Pack Name</label>
+    <input type="text" placeholder="e.g. Drill Starter Kit">
+
+    <!-- 📦 ZIP (MAIN FILE) -->
+    <label>Upload ZIP (MAIN FILE)</label>
+    <input type="file" id="zipInput" accept=".zip,.rar" required>
+
+    <!-- 🎧 OPTIONAL SOUNDS -->
+    <label>Upload Sounds (optional preview)</label>
+    <input type="file" id="packInput" multiple accept="audio/*">
+    <ul id="fileList"></ul>
+
+    <!-- 🔊 AUDIO PLAYER -->
+    <audio id="audioPreview" controls style="display:none; width:100%; margin-top:10px;"></audio>
+
+    <!-- 🖼 COVER -->
+    <label>Pack Cover</label>
+    <input type="file" id="packCover" accept="image/*">
+    <img id="packCoverPreview" src="assets/logo.png"
+         style="width:100%; margin-top:10px; border-radius:10px;">
+
+    <!-- 🧠 INFO -->
+    <label>Genre</label>
+    <input type="text" placeholder="e.g. Drill, Trap">
+
+    <label>Description</label>
+    <textarea placeholder="Describe your pack..."></textarea>
+
+    <!-- 🚀 BUTTON -->
+    <button class="upload-btn" onclick="validatePack()">Upload Pack</button>
+
+  </div>
+
+</div>
+
+<script>
+
+// 🎧 OPTIONAL AUDIO PREVIEW SYSTEM
+const packInput = document.getElementById("packInput");
+const fileList = document.getElementById("fileList");
+const audioPreview = document.getElementById("audioPreview");
+
+let selectedFiles = [];
+
+packInput.addEventListener("change", () => {
+  const newFiles = Array.from(packInput.files);
+  selectedFiles = [...selectedFiles, ...newFiles];
+  renderFiles();
+});
+
+function renderFiles() {
+  fileList.innerHTML = "";
+
+  selectedFiles.forEach((file, index) => {
+    const li = document.createElement("li");
+
+    li.innerHTML = `
+      ${file.name}
+      <button data-play="${index}">▶</button>
+      <button data-delete="${index}">❌</button>
+    `;
+
+    fileList.appendChild(li);
+  });
+
+  // ▶ PLAY
+  fileList.querySelectorAll("[data-play]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const file = selectedFiles[btn.dataset.play];
+      audioPreview.src = URL.createObjectURL(file);
+      audioPreview.style.display = "block";
+      audioPreview.play();
+    });
+  });
+
+  // ❌ DELETE
+  fileList.querySelectorAll("[data-delete]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      selectedFiles.splice(btn.dataset.delete, 1);
+      renderFiles();
+    });
+  });
+}
+
+
+// 🖼 COVER PREVIEW
+const packCoverInput = document.getElementById("packCover");
+const packCoverPreview = document.getElementById("packCoverPreview");
+
+packCoverInput.addEventListener("change", () => {
+  const file = packCoverInput.files[0];
+
+  if (file) {
+    packCoverPreview.src = URL.createObjectURL(file);
+  } else {
+    packCoverPreview.src = "assets/logo.png";
+  }
+});
+
+
+// 🚨 VALIDATION (ZIP REQUIRED)
+function validatePack() {
+  const zipInput = document.getElementById("zipInput");
+
+  if (!zipInput.files.length) {
+    alert("🚨 Upload a ZIP file first bro!");
+    return;
+  }
+
+  alert("🔥 Pack ready to upload!");
+}
+
+</script>
+
+</body>
+</html>
