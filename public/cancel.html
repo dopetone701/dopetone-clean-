@@ -94,15 +94,6 @@
       transition: 0.3s;
     }
 
-    .retry {
-      background: linear-gradient(135deg, #00c6ff, #ff0055);
-    }
-    .btn.retry {
-     cursor: pointer;
-  border: none;
-    }
-
-
     .home {
       background: rgba(255,255,255,0.1);
       border: 1px solid rgba(255,255,255,0.2);
@@ -144,43 +135,13 @@
     <div class="btn-group">
   <a href="/" class="btn home">Back to Vault</a>
 
-  <!-- ✅ REAL retry button -->
-  <button id="retryBtn" class="btn retry">
-    Try Again
-  </button>
+  
 </div>
 
   </div>
 <script>
-const stripe = Stripe("pk_test_51TMjXCJrs2djvfJIbYMYgQ23yy0vzIwPvbPc9m5qghzGgg9NMECTyNWebBGqkLULxb4rI1dXwBS5uYjLKLQY3idp003dEmbIVy"); // your real key
-
-retryBtn.addEventListener("click", async () => {
-  try {
-    const res = await fetch("https://dopetone-clean.onrender.com/create-checkout-session", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        name: beat,
-        price: Number(price)
-      })
-    });
-
-    const data = await res.json();
-
-    await stripe.redirectToCheckout({
-      sessionId: data.id
-    });
-
-  } catch (err) {
-    console.error("Retry failed:", err);
-  }
-});
-
 
 </script>
-<script src="https://js.stripe.com/v3/"></script>
 
 </body>
 </html>
