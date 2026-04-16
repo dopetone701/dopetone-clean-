@@ -181,7 +181,7 @@ retryBtn.addEventListener("click", async () => {
 
     const data = await res.json();
 
-    const stripe = Stripe("YOUR_PUBLIC_KEY");
+    const stripe = Stripe("pk_test_51TMjXCJrs2djvfJIbYMYgQ23yy0vzIwPvbPc9m5qghzGgg9NMECTyNWebBGqkLULxb4rI1dXwBS5uYjLKLQY3idp003dEmbIVy");
 
     await stripe.redirectToCheckout({
       sessionId: data.id,
