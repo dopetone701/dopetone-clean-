@@ -280,12 +280,14 @@ cards.forEach(card => {
 
   });
 });
-// WAIT UNTIL PAGE LOADS
+// Wait until page fully loads
 window.addEventListener("load", () => {
+  console.log("🚀 Page loaded");
 
-  // ✅ INIT STRIPE (THIS WAS MISSING)
-  const stripe = Stripe("pk_test_51TMjXCJrs2djvfJIbYMYgQ23yy0vzIwPvbPc9m5qghzGgg9NMECTyNWebBGqkLULxb4rI1dXwBS5uYjLKLQY3idp003dEmbIVy"); // <-- PUT YOUR REAL KEY
+  // ✅ Initialize Stripe
+  const stripe = Stripe("pk_test_51TMjXCJrs2djvfJIbYMYgQ23yy0vzIwPvbPc9m5qghzGgg9NMECTyNWebBGqkLULxb4rI1dXwBS5uYjLKLQY3idp003dEmbIVy"); // 🔁 replace with your real key
 
+  // ✅ Get all pay buttons
   const buttons = document.querySelectorAll(".pay-btn");
 
   console.log("Buttons found:", buttons.length);
@@ -295,40 +297,51 @@ window.addEventListener("load", () => {
     return;
   }
 
+  // ✅ Loop through buttons
   buttons.forEach((btn) => {
     btn.addEventListener("click", async () => {
 
-      const price = btn.dataset.price;
+      // Get data from button
+      const price = Number(btn.dataset.price);
       const name = btn.dataset.name;
 
       console.log("🔥 Buying:", name, price);
 
-      try {
-        const res = await fetch("https://your-app.onrender.com/create-checkout-session", {
+      // Validate
+      if (!price || !name) {
+        console.error("❌ Missing price or name");
+        return;
+      }
 
+      try {
+        // ✅ Call backend
+        const res = await fetch("https://dopetone-clean.onrender.com/create-checkout-session", {
           method: "POST",
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            price: Number(price),
-            name: name
-          })
+            price,
+            name,
+          }),
         });
 
+        // ✅ Convert response
         const data = await res.json();
-
         console.log("Session response:", data);
 
+        // ❌ No session returned
         if (!data.id) {
-          console.error("❌ No session ID");
+          console.error("❌ No session ID returned");
           return;
         }
 
+        // ✅ Redirect to Stripe Checkout
         const result = await stripe.redirectToCheckout({
-          sessionId: data.id
+          sessionId: data.id,
         });
 
+        // ❌ Stripe error
         if (result.error) {
           console.error("❌ Stripe redirect error:", result.error.message);
         }
@@ -336,8 +349,6 @@ window.addEventListener("load", () => {
       } catch (err) {
         console.error("❌ Payment error:", err);
       }
-
     });
   });
-
 });

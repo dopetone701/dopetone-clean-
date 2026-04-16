@@ -1,1 +1,147 @@
-<h1>Payment Cancelled ❌</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Payment Cancelled</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      /* SAME VAULT BACKGROUND */
+      background: url("/images/vault-image.png") no-repeat center center fixed;
+      background-size: cover;
+    }
+
+    /* DARK GLASS OVERLAY */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+
+      background: linear-gradient(
+        135deg,
+        rgba(8, 15, 40, 0.9),   /* deep blue */
+        rgba(40, 0, 10, 0.85)   /* deep red */
+      );
+
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+
+      z-index: -1;
+    }
+
+    /* MAIN CARD */
+    .cancel-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+
+      border-radius: 20px;
+      padding: 40px;
+      width: 90%;
+      max-width: 420px;
+
+      text-align: center;
+
+      border: 1px solid rgba(255,255,255,0.1);
+
+      box-shadow:
+        0 0 40px rgba(255, 0, 80, 0.2);
+    }
+
+    .cancel-icon {
+      font-size: 60px;
+      margin-bottom: 20px;
+    }
+
+    .cancel-title {
+      font-size: 24px;
+      color: #ff4d6d;
+      margin-bottom: 10px;
+    }
+
+    .cancel-text {
+      color: #ccc;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 12px 20px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: bold;
+      color: white;
+      transition: 0.3s;
+    }
+
+    .retry {
+      background: linear-gradient(135deg, #00c6ff, #ff0055);
+    }
+
+    .home {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+    }
+
+    .logo {
+      width: 80px;
+      margin-bottom: 20px;
+      opacity: 0.9;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <div class="cancel-card">
+
+    <!-- LOGO -->
+    <img src="/images/logo.png" class="logo" />
+
+    <!-- ICON -->
+    <div class="cancel-icon">❌</div>
+
+    <!-- TITLE -->
+    <div class="cancel-title">Payment Cancelled</div>
+
+    <!-- TEXT -->
+    <div class="cancel-text">
+      You didn’t unlock the vault yet.<br/>
+      Your sound is still waiting.
+    </div>
+
+    <!-- BUTTONS -->
+    <div class="btn-group">
+      <a href="/" class="btn home">Back to Vault</a>
+      <a href="/licence-page.html" class="btn retry">Try Again</a>
+    </div>
+
+  </div>
+
+</body>
+</html>
