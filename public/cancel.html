@@ -152,46 +152,35 @@
 
   </div>
 <script>
-const params = new URLSearchParams(window.location.search);
-
-const beat = params.get("beat");
-const price = params.get("price");
-
-console.log("Cancel page data:", beat, price);
-
-const retryBtn = document.getElementById("retryBtn");
+const stripe = Stripe("pk_test_51TMjXCJrs2djvfJIbYMYgQ23yy0vzIwPvbPc9m5qghzGgg9NMECTyNWebBGqkLULxb4rI1dXwBS5uYjLKLQY3idp003dEmbIVy"); // your real key
 
 retryBtn.addEventListener("click", async () => {
-  if (!beat || !price) {
-    alert("Missing beat info. Reload from vault.");
-    return;
-  }
-
   try {
-    const res = await fetch("/create-checkout-session", {
+    const res = await fetch("https://dopetone-clean.onrender.com/create-checkout-session", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({
         name: beat,
-        price: Number(price),
-      }),
+        price: Number(price)
+      })
     });
 
     const data = await res.json();
 
-    const stripe = Stripe("pk_test_51TMjXCJrs2djvfJIbYMYgQ23yy0vzIwPvbPc9m5qghzGgg9NMECTyNWebBGqkLULxb4rI1dXwBS5uYjLKLQY3idp003dEmbIVy");
-
     await stripe.redirectToCheckout({
-      sessionId: data.id,
+      sessionId: data.id
     });
 
   } catch (err) {
     console.error("Retry failed:", err);
   }
 });
+
+
 </script>
+<script src="https://js.stripe.com/v3/"></script>
 
 </body>
 </html>
