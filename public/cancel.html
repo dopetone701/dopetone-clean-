@@ -1,93 +1,169 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Payment Cancelled</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Payment Cancelled</title>
 
-<!-- ✅ IMPORTANT: LOAD STRIPE -->
-<script src="https://js.stripe.com/v3/"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
 
-<style>
-body {
-  margin: 0;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    body {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
-  /* ✅ FIX BG PATH */
-  background: url("/images/vault-image.png") center/cover no-repeat;
-}
+      /* SAME VAULT BACKGROUND */
+      background: url("/images/vault-image.png") no-repeat center center fixed;
+      background-size: cover;
+    }
 
-/* glass effect */
-body::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(10, 10, 20, 0.7);
-  backdrop-filter: blur(12px);
-}
+    /* DARK GLASS OVERLAY */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
 
-.cancel-card {
-  position: relative;
-  z-index: 2;
-  padding: 40px;
-  border-radius: 20px;
-  background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(15px);
-  text-align: center;
-  color: white;
-}
+      background: linear-gradient(
+        135deg,
+        rgba(8, 15, 40, 0.9),   /* deep blue */
+        rgba(40, 0, 10, 0.85)   /* deep red */
+      );
 
-.btn-group {
-  margin-top: 20px;
-}
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
 
-.btn {
-  padding: 10px 20px;
-  margin: 5px;
-  border-radius: 10px;
-  border: none;
-  cursor: pointer;
-}
+      z-index: -1;
+    }
 
-.home {
-  background: gray;
-  color: white;
-}
+    /* MAIN CARD */
+    .cancel-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
 
-.retry {
-  background: linear-gradient(45deg, blue, red);
-  color: white;
-}
-</style>
+      border-radius: 20px;
+      padding: 40px;
+      width: 90%;
+      max-width: 420px;
+
+      text-align: center;
+
+      border: 1px solid rgba(255,255,255,0.1);
+
+      box-shadow:
+        0 0 40px rgba(255, 0, 80, 0.2);
+    }
+
+    .cancel-icon {
+      font-size: 60px;
+      margin-bottom: 20px;
+    }
+
+    .cancel-title {
+      font-size: 24px;
+      color: #ff4d6d;
+      margin-bottom: 10px;
+    }
+
+    .cancel-text {
+      color: #ccc;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 12px 20px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: bold;
+      color: white;
+      transition: 0.3s;
+    }
+
+    .retry {
+      background: linear-gradient(135deg, #00c6ff, #ff0055);
+    }
+    .btn.retry {
+     cursor: pointer;
+     border: none;
+    }
+
+
+    .home {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+    }
+
+    .logo {
+      width: 80px;
+      margin-bottom: 20px;
+      opacity: 0.9;
+    }
+
+  </style>
 </head>
 
 <body>
 
-<div class="cancel-card">
-  <h2>❌ Payment Cancelled</h2>
-  <p>You didn’t unlock the vault yet.<br>Your sound is still waiting.</p>
+  <div class="cancel-card">
 
-  <div class="btn-group">
-    <a href="/" class="btn home">Back to Vault</a>
-    <button id="retryBtn" class="btn retry">Try Again</button>
-  </div>
+    <!-- LOGO -->
+    <img src="/images/logo.png" class="logo" />
+
+    <!-- ICON -->
+    <div class="cancel-icon">❌</div>
+
+    <!-- TITLE -->
+    <div class="cancel-title">Payment Cancelled</div>
+
+    <!-- TEXT -->
+    <div class="cancel-text">
+      You didn’t unlock the vault yet.<br/>
+      Your sound is still waiting.
+    </div>
+
+    <!-- BUTTONS -->
+    <div class="btn-group">
+  <a href="/" class="btn home">Back to Vault</a>
+
+  <!-- ✅ REAL retry button -->
+  <button id="retryBtn" class="btn retry">
+    Try Again
+  </button>
 </div>
 
+  </div>
 <script>
 const params = new URLSearchParams(window.location.search);
+
 const beat = params.get("beat");
 const price = params.get("price");
 
-console.log("Cancel data:", beat, price);
+console.log("Cancel page data:", beat, price);
 
-// ✅ INIT STRIPE
-const stripe = Stripe("pk_test_51TMjXCJrs2djvfJIbYMYgQ23yy0vzIwPvbPc9m5qghzGgg9NMECTyNWebBGqkLULxb4rI1dXwBS5uYjLKLQY3idp003dEmbIVy");
+const retryBtn = document.getElementById("retryBtn");
 
-document.getElementById("retryBtn").addEventListener("click", async () => {
+retryBtn.addEventListener("click", async () => {
   if (!beat || !price) {
-    alert("Missing data. Go back to vault.");
+    alert("Missing beat info. Reload from vault.");
     return;
   }
 
@@ -95,23 +171,20 @@ document.getElementById("retryBtn").addEventListener("click", async () => {
     const res = await fetch("/create-checkout-session", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         name: beat,
-        price: Number(price)
-      })
+        price: Number(price),
+      }),
     });
 
     const data = await res.json();
 
-    if (!data.id) {
-      alert("Session error");
-      return;
-    }
+    const stripe = Stripe("YOUR_PUBLIC_KEY");
 
     await stripe.redirectToCheckout({
-      sessionId: data.id
+      sessionId: data.id,
     });
 
   } catch (err) {
