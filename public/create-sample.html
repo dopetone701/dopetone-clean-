@@ -1,0 +1,69 @@
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Upload Sample</title>
+  <link rel="stylesheet" href="styles/main.css">
+</head>
+
+<body>
+
+<div class="form-page">
+
+  <div class="create-form">
+    <h2>Upload Sample</h2>
+
+    <!-- 🎧 AUDIO -->
+    <label>Sample Audio</label>
+    <input type="file" id="audioInput" accept="audio/*">
+
+    <audio id="audioPreview" controls 
+      style="display:none; width:100%; margin-top:10px;">
+    </audio>
+
+    <!-- 🖼 COVER (DEFAULT LOGO ONLY) -->
+    <label>Cover Image</label>
+    <img src="assets/logo.png"
+         style="width:100%; margin-top:10px; border-radius:10px;">
+
+    <!-- 🧠 INFO -->
+    <label>Sample Name</label>
+    <input type="text">
+
+    <label>Category</label>
+    <input type="text">
+
+    <label>BPM</label>
+    <input type="number">
+
+    <label>Key</label>
+    <input type="text">
+
+    <!-- 🚀 BUTTON -->
+    <button class="upload-btn">Upload Sample</button>
+
+  </div>
+
+</div>
+
+<script>
+
+// 🎧 AUDIO PREVIEW
+const audioInput = document.getElementById("audioInput");
+const audioPreview = document.getElementById("audioPreview");
+
+audioInput.addEventListener("change", () => {
+  const file = audioInput.files[0];
+
+  if (file) {
+    audioPreview.src = URL.createObjectURL(file);
+    audioPreview.style.display = "block";
+  }
+});
+
+</script>
+
+</body>
+</html>
