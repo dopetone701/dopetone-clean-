@@ -169,25 +169,58 @@ if (noticeBoardSend) {
 // Load single latest post
 async function loadNotices() {
   if (!noticeBoardFeed) return;
-  try {
-    const res = await fetch(`${API_BASE}/api/notices?cache=${Date.now()}`);
-    const notices = await res.json();
-    const latest = Array.isArray(notices) && notices.length > 0? notices[0] : null;
 
-    if (!latest || latest.from!== 'admin') {
-      if (currentPostId!== null) {
+  // 1. Skip if API_BASE not defined or is localhost
+  if (typeof API_BASE === 'undefined' || API_BASE.includes('localhost')) {
+    console.warn('[NOX] API_BASE not set or localhost, skipping notices');
+    noticeBoardFeed.innerHTML = '<div style="color:#666;padding:30px;text-align:center;">No drops yet</div>';
+    return;
+  }
+
+  // 2. Add timeout so fetch never hangs forever
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 4000); // 4s timeout
+
+  try {
+    const res = await fetch(`${API_BASE}/api/notices?cache=${Date.now()}`, {
+      signal: controller.signal,
+      mode: 'cors' // explicit
+    });
+    
+    clearTimeout(timeoutId);
+
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    
+    const notices = await res.json();
+    const latest = Array.isArray(notices) && notices.length > 0 ? notices[0] : null;
+
+    if (!latest || latest.from !== 'admin') {
+      if (currentPostId !== null) {
         currentPostId = null;
         noticeBoardFeed.innerHTML = '<div style="color:#666;padding:30px;text-align:center;">No drops yet</div>';
       }
       return;
     }
 
-    if (latest.id!== currentPostId) {
+    if (latest.id !== currentPostId) {
       currentPostId = latest.id;
-      console.log('[NOX] New post:', latest.promotion? `${latest.promotion.items.length} beats` : 'text');
+      console.log('[NOX] New post:', latest.promotion ? `${latest.promotion.items.length} beats` : 'text');
       renderNotice(latest);
     }
-  } catch(e) { console.error(e); }
+
+  } catch (err) {
+    clearTimeout(timeoutId);
+    // 3. Fail silently - don't crash page
+    if (err.name === 'AbortError') {
+      console.warn('[NOX] Notices API timeout');
+    } else {
+      console.warn('[NOX] Notices API error:', err.message);
+    }
+    // Show fallback so UI doesn't look broken
+    if (currentPostId === null) {
+      noticeBoardFeed.innerHTML = '<div style="color:#666;padding:30px;text-align:center;">No drops yet</div>';
+    }
+  }
 }
 
 loadNotices();
