@@ -1,7 +1,7 @@
 // ===============================
 // 📜 NOTICE BOARD - PROMO FIXED
 // ===============================
-const API_BASE = 'https://dope-tone-api.dopetone701.workers.dev';
+const API_URL = 'https://api.dopetonevault.com/api/beats'
 const noticeBoardFeed = document.getElementById('noticeBoardFeed');
 const noticeBoardInput = document.getElementById('noticeBoardInput');
 const noticeBoardSend = document.getElementById('noticeBoardSend');

@@ -1,6 +1,6 @@
 import { renderSimilarTracks } from "./licence-similar.js"
 
-const API_URL = 'https://dope-tone-api.dopetone701.workers.dev';
+const API_URL = 'https://api.dopetonevault.com/api/beats'
 const WORKER_URL = API_URL;
 const params = new URLSearchParams(window.location.search);
 let beatId = params.get("id");

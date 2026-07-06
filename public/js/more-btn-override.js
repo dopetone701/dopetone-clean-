@@ -3,7 +3,7 @@
 // DOPE TONE - email gate v3
 // ===============================
 
-const API_URL = 'https://dope-tone-api.dopetone701.workers.dev';
+const API_URL = 'https://api.dopetonevault.com/api/beats'
 let __DT_CURRENT_BEAT__ = null;
 
 // ---------- email check ----------

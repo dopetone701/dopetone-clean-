@@ -3,7 +3,7 @@
 // 🔥 SIMILAR TRACKS + RECENTLY VIEWED - CLOUDFLARE
 // ========================================
 
-const API_URL = 'https://dope-tone-api.dopetone701.workers.dev';
+const API_URL = 'https://api.dopetonevault.com/api/beats'
 
 // ===============================
 // 🕐 RECENT TRACKER - LOCAL TO THIS FILE

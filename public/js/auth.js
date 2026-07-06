@@ -73,42 +73,42 @@ class AuthManager {
   }
 
   async loadUserDataFromCloud() {
-    if (!this.user) {
-      console.log('❌ loadUserData: No user');
-      return;
-    }
+  if (!this.user) return;
+ 
+  const userId = this.user.id;
+  console.log('🔄 Loading from D1 for:', userId);
+
+  try {
+    const res = await fetch(`${API_URL}/api/user/${userId}/data`);
+    const cloudData = await res.json();
    
-    const userId = this.user.id;
-    console.log('🔄 Loading from D1 for:', userId);
+    console.log('📦 D1 Response:', cloudData);
 
-    try {
-      const res = await fetch(`${API_URL}/api/user/${userId}/data`);
-      const cloudData = await res.json();
-     
-      console.log('📦 D1 Response:', cloudData);
-      console.log('🖼️ Avatar in D1:', cloudData.avatar);
+    if (cloudData) {
+      // Load cart/likes/playlists
+      this.setUserStorage('dopetone_cart', JSON.stringify(cloudData.cart || []));
+      this.setUserStorage('dopetone_playlists', JSON.stringify(cloudData.playlists || []));
+      this.setUserStorage('dopetone_liked_beats', JSON.stringify(cloudData.likes || []));
+      this.setUserStorage('dopetone_licences', JSON.stringify(cloudData.licences || {}));
 
-      if (cloudData) {
-        this.setUserStorage('dopetone_cart', JSON.stringify(cloudData.cart || []));
-        this.setUserStorage('dopetone_playlists', JSON.stringify(cloudData.playlists || []));
-        this.setUserStorage('dopetone_liked_beats', JSON.stringify(cloudData.likes || []));
-        this.setUserStorage('dopetone_licences', JSON.stringify(cloudData.licences || {}));
-
-        if (cloudData.avatar) {
-          console.log('✅ Setting avatar from D1:', cloudData.avatar);
-          this.user.avatar = cloudData.avatar;
-          this.avatarData = cloudData.avatar;
-          localStorage.setItem('dopetone_user', JSON.stringify(this.user));
-          console.log('💾 Saved to localStorage');
-        } else {
-          console.log('⚠️ No avatar in D1 data');
-        }
+      // LOAD AVATAR FROM D1 - This is the key
+      if (cloudData.avatar) {
+        console.log('✅ Loading avatar from D1:', cloudData.avatar);
+        this.user.avatar = cloudData.avatar;
+        this.avatarData = cloudData.avatar;
+        localStorage.setItem('dopetone_user', JSON.stringify(this.user));
+        
+        // Update all avatar elements
+        document.querySelectorAll('[data-user-avatar], #userAvatar, #panelAvatar, .header-avatar')
+          .forEach(img => { if (img) img.src = cloudData.avatar; });
       }
-    } catch (e) {
-      console.error('❌ Cloud load failed:', e);
-      this.migrateToUserStorage();
     }
+  } catch (e) {
+    console.error('❌ Cloud load failed:', e);
+    this.migrateToUserStorage();
   }
+}
+
 
   migrateToUserStorage() {
     if (!this.user) return;
@@ -247,6 +247,19 @@ class AuthManager {
           this.closeCropper();
         }
       });
+      // Mobile panel profile click = open login if guest
+const mobileProfileBtn = document.getElementById('mobileProfileBtn');
+if (mobileProfileBtn) {
+  mobileProfileBtn.onclick = () => {
+    if (!this.user) {
+      this.openModal(false); // Open login
+      document.getElementById('navPanel')?.classList.remove('active'); // Close mobile menu
+    } else {
+      this.toggleAccountPanel(); // Open account panel if logged in
+    }
+  };
+}
+
 
       window.addEventListener('cartUpdated', () => this.updateCartCount());
      
@@ -390,8 +403,25 @@ class AuthManager {
   }
 
   async handleForgotPassword() {
-    this.showToast('Password reset coming soon');
+  const email = this.els.authEmail.value.trim();
+  
+  if (!email) {
+    this.showError('Enter your email first');
+    this.els.authEmail.focus();
+    return;
   }
+  
+  if (!this.isValidEmail(email)) {
+    this.showError('Enter a valid email');
+    return;
+  }
+  
+  this.showToast('Password reset link sent to ' + email);
+  
+  // TODO LATER: Send actual email with verification code
+  // For now just show toast. When ready, we'll add email service.
+}
+
 
   isValidEmail(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -439,43 +469,50 @@ class AuthManager {
   }
 
   async saveCrop() {
-    if (!this.cropper) return;
-   
-    const canvas = this.cropper.getCroppedCanvas({ width: 500, height: 500 });
-   
-    canvas.toBlob(async (blob) => {
-      const fd = new FormData();
-      fd.append('file', blob, 'avatar.png');
-      fd.append('folder', 'avatars');
+  if (!this.cropper) return;
+ 
+  const canvas = this.cropper.getCroppedCanvas({ width: 500, height: 500 });
+ 
+  canvas.toBlob(async (blob) => {
+    const fd = new FormData();
+    fd.append('file', blob, 'avatar.png');
+    fd.append('folder', 'avatars');
 
-      try {
-        const res = await fetch(`${API_URL}/api/upload`, { method: 'POST', body: fd });
-        const data = await res.json();
-        if (data.success) this.avatarData = data.url;
-      } catch (err) {
-        this.avatarData = canvas.toDataURL('image/png');
-      }
+    try {
+      // Upload to R2
+      const res = await fetch(`${API_URL}/api/upload`, { method: 'POST', body: fd });
+      const data = await res.json();
+      if (data.success) this.avatarData = data.url;
+    } catch (err) {
+      // Fallback to base64 if R2 fails
+      this.avatarData = canvas.toDataURL('image/png');
+    }
 
-      document.querySelectorAll('[data-user-avatar], #userAvatar, #panelAvatar, #avatarPreview')
-       .forEach(img => { if (img) img.src = this.avatarData; });
+    // Update UI immediately
+    document.querySelectorAll('[data-user-avatar], #userAvatar, #panelAvatar, #avatarPreview')
+      .forEach(img => { if (img) img.src = this.avatarData; });
 
-      if (this.user) {
-        this.user.avatar = this.avatarData;
-        localStorage.setItem('dopetone_user', JSON.stringify(this.user));
-       
-        await this.saveUserDataToCloud();
-       
-        await fetch(`${API_URL}/api/auth/update-avatar`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: this.user.email, avatar: this.avatarData })
-        }).catch(() => {});
-      }
+    // Save to user profile + D1
+    if (this.user) {
+      this.user.avatar = this.avatarData;
+      localStorage.setItem('dopetone_user', JSON.stringify(this.user));
+     
+      // 1. Update users_auth table
+      await fetch(`${API_URL}/api/auth/update-avatar`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: this.user.email, avatar: this.avatarData })
+      }).catch(() => {});
+      
+      // 2. Update user_data table for cross-device sync
+      await this.saveUserDataToCloud();
+    }
 
-      this.closeCropper();
-      this.showToast('Avatar saved to cloud');
-    }, 'image/png', 0.9);
-  }
+    this.closeCropper();
+    this.showToast('Avatar saved to cloud');
+  }, 'image/png', 0.9);
+}
+
 
   closeCropper() {
     this.hideModal(this.els.cropModal);
@@ -530,55 +567,81 @@ class AuthManager {
   }
 
   syncUI() {
-    const savedUser = localStorage.getItem('dopetone_user');
-    this.user = savedUser? JSON.parse(savedUser) : null;
-    const isLoggedIn =!!this.user;
+  const savedUser = localStorage.getItem('dopetone_user');
+  this.user = savedUser? JSON.parse(savedUser) : null;
+  const isLoggedIn =!!this.user;
+  const isAdmin = this.user?.email === 'dopetone701@gmail.com';
 
-    const DEFAULT_AVATAR = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cdefs%3E%3ClinearGradient id='b' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0%25' stop-color='%230066ff'/%3E%3Cstop offset='100%25' stop-color='%230044aa'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='200' height='200' rx='100' fill='url(%23b)'/%3E%3Ccircle cx='100' cy='72' r='28' fill='%23fff'/%3E%3Cpath d='M100 112c-28 0-52 14-52 32v8c0 5 4 9 9 9h86c5 0 9-4 9-9v-8c0-18-24-32-52-32z' fill='%23fff'/%3E%3C/svg%3E";
+  const DEFAULT_AVATAR = "images/default-user.png";
 
-    const signInBtn = document.querySelector('.sign-in-btn, #signInBtn, [data-action="signin"], a[href*="signin"]');
-    const userMenu = document.querySelector('.user-menu, #userMenu,.header-avatar-wrap, [data-user-menu]');
-    const cartBtn = document.querySelector('.cart-btn, #cartBtn, [data-action="cart"]');
+  // ===== YOUR EXISTING HEADER ELEMENTS =====
+  const authGuest = document.getElementById('authGuest');
+  const authUser = document.getElementById('authUser');
+  const controlCenterBtn = document.getElementById('controlCenterBtn');
+  
+  // Mobile panel elements
+  const mobileProfileName = document.getElementById('mobileProfileName');
+  const mobileProfileSub = document.getElementById('mobileProfileSub');
+  const mobileProfileAvatar = document.getElementById('mobileProfileAvatar');
 
-    if (isLoggedIn) {
-      const avatar = this.user.avatar || DEFAULT_AVATAR;
-      const name = this.user.username || this.user.email.split('@')[0];
+  if (isLoggedIn) {
+    const avatar = this.user.avatar || DEFAULT_AVATAR;
+    const name = this.user.username || this.user.email.split('@')[0];
 
-      if (signInBtn) signInBtn.style.display = 'none';
-      if (userMenu) userMenu.style.display = 'flex';
-      if (cartBtn) cartBtn.style.display = 'flex';
+    // 1. SWAP GUEST → USER
+    if (authGuest) authGuest.style.display = 'none';
+    if (authUser) authUser.style.display = 'flex';
 
-      const avatars = [
-        this.els.userAvatar,
-        this.els.panelAvatar,
-       ...document.querySelectorAll('#userAvatar, #panelAvatar, [data-user-avatar],.header-avatar')
-      ].filter(Boolean);
-
-      avatars.forEach(img => {
-        img.src = avatar;
-        img.onerror = () => img.src = DEFAULT_AVATAR;
-      });
-
-      if (this.els.panelName) this.els.panelName.textContent = name;
-      if (this.els.panelEmail) this.els.panelEmail.textContent = this.user.email;
-
-      document.body.classList.add('logged-in');
-
-    } else {
-      if (signInBtn) signInBtn.style.display = 'flex';
-      if (userMenu) userMenu.style.display = 'none';
-      if (cartBtn) cartBtn.style.display = 'none';
-
-      document.querySelectorAll('#userAvatar, #panelAvatar, [data-user-avatar]').forEach(img => {
-        img.src = DEFAULT_AVATAR;
-      });
-
-      document.body.classList.remove('logged-in');
+    // 2. ADMIN ONLY: Control Center in account panel
+    if (controlCenterBtn) {
+      controlCenterBtn.style.display = isAdmin? 'flex' : 'none';
     }
 
-    this.updateCartCount();
-    this.fixCameraPosition();
+    // 3. UPDATE ALL AVATARS
+    const avatars = [
+      this.els.userAvatar,
+      this.els.panelAvatar,
+      document.getElementById('userAvatar'),
+      document.getElementById('panelAvatar'),
+      mobileProfileAvatar
+    ].filter(Boolean);
+
+    avatars.forEach(img => {
+      img.src = avatar;
+      img.onerror = () => img.src = DEFAULT_AVATAR;
+    });
+
+    // 4. UPDATE PANEL + MOBILE MENU
+    if (this.els.panelName) this.els.panelName.textContent = name;
+    if (this.els.panelEmail) this.els.panelEmail.textContent = this.user.email;
+    if (mobileProfileName) mobileProfileName.textContent = name;
+    if (mobileProfileSub) mobileProfileSub.textContent = this.user.email;
+
+    document.body.classList.add('logged-in');
+    if (isAdmin) document.body.classList.add('is-admin');
+
+  } else {
+    // LOGGED OUT - Show login/signup, hide user stuff
+    if (authGuest) authGuest.style.display = 'flex';
+    if (authUser) authUser.style.display = 'none';
+    if (controlCenterBtn) controlCenterBtn.style.display = 'none';
+
+    // Reset mobile panel to guest
+    if (mobileProfileName) mobileProfileName.textContent = 'Guest';
+    if (mobileProfileSub) mobileProfileSub.textContent = 'Tap to sign in';
+    if (mobileProfileAvatar) mobileProfileAvatar.src = DEFAULT_AVATAR;
+
+    // Reset all avatars
+    document.querySelectorAll('#userAvatar, #panelAvatar, #mobileProfileAvatar').forEach(img => {
+      img.src = DEFAULT_AVATAR;
+    });
+
+    document.body.classList.remove('logged-in', 'is-admin');
   }
+
+  this.updateCartCount();
+  this.fixCameraPosition();
+}
 
   fixCameraPosition() {
     const style = document.createElement('style');

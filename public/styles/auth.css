@@ -882,3 +882,90 @@ header .nav-auth a[data-auth="login"] {
   height: 100%;
   object-fit: cover;
 }
+.auth-guest,.auth-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar-btn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.avatar-btn img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid #0f0;
+  object-fit: cover;
+}
+
+.cart-desktop {
+  position: relative;
+}
+
+/* Admin badge */
+body.is-admin.avatar-btn img {
+  border-color: #ffd700;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+/* Forgot Password Link */
+.forgot-password-link {
+  background: transparent;
+  border: none;
+  color: #00d9ff;
+  font-size: 12px;
+  font-weight: 500;
+  text-align: right;
+  width: 100%;
+  padding: 8px 0 0;
+  margin-top: -8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.forgot-password-link:hover {
+  color: #00eaff;
+  text-shadow: 0 0 8px rgba(0, 234, 255, 0.5);
+}
+
+.forgot-password-link:active {
+  transform: scale(0.98);
+}
+
+/* Password input group - make space for the link */
+.auth-input-group {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.auth-input-group label {
+  display: block;
+  color: #aaa;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.auth-input-group input {
+  width: 100%;
+  background: #0a0a14;
+  border: 2px solid #222;
+  border-radius: 8px;
+  padding: 14px 16px;
+  color: #fff;
+  font-size: 15px;
+  transition: all 0.2s ease;
+}
+
+.auth-input-group input:focus {
+  outline: none;
+  border-color: #0f0;
+  box-shadow: 0 0 0 3px rgba(0, 255, 0, 0.1);
+}

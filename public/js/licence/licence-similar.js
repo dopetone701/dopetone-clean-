@@ -20,7 +20,7 @@ export async function renderSimilarTracks() {
     // ========================================
 
 
-    const API_URL = 'https://dope-tone-api.dopetone701.workers.dev';
+    const API_URL = 'https://api.dopetonevault.com/api/beats'
     // ===============================
 // 🔄 NORMALIZE BEAT FIELDS
 // ===============================

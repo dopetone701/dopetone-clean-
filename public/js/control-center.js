@@ -1,5 +1,5 @@
 // ===== CONFIG =====
-const API_URL = 'https://dope-tone-api.dopetone701.workers.dev';
+const API_URL = 'https://api.dopetonevault.com/api/beats'
 const ADMIN_EMAIL = 'dopetone701@gmail.com';
 const DEFAULT_LOGO = 'images/logo.png';
 

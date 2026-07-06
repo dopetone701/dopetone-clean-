@@ -33,7 +33,7 @@
 
   async function drawAllSparklines() {
     try {
-      const apiUrl = window.API_URL || 'https://dope-tone-api.dopetone701.workers.dev';
+      const API_URL = 'https://api.dopetonevault.com/api/beats'
       const res = await fetch(`${apiUrl}/api/stats/history`);
       if (!res.ok) throw new Error('History fetch failed');
 
