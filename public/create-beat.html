@@ -15,9 +15,8 @@
       <h2>Upload Beat</h2>
 
       <!-- MP3 PREVIEW -->
-      <label>Preview (MP3)</label>
-      <input type="file" id="mp3Input" accept="audio/mp3,audio/*">
-
+      <label>Preview (MP3) *</label>
+      <input type="file" id="mp3Input" accept="audio/mp3,audio/*" required>
       <audio id="mp3Preview" controls style="display:none; width:100%; margin-top:10px;"></audio>
 
       <!-- WAV -->
@@ -26,48 +25,85 @@
 
       <!-- ZIP -->
       <label>Project File (ZIP)</label>
-      <input type="file" accept=".zip">
+      <input type="file" id="zipInput" accept=".zip">
 
       <!-- COVER -->
-      <label>Cover Art</label>
-      <input type="file" id="coverInput" accept="image/*">
-
+      <label>Cover Art *</label>
+      <input type="file" id="coverInput" accept="image/*" required>
       <img id="coverPreview" src="images/logo.png" style="width:100%; margin-top:10px;">
 
       <!-- 🟩 BEAT INFO -->
-<label>Beat Name</label>
-<input type="text" id="title" required>
+      <label>Beat Name *</label>
+      <input type="text" id="title" required>
 
-<label>Genre</label>
-<input type="text" id="genre">
+      <label>Genre</label>
+      <input type="text" id="genre">
 
-<label>Mood</label>
-<input type="text" id="mood">
+      <label>Mood</label>
+      <input type="text" id="mood">
 
-<label>Type Beat</label>
-<input type="text" id="type">
+      <label>Type Beat</label>
+      <input type="text" id="type">
 
-<label>BPM</label>
-<input type="number" id="bpm">
+      <label>BPM</label>
+      <input type="number" id="bpm">
 
-<label>Key</label>
-<input type="text" id="key">
+      <label>Key</label>
+      <input type="text" id="key">
 
-      <button type="submit">Upload Beat</button>
+      <button type="submit" id="uploadBtn">Upload Beat</button>
     </form>
 
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-
 <script>
-const db = supabase.createClient(
-  "https://puscryqnudgxjlzhrqrf.supabase.co",
-  "sb_publishable_Ji4XS2HywMG57NefOBEzYw_c4TPF-kf"
-);
-
+const API_URL = 'https://dope-tone-api.dopetone701.workers.dev';
 const form = document.getElementById("beatForm");
+const uploadBtn = document.getElementById("uploadBtn");
+
+// =========================
+// 🖼 PREVIEW HANDLERS
+// =========================
+document.getElementById("mp3Input").onchange = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    const url = URL.createObjectURL(file);
+    const preview = document.getElementById("mp3Preview");
+    preview.src = url;
+    preview.style.display = "block";
+  }
+};
+
+document.getElementById("coverInput").onchange = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    const url = URL.createObjectURL(file);
+    document.getElementById("coverPreview").src = url;
+  }
+};
+
+// =========================
+// 🔥 UPLOAD TO CLOUDFLARE R2
+// =========================
+async function uploadToR2(file, folder) {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('folder', folder);
+  
+  const res = await fetch(`${API_URL}/upload`, {
+    method: 'POST',
+    body: formData
+  });
+  
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Upload failed: ${err}`);
+  }
+  
+  const data = await res.json();
+  return data.url; // Your API returns { url: 'https://...' }
+}
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -84,91 +120,77 @@ form.addEventListener("submit", async (e) => {
 
   const mp3File = document.getElementById("mp3Input").files[0];
   const coverFile = document.getElementById("coverInput").files[0];
-  const zipInput = document.querySelector('input[accept=".zip"]');
-  const zipFile = zipInput?.files[0] || null;
+  const wavFile = document.getElementById("wavInput").files[0];
+  const zipFile = document.getElementById("zipInput").files[0];
 
-  if (!mp3File || !coverFile) {
-    alert("MP3 and Cover are required ❌");
+  if (!mp3File ||!coverFile ||!title) {
+    alert("MP3, Cover, and Title are required ❌");
     return;
   }
 
+  uploadBtn.disabled = true;
+  uploadBtn.textContent = "Uploading...";
+
   try {
-    const time = Date.now();
-
     // =========================
-    // 🎵 MP3 UPLOAD
+    // 🎵 UPLOAD FILES TO R2
     // =========================
-    const mp3Path = `${time}-${mp3File.name}`;
+    uploadBtn.textContent = "Uploading MP3...";
+    const mp3Url = await uploadToR2(mp3File, 'beats');
 
-    const { error: mp3Error } = await db.storage
-      .from("beats")
-      .upload(mp3Path, mp3File, { upsert: true });
+    uploadBtn.textContent = "Uploading Cover...";
+    const coverUrl = await uploadToR2(coverFile, 'covers');
 
-    if (mp3Error) throw mp3Error;
+    let wavUrl = null;
+    if (wavFile) {
+      uploadBtn.textContent = "Uploading WAV...";
+      wavUrl = await uploadToR2(wavFile, 'wavs');
+    }
 
-    const mp3Url = db.storage
-      .from("beats")
-      .getPublicUrl(mp3Path).data.publicUrl;
-
-    // =========================
-    // 🖼 COVER UPLOAD
-    // =========================
-    const coverPath = `${time}-${coverFile.name}`;
-
-    const { error: coverError } = await db.storage
-      .from("covers")
-      .upload(coverPath, coverFile, { upsert: true });
-
-    if (coverError) throw coverError;
-
-    const coverUrl = db.storage
-      .from("covers")
-      .getPublicUrl(coverPath).data.publicUrl;
-
-    // =========================
-    // 📦 ZIP (OPTIONAL)
-    // =========================
     let zipUrl = null;
-
     if (zipFile) {
-      const zipPath = `${time}-${zipFile.name}`;
-
-      const { error: zipError } = await db.storage
-        .from("projects")
-        .upload(zipPath, zipFile, { upsert: true });
-
-      if (zipError) throw zipError;
-
-      zipUrl = db.storage
-        .from("projects")
-        .getPublicUrl(zipPath).data.publicUrl;
+      uploadBtn.textContent = "Uploading ZIP...";
+      zipUrl = await uploadToR2(zipFile, 'projects');
     }
 
     // =========================
-    // 💾 SAVE TO DATABASE
+    // 💾 SAVE TO D1 DATABASE
     // =========================
-    const { error: dbError } = await db.from("beats").insert([
-      {
+    uploadBtn.textContent = "Saving to database...";
+    
+    const res = await fetch(`${API_URL}/beats`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
         title,
         genre,
         mood,
         type,
-        bpm,
+        bpm: bpm? parseInt(bpm) : null,
         key,
         mp3_url: mp3Url,
         cover_url: coverUrl,
-        zip_url: zipUrl,
-      },
-    ]);
+        wav_url: wavUrl,
+        zip_url: zipUrl
+      })
+    });
 
-    if (dbError) throw dbError;
+    if (!res.ok) {
+      const err = await res.text();
+      throw new Error(`Database error: ${err}`);
+    }
 
     alert("🔥 Beat uploaded successfully!");
     form.reset();
+    document.getElementById("mp3Preview").style.display = "none";
+    document.getElementById("coverPreview").src = "images/logo.png";
 
   } catch (err) {
     console.error(err);
     alert("Upload failed 💀: " + err.message);
+  } finally {
+    uploadBtn.disabled = false;
+    uploadBtn.textContent = "Upload Beat";
   }
 });
 </script>

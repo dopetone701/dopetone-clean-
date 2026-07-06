@@ -1,0 +1,60 @@
+<header class="navbar" id="mainNav">
+  <div class="nav-inner">
+    <button type="button" class="nav-icon-btn mobile-cart" id="mobileCartBtn" aria-label="Cart">
+      🛒<span class="cart-count" data-cart-count>0</span>
+    </button>
+
+    <a href="index.html" class="logo">
+      <img src="images/logo.png" alt="Dope Tone">
+      <span>DOPE TONE</span>
+    </a>
+
+    <nav class="nav-links">
+      <a href="#beats">Beats</a>
+      <a href="#samples">Samples</a>
+      <a href="#packs">Packs</a>
+      <a href="#tools">Free Tools</a>
+    </nav>
+
+    <div class="auth-buttons">
+      <div class="auth-guest" id="authGuest" data-auth="guest-area">
+        <button type="button" id="loginBtn" class="btn-login">Login</button>
+        <button type="button" id="signupBtn" class="btn-signup">Sign Up</button>
+      </div>
+      <div class="auth-user" id="authUser" data-auth="user-area" style="display:none;">
+        <button type="button" class="nav-icon-btn cart-desktop" id="cartBtn" aria-label="Cart">
+          🛒<span class="cart-count" data-cart-count>0</span>
+        </button>
+        <button type="button" class="avatar-btn" id="accountBtn">
+          <img id="userAvatar" src="images/default-user.png" alt="Account"
+            onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=DT&background=0a0a14&color=00eaff&bold=true'">
+        </button>
+      </div>
+      <button type="button" class="nav-icon-btn menu-toggle" aria-label="Menu">☰</button>
+    </div>
+  </div>
+
+  <div class="overlay" id="navOverlay"></div>
+
+  <div class="mobile-panel" id="navPanel">
+    <button type="button" class="panel-close" id="panelCloseBtn" aria-label="Close">✕</button>
+    <img src="images/logo.png" class="panel-logo" alt="Dope Tone">
+    <nav class="panel-links">
+      <a href="index.html#beats">Beats</a>
+      <a href="index.html#samples">Samples</a>
+      <a href="index.html#packs">Packs</a>
+      <a href="index.html#tools">Free Tools</a>
+      <a href="beats.html">All Beats</a>
+    </nav>
+    <div class="panel-profile">
+      <button type="button" id="mobileProfileBtn">
+        <img id="mobileProfileAvatar" src="images/default-user.png" alt=""
+          onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Guest&background=0a0a14&color=00eaff&bold=true'">
+        <div class="panel-profile-text">
+          <strong id="mobileProfileName">Guest</strong>
+          <span id="mobileProfileSub">Tap to sign in</span>
+        </div>
+      </button>
+    </div>
+  </div>
+</header>

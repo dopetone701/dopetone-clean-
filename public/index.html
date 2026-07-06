@@ -1,157 +1,473 @@
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Dope Tone</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dope Tone</title>
 
-  <!-- THIS MUST MATCH YOUR FOLDER -->
-  <link rel="stylesheet" href="styles/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <!-- ================= STYLES ================= -->
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/components.css">
+    <link rel="stylesheet" href="styles/arsenal.css">
+    <link rel="stylesheet" href="styles/arsenal-premium.css">
+    <link rel="stylesheet" href="styles/latest.css">
+    <link rel="stylesheet" href="styles/featured.css">
+    <link rel="stylesheet" href="styles/player-overlay.css">
+    <link rel="stylesheet" href="styles/trending.css">
+    <link rel="stylesheet" href="styles/notice-board.css">
+    <link rel="stylesheet" href="styles/grid-beats.css">
+    <link rel="stylesheet" href="styles/global-player.css">
+    <link rel="stylesheet" href="styles/full-screen.css">
+    <link rel="stylesheet" href="styles/navbar.css">
+    <link rel="stylesheet" href="styles/auth.css">
+    <link rel="stylesheet" href="styles/dopetone-footer.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="styles/playlist-modal.css">
+    <link rel="stylesheet" href="styles/playlists-page.css">
+    <link rel="stylesheet" href="styles/playlist-cards.css">
+    <link rel="stylesheet" href="styles/playlists.css">
+    <link rel="stylesheet" href="styles/lazy-loader.css">
+    <link rel="stylesheet" href="styles/recent-played.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.css" />
+
+    <style>
+        html{ scroll-behavior:smooth; }
+    </style>
 </head>
+
 <body>
 
-<header class="navbar">
- 
-  <div class="cart">🛒</div>
+    <!-- ================= NAVBAR ================= -->
+    <div id="navbarMount"></div>
 
-  <div class="logo">
-    <img src="images/logo.png" alt="">
-    <span>DOPE TONE</span>
-  </div>
-<section id="beats"></section>
-<section id="samples"></section>
-<section id="packs"></section>
-<section id="tools"></section>
+    <!-- ================= HERO ================= -->
+    <section class="hero">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1 class="hero-title glass-title">
+                <span class="top-line">DOPE TONE</span>
+                <span class="bottom-line">VAULT</span>
+            </h1>
+            <p class="hero-subtext">Premium Sound Arsenal For Next-Level Creators</p>
+            <div class="hero-buttons">
+                <a href="beats.html" class="cta-btn primary">Explore Beats</a>
+                <button class="cta-btn secondary">Sample Packs</button>
+            </div>
+        </div>
+    </section>
 
-  <div class="menu-toggle">☰</div>
+    <!-- ================= FEATURED ================= -->
+    <section class="featured-section" id="packs">
+        <div class="section-title-wrap">
+            <h2 class="section-title">🔥 Featured</h2>
+        </div>
+        <div class="featured-container">
+            <div id="featuredTrack" class="featured-track"></div>
+        </div>
+    </section>
 
-  <nav class="nav-links">
-    <a>Beats</a>
-    <a>Samples</a>
-    <a>Packs</a>
-    <a>Free Tools</a>
-  </nav>
+    <!-- ================= LATEST TRACKS - RP CLONE ================= -->
+    <section id="latestWrap" class="rp-wrap">
+        <div class="rp-head">
+            <h2 class="rp-heading">🔥 Latest Tracks</h2>
+        </div>
+        <div id="latestMount"></div>
+    </section>
 
-  <div class="auth-buttons">
-    <button>Login</button>
-    <button>Sign Up</button>
-  </div>
+    <!-- ================= MAIN ================= -->
+    <section class="main-layout" id="beats">
+        <div class="left-panel">
+            <div class="arsenal-section">
+                <div class="arsenal-inner">
+                    <div class="view-toggle">
+                        <div class="toggle-fixed">
+                            <h2 class="arsenal-bar-title">⚔️ Beat's Arsenal</h2>
+                            <button class="filter-capsule active" data-genre="all">All</button>
+                            <button class="filter-capsule" data-genre="trap">Trap</button>
+                            <button class="filter-capsule" data-genre="edm">EDM</button>
+                            <button class="filter-capsule" data-genre="afro">Afro</button>
+                            <button class="filter-capsule" data-genre="rnb">R&B</button>
+                            <button class="filter-capsule" data-genre="pop">Pop</button>
+                            <button class="filter-capsule" data-genre="drill">Drill</button>
+                        </div>
+                        <div class="arsenal-search">
+                            <input
+                                type="search"
+                                name="beat_search_qt7x9f"
+                                id="beatSearch"
+                                placeholder="Search..."
+                                autocomplete="off"
+                                role="searchbox"
+                                readonly
+                                onfocus="this.removeAttribute('readonly')"
+                                data-lpignore="true"
+                                data-1p-ignore="true"
+                                data-bwignore="true"
+                                data-form-type="other"
+                            >
+                            <div class="search-dropdown" id="searchDropdown"></div>
+                        </div>
+                    </div>
+                    <div id="waveList" class="wave-list"></div>
+                </div>
+            </div>
+        </div>
 
-</header>
-<div class="mobile-panel">
-<div class="panel-top">
-  <img src="images/logo.png" alt="logo">
-  
-</div>
+        <div class="right-panel">
+            <div class="section-title-wrap">
+                <h3 class="section-title">🔥 Trending</h3>
+            </div>
+            <div id="trendingGrid" class="trending-grid"></div>
 
-  <a href="#beats">Beats</a>
-  <a href="#samples">Samples</a>
-  <a href="#packs">Packs</a>
-  <a href="#tools">Free Tools</a>
-  <a href="#contact">Contact</a>
-<a href="#" class="profile-link">👤</a>
+            <!-- 🔥 DOPE TONE NOTICE BOARD -->
+            <div class="notice-board">
+                <div class="notice-board-head">
+                    <h3 class="notice-board-title">📜 DT DROP ZONE</h3>
+                    <div class="notice-board-live">
+                        <span class="live-dot"></span> LIVE
+                    </div>
+                </div>
+                <div id="noticeBoardFeed" class="notice-board-feed"></div>
+                <div class="notice-board-input-wrap">
+                    <input
+                        type="text"
+                        id="noticeBoardInput"
+                        placeholder="Reply to Dope Tone..."
+                        autocomplete="off"
+                    >
+                    <button id="noticeBoardSend" class="notice-send-btn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                            <path d="M22 2L11 13M22 2L15 22L11 13M22 2L2 9L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
 
-</div>
+    <!-- ================= PLAYLISTS ================= -->
+    <section id="homepagePlaylists"></section>
 
-<!-- 
-================= HERO =================
-========================================
--->
-<!-- 
-================= HERO =================
-SAFE ZONE — BUILD HERE ONLY
-========================================
--->
-<!-- ================= HERO ================= -->
+    <!-- ================= CREATE SYSTEM ================= -->
+    <button id="createBtn" class="create-btn" style="display:none;">+</button>
+    <div id="createPanel" class="create-panel" style="display:none;">
+        <a href="create-beat.html"><button>Upload Beats</button></a>
+        <a href="create-pack.html"><button>Sample Packs</button></a>
+        <a href="create-sample.html"><button>Upload Sample</button></a>
+    </div>
 
-<section class="hero">
+    <!-- ================= PLAYER - SVG ONLY ================= -->
+    <div id="globalPlayerUI" class="global-player">
+        <div class="gp-left">
+            <img id="gpCover" src="images/logo.png" />
+            <div class="gp-text" id="gpInfo">
+                <div id="gpTitle">No track</div>
+                <button id="gpAdd">+</button>
+            </div>
+        </div>
+       
+        <div class="gp-center">
+            <div class="gp-controls">
+               <button id="gpShuffle" class="player-btn" title="Enable shuffle">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M10.59 9.17L5.41 4L4 5.41l5.17 5.17l1.42-1.41zM14.5 4l2.04 2.04L4 18.59L5.41 20L17.96 7.46L20 9.5V4h-5.5zm.33 9.41l-1.41 1.41l3.13 3.13L14.5 20H20v-5.5l-2.04 2.04l-3.13-3.13z"/>
+                    </svg>
+                </button>
 
-  <div class="hero-overlay"></div>
+                <button id="gpPrev" class="player-btn" title="Previous">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
+                    </svg>
+                </button>
 
-  <div class="hero-content">
+                <button id="gpPlay" class="player-btn" title="Play" aria-label="Play/Pause">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                        <path id="gpPlayPath" d="M8 5v14l11-7z"/>
+                    </svg>
+                </button>
 
-    <h1 class="hero-title glass-title">
-      <span class="top-line">DOPE   TONE</span>
-      <span class="bottom-line">VAULT</span>
-    </h1>
+                <button id="gpNext" class="player-btn" title="Next">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
+                    </svg>
+                </button>
 
-    <p class="hero-subtext">Premium Sound Arsenal For Next-Level Creators</p>
+                <button id="gpRepeat" class="player-btn" title="Enable repeat">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/>
+                    </svg>
+                </button>
+
+                <button id="gpDownload" class="gp-side player-btn" title="Download">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                    </svg>
+                </button>
+                <button id="gpMore" class="gp-side player-btn" title="More">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                    </svg>
+                </button>
+
+            </div>
+           
+            <div class="gp-progress-wrap">
+                <span id="gpCurrent">0:00</span>
+                <div id="gpProgress"><div id="gpBar"></div></div>
+                <span id="gpDuration">0:00</span>
+            </div>
+        </div>
+       
+        <div class="gp-right">
+            <button id="loveTrackBtn" class="love-track-btn">
+                <span class="love-text">LOVE IT</span>
+                <span class="love-heart">♡</span>
+            </button>
+            <div class="wave-card player-cover-wrap">
+                <canvas id="liquidEq" width="54" height="54"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= FULLSCREEN MOBILE PLAYER - SVG ONLY ================= -->
+    <div id="mobilePlayer" class="mobile-player">
+        <div class="mp-header">
+            <span id="mpClose">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
+                </svg>
+            </span>
+        </div>
+        <img id="mpCover" src="images/logo.png">
+        <div id="mpTitle">No track</div>
+       
+        <div class="mp-controls">
+            <button id="mpPrev" class="player-btn">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
+                </svg>
+            </button>
+           
+            <button id="mpPlay" class="player-btn play-btn" title="Play" aria-label="Play/Pause">
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+        <path id="mpPlayPath" d="M8 5v14l11-7z"/>
+    </svg>
+</button>
+
+           
+            <button id="mpNext" class="player-btn">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
+                </svg>
+            </button>
+        </div>
+       
+        <div id="mpProgress"><div id="mpBar"></div></div>
+       
+        <div class="mp-time">
+            <span id="mpCurrent">0:00</span>
+            <span id="mpDuration">0:00</span>
+        </div>
+       
+        <div class="mp-actions">
+            <button id="mpLike" class="love-track-btn">
+                <span class="love-heart">♡</span>
+            </button>
+           
+            <button id="mpShuffle" class="player-btn" title="Shuffle">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M10.59 9.17L5.41 4L4 5.41l5.17 5.17l1.42-1.41zM14.5 4l2.04 2.04L4 18.59L5.41 20L17.96 7.46L20 9.5V4h-5.5zm.33 9.41l-1.41 1.41l3.13 3.13L14.5 20H20v-5.5l-2.04 2.04l-3.13-3.13z"/>
+                </svg>
+            </button>
+           
+            <button id="mpRepeat" class="player-btn" title="Repeat">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/>
+                </svg>
+            </button>
+           
+            <button id="mpDownload">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                </svg>
+            </button>
+           
+            <button id="mpBuy" class="player-btn" title="Buy Track">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
+    </svg>
+</button>
 
 
-    <div class="hero-buttons">
-      <button class="cta-btn primary">Explore Beats</button>
-<button class="cta-btn secondary">Sample Packs</button>
-  </div>
-</div> <!-- close hero-content -->
-</section> <!-- close hero -->
 
-  
+            <button id="mpMore">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                </svg>
+            </button>
+        </div>
+    </div>
 
+    <div id="footerMount"></div>
 
-<!-- 🟥🟥🟥 CREATE SYSTEM HTML 🟥🟥🟥 -->
+    <!-- ================= AUTH MOUNT ================= -->
+    <div id="authMount"></div>
 
-<button id="createBtn" class="create-btn" style="display:none;">+</button>
+    <!-- ================= LIBS ================= -->
+    <script src="https://unpkg.com/wavesurfer.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.js"></script>
+   
+    <!-- ================= APP BOOT - CONTROLS LOAD ORDER ================= -->
+    <script type="module" src="js/app-loader.js"></script>
 
-<div id="createPanel" class="create-panel">
+    <!-- ================= PLAYER & CORE ================= -->
+    <script src="js/global-player.js"></script>
+    <script src="js/mini-eq.js"></script>
+    <script src="js/more-btn-override.js"></script>
+    <script src="js/shared/data.js"></script>
+    <script src="js/shared/ui.js"></script>
+    <script src="js/home/home.js"></script>
+    <script src="js/footer-loader.js"></script>
+    <script src="js/notice-board.js"></script>
 
- <!-- 🟥🟥🟥 NAV BUTTONS 🟥🟥🟥 -->
+    <!-- ================= APP CORE ================= -->
+    <script type="module" src="js/app.js"></script>
 
-<a href="create-beat.html">
-  <button>Upload Beats</button>
-</a>
+    <!-- ================= PLAYLIST SYSTEM ================= -->
+    <div id="playlistModalMount"></div>
+    <script type="module" src="js/playlists/playlist-storage.js"></script>
+    <script type="module" src="js/playlists/playlist-engine.js"></script>
+    <script type="module" src="js/playlists/playlist-render.js"></script>
+    <script type="module" src="js/playlists/playlist-modal.js"></script>
 
-<a href="create-pack.html">
-  <button>Sample Packs</button>
-</a>
-<a href="create-sample.html">
-  <button>Upload Sample</button>
-</a>
+    <!-- ================= UTILS ================= -->
+    <script>
+        // Owner check
+        const isOwner = localStorage.getItem("isOwner");
+        if (isOwner === "true") {
+            document.getElementById("createBtn").style.display = "block";
+            document.getElementById("createPanel").style.display = "block";
+        }
 
-</div>
-<!-- 🟥 BEATS CONTAINER -->
-<div id="beatsContainer"></div>
+        // Smooth scroll
+        document.addEventListener("click", (e) => {
+            const link = e.target.closest('a[href="#beats"]');
+            if (!link) return;
+            e.preventDefault();
+            const section = document.getElementById("beats");
+            if (!section) return;
+            section.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
 
-<script>
-// 🔐 OWNER CONTROL
-const isOwner = localStorage.getItem("isOwner");
+        // Licence redirect
+        window.goToLicence = function (beat) {
+            if (!beat ||!beat.id) return;
+            window.location.href = "licence-page.html?id=" + beat.id;
+        }
 
-if (isOwner === "true") {
-  document.getElementById("createBtn").style.display = "block";
-  document.getElementById("createPanel").style.display = "block";
-}
-</script>
+        // Player play/pause toggle - single path swap for both players
+        const PLAY_ICON = "M8 5v14l11-7z";
+        const PAUSE_ICON = "M6 19h4V5H6v14zm8-14v14h4V5h-4z";
+        
+        const gpPlayPath = document.getElementById('gpPlayPath');
+        const mpPlayPath = document.getElementById('mpPlayPath');
 
-<script type="module" src="js/app.js"></script>
-<script src="js/shared/data.js"></script>
-<script src="js/shared/ui.js"></script>
-<script src="js/home/home.js"></script>
-<!-- 🟥 LOAD GLOBAL STORE FIRST -->
+        function syncPlayIcon(isPlaying) {
+            const icon = isPlaying ? PAUSE_ICON : PLAY_ICON;
+            if (gpPlayPath) gpPlayPath.setAttribute('d', icon);
+            if (mpPlayPath) mpPlayPath.setAttribute('d', icon);
+            document.getElementById('gpPlay')?.setAttribute('title', isPlaying ? 'Pause' : 'Play');
+            document.getElementById('mpPlay')?.setAttribute('title', isPlaying ? 'Pause' : 'Play');
+        }
 
-
-<!-- 🟩 THEN PAGE LOGIC -->
-<script src="js/licence/licence-page.js"></script>
-
-<section class="section">
-  <h2>🔥 Featured Beats</h2>
-  <div class="scroll-row" id="featured"></div>
-</section>
-
-<section class="section">
-  <h2>📈 Popular Beats</h2>
-  <div class="scroll-row" id="popular"></div>
-</section>
-
-<section class="section">
-  <h2>🎧 Playlist</h2>
-  <div class="grid" id="playlist"></div>
-
-  <div class="explore">
-    <button>Explore More</button>
-  </div>
-</section>
+        // Hook this to your actual audio element
+        // Example: audio.addEventListener('play', () => syncPlayIcon(true));
+        //          audio.addEventListener('pause', () => syncPlayIcon(false));
+    </script>
+   
+    <!-- ================= DOWNLOAD EMAIL GATE ================= -->
+    <div id="downloadGate" class="download-gate">
+        <div class="gate-content">
+            <button class="gate-close" onclick="closeDownloadGate()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 17.59 13.41 12z"/>
+                </svg>
+            </button>
+           
+            <div class="gate-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+            </div>
+           
+            <h3>Unlock HQ Download</h3>
+            <p class="gate-subtitle">Get 320kbps + exclusive drops. Join 12k+ producers.</p>
+           
+            <form id="gateForm" class="gate-form">
+                <div class="input-group">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                    </svg>
+                    <input type="email" id="gateEmail" placeholder="your@email.com" required autocomplete="email">
+                </div>
+                <button type="submit" class="gate-btn">
+                    <span>Continue</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
+                    </svg>
+                </button>
+            </form>
+           
+            <p class="gate-privacy">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+                </svg> No spam. Unsubscribe anytime.
+            </p>
+           
+            <button class="gate-skip" onclick="skipDownloadGate()">Maybe later</button>
+        </div>
+    </div>
 
 </body>
 
+    <!-- ================= FULL PAGE SKELETON ================= -->
+    <div id="pageLoader" class="page-loader">
+        <div class="loader-header">
+            <div class="skeleton skeleton-logo"></div>
+            <div class="skeleton skeleton-nav"></div>
+        </div>
+       
+        <div class="loader-hero">
+            <div class="skeleton skeleton-title"></div>
+            <div class="skeleton skeleton-subtitle"></div>
+            <div class="skeleton skeleton-btn"></div>
+        </div>
+
+        <div class="loader-section">
+            <div class="skeleton skeleton-section-title"></div>
+            <div class="skeleton-row">
+                <div class="skeleton skeleton-card"></div>
+                <div class="skeleton skeleton-card"></div>
+                <div class="skeleton skeleton-card"></div>
+                <div class="skeleton skeleton-card"></div>
+            </div>
+        </div>
+
+        <div class="loader-section">
+            <div class="skeleton skeleton-section-title"></div>
+            <div class="skeleton-row">
+                <div class="skeleton skeleton-card"></div>
+                <div class="skeleton skeleton-card"></div>
+                <div class="skeleton skeleton-card"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= NAVBAR ================= -->
+    <div id="appContent" style="opacity: 0; visibility: hidden;">
+        <div id="navbarMount"></div>
+    </div>
+
+</html>

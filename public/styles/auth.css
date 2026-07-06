@@ -1,0 +1,884 @@
+/* =========================================
+   🔥 AUTH SYSTEM - ELITE v2.2
+   Version: 2.2
+   Controlled by: js/auth.js
+========================================= */
+
+
+/* =========================================
+   AUTH MODAL - ELITE
+========================================= */
+
+.auth-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 8, 16, 0.92);
+    backdrop-filter: blur(32px) saturate(180%);
+    -webkit-backdrop-filter: blur(32px) saturate(180%);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 999999;
+    padding: 20px;
+    box-sizing: border-box;
+    opacity: 0;
+    transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.auth-modal.active {
+    display: flex;
+    opacity: 1;
+}
+
+.auth-box {
+    width: 100%;
+    max-width: 420px;
+    background: linear-gradient(180deg, #0f1424 0%, #0a0e1a 100%);
+    border-radius: 28px;
+    padding: 36px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    box-sizing: border-box;
+    border: 1px solid rgba(0, 240, 255, 0.08);
+    box-shadow: 
+        0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+        0 32px 64px rgba(0, 0, 0, 0.7),
+        0 0 80px rgba(0, 240, 255, 0.1);
+    transform: scale(0.92) translateY(20px);
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+}
+
+.auth-modal.active .auth-box {
+    transform: scale(1) translateY(0);
+}
+
+.auth-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.04);
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s ease;
+}
+
+.auth-close:hover {
+    background: rgba(255, 45, 85, 0.15);
+    color: #ff2d55;
+    transform: rotate(90deg);
+}
+
+/* =========================================
+   AUTH HEADER - ELITE
+========================================= */
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 4px;
+}
+
+.auth-header h2 {
+    color: white;
+    margin: 0 0 6px 0;
+    font-size: 30px;
+    font-weight: 700;
+    font-family: 'Orbitron', sans-serif;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #fff 0%, #00f0ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.auth-subtitle {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 14px;
+    margin: 0;
+    font-weight: 400;
+}
+
+/* =========================================
+   AUTH FORM - ELITE
+========================================= */
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.auth-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.auth-input-group label {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 12px;
+    font-weight: 600;
+    margin-left: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.auth-input-group input {
+    height: 52px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    padding: 0 18px;
+    background: rgba(255, 255, 255, 0.03);
+    color: white;
+    font-size: 15px;
+    font-weight: 500;
+    outline: none;
+    transition: all 0.25s ease;
+}
+
+.auth-input-group input:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.auth-input-group input:focus {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: #00f0ff;
+    box-shadow: 0 0 0 3px rgba(0, 240, 255, 0.08);
+}
+
+.auth-input-group input::placeholder {
+    color: rgba(255, 255, 255, 0.25);
+    font-weight: 400;
+}
+
+/* =========================================
+   AUTH SUBMIT BUTTON - ELITE
+========================================= */
+
+.auth-submit-btn {
+    height: 54px;
+    border: none;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #00f0ff 0%, #00d4e6 50%, #ff4d6d 100%);
+    background-size: 200% 100%;
+    color: #000;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    box-shadow: 0 8px 24px rgba(0, 240, 255, 0.25);
+}
+
+.auth-submit-btn:hover {
+    background-position: 100% 0;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(0, 240, 255, 0.35);
+}
+
+.auth-submit-btn:active {
+    transform: scale(0.98);
+}
+
+.auth-submit-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* =========================================
+   AUTH ERROR - ELITE
+========================================= */
+
+.auth-error {
+    padding: 12px 16px;
+    background: rgba(255, 45, 85, 0.1);
+    border: 1px solid rgba(255, 45, 85, 0.2);
+    border-radius: 12px;
+    color: #ff5577;
+    font-size: 13px;
+    font-weight: 500;
+    text-align: center;
+}
+
+/* =========================================
+   SWITCH AUTH MODE - ELITE
+========================================= */
+
+.auth-switch {
+    color: rgba(255, 255, 255, 0.5);
+    text-align: center;
+    margin: 0;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+#switchAuthBtn {
+    background: none;
+    border: none;
+    color: #00f0ff;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 13px;
+    padding: 0;
+    transition: 0.2s ease;
+}
+
+#switchAuthBtn:hover {
+    color: #00d4e6;
+    text-decoration: underline;
+}
+
+/* =========================================
+   AVATAR UPLOAD - BALANCED & CENTERED
+========================================= */
+
+.signup-avatar-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 0;
+    margin-top: 4px;
+}
+
+.avatar-upload-box {
+    position: relative;
+    width: 100px;
+    height: 100px;
+}
+
+.avatar-placeholder {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1a1f35 0%, #0f1424 100%);
+    border: 2px solid rgba(0, 240, 255, 0.15);
+    box-shadow: 
+        0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+        0 8px 24px rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(0, 240, 255, 0.4);
+    font-size: 36px;
+    transition: all 0.3s ease;
+}
+
+.avatar-placeholder:hover {
+    border-color: rgba(0, 240, 255, 0.3);
+    color: rgba(0, 240, 255, 0.6);
+}
+
+/* 🔥 FIX: Style both placeholder div AND the img that replaces it */
+.avatar-placeholder,
+#avatarPreview {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1a1f35 0%, #0f1424 100%);
+    border: 2px solid rgba(0, 240, 255, 0.15);
+    box-shadow: 
+        0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+        0 8px 24px rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(0, 240, 255, 0.4);
+    font-size: 36px;
+    transition: all 0.3s ease;
+    object-fit: cover; /* 🔥 This makes img crop to circle */
+}
+
+.avatar-placeholder:hover,
+#avatarPreview:hover {
+    border-color: rgba(0, 240, 255, 0.3);
+    color: rgba(0, 240, 255, 0.6);
+}
+
+/* When it's an img, remove the icon color */
+img#avatarPreview {
+    color: transparent;
+    background: #0f1424; /* Fallback if image fails */
+}
+
+
+.avatar-edit-btn {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #00f0ff, #ff4d6d);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #000;
+    cursor: pointer;
+    font-size: 14px;
+    border: 3px solid #0a0e1a;
+    transition: 0.25s ease;
+    box-shadow: 0 4px 12px rgba(0, 240, 255, 0.3);
+}
+
+.avatar-edit-btn:hover {
+    transform: scale(1.15) rotate(15deg);
+}
+
+/* 🔥 NEW: Centered text block below avatar */
+.avatar-info {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.avatar-label {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 13px;
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: 0.3px;
+}
+
+.avatar-hint {
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 12px;
+    margin: 0;
+    font-weight: 400;
+    line-height: 1.4;
+}
+
+
+/* =========================================
+   ACCOUNT PANEL DROPDOWN - ELITE
+========================================= */
+
+.account-panel {
+    position: fixed;
+    top: 90px;
+    right: 24px;
+    background: rgba(11, 16, 32, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
+    z-index: 9999999;
+    display: none;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    animation: slideDown 0.3s ease;
+    max-height: calc(100vh - 180px);
+    overflow-y: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.account-panel::-webkit-scrollbar {
+    display: none;
+}
+
+.account-panel.active {
+    display: block;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.account-card {
+    width: 280px;
+    padding: 24px;
+    padding-bottom: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+.panel-avatar-wrap {
+    position: relative;
+    width: 90px;
+    height: 90px;
+    flex-shrink: 0;
+}
+
+#panelAvatar {
+    width: 90px;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+    background: #111827;
+    border: 3px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+}
+
+.panel-edit-avatar {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #00f0ff, #ff4d6d);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #000;
+    cursor: pointer;
+    font-size: 14px;
+    border: 2px solid #0b1020;
+    transition: 0.25s ease;
+}
+
+.panel-edit-avatar:hover {
+    transform: scale(1.1);
+}
+
+#panelName {
+    color: white;
+    font-size: 22px;
+    font-weight: 700;
+    text-align: center;
+    margin: 0;
+}
+
+.panel-email {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 13px;
+    text-align: center;
+    margin: -8px 0 0 0;
+    word-break: break-all;
+}
+
+.account-divider {
+    width: 100%;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.08);
+    margin: 4px 0;
+}
+
+.account-action {
+    width: 100%;
+    height: 48px;
+    border: none;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.04);
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.25s ease;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    padding: 0 16px;
+}
+
+.account-action:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateX(4px);
+}
+
+.account-action i {
+    font-size: 16px;
+    opacity: 0.8;
+}
+
+.account-action.logout {
+    background: rgba(255, 45, 85, 0.15);
+    color: #ff2d55;
+}
+
+.account-action.logout:hover {
+    background: rgba(255, 45, 85, 0.25);
+}
+
+/* =========================================
+   SHAKE ANIMATION - NO LIKED TRACKS
+========================================= */
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); }
+    20%, 40%, 60%, 80% { transform: translateX(8px); }
+}
+
+.account-action.shake {
+    animation: shake 0.5s ease;
+    background: rgba(255, 45, 85, 0.2) !important;
+}
+
+/* =========================================
+   TOAST NOTIFICATION - ELITE
+========================================= */
+
+#authToast {
+    position: fixed;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100px);
+    min-width: 280px;
+    padding: 16px 24px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #00f0ff, #ff4d6d);
+    color: #000;
+    font-size: 15px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    z-index: 9999999;
+    box-sizing: border-box;
+    box-shadow: 0 10px 40px rgba(0, 240, 255, 0.4);
+}
+
+#authToast.active {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+#authToast i {
+    font-size: 20px;
+}
+
+/* =========================================
+   CROP MODAL - ELITE
+========================================= */
+
+#cropModal {
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 8, 16, 0.92);
+    backdrop-filter: blur(32px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999999;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+#cropModal.active {
+    display: flex;
+}
+
+.crop-box {
+    width: 100%;
+    max-width: 480px;
+    max-height: 92vh;
+    overflow: auto;
+    background: linear-gradient(180deg, #0f1424 0%, #0a0e1a 100%);
+    border-radius: 28px;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    box-sizing: border-box;
+    border: 1px solid rgba(0, 240, 255, 0.08);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+}
+
+.crop-box h2 {
+    color: white;
+    text-align: center;
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #fff 0%, #00f0ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.crop-container {
+    width: 100%;
+    max-height: 50vh;
+    overflow: hidden;
+    border-radius: 20px;
+    background: #000;
+}
+
+#cropImage {
+    width: 100%;
+    max-height: 50vh;
+    object-fit: contain;
+    border-radius: 20px;
+    display: block;
+}
+
+.crop-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.crop-btn {
+    flex: 1;
+    height: 56px;
+    border: none;
+    border-radius: 16px;
+    color: white;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.25s ease;
+}
+
+.crop-btn.cancel {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.crop-btn.cancel:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.crop-btn.save {
+    background: linear-gradient(135deg, #00f0ff, #ff4d6d);
+    color: #000;
+}
+
+.crop-btn.save:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0, 240, 255, 0.3);
+}
+
+/* =========================================
+   NAV SPACING
+========================================= */
+
+.nav-user-area {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+#cartBtn {
+    margin-right: 4px;
+}
+
+#accountBtn {
+    transition: 0.3s ease;
+}
+
+#accountBtn:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 12px rgba(0, 240, 255, 0.6));
+}
+
+/* =========================================
+   MOBILE RESPONSIVE
+========================================= */
+
+@media (max-width: 768px) {
+    .auth-box {
+        padding: 28px 24px;
+        border-radius: 24px;
+    }
+
+    .auth-header h2 {
+        font-size: 26px;
+    }
+
+    .account-card {
+        width: 260px;
+        padding: 20px;
+        padding-bottom: 28px;
+    }
+
+    .account-panel {
+        right: 16px;
+        top: 80px;
+        max-height: calc(100vh - 160px);
+    }
+
+    .crop-box {
+        padding: 20px;
+        border-radius: 24px;
+    }
+
+    #authToast {
+        min-width: 240px;
+        font-size: 14px;
+    }
+}
+/* =========================================
+   🔥 MODAL SCROLL FIX - ADDITIVE
+========================================= */
+
+.auth-modal {
+    /* Make backdrop capture all clicks */
+    pointer-events: auto;
+}
+
+.auth-box {
+    /* 🔥 KEY FIX: Make modal scrollable if too tall */
+    max-height: 90vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    
+    /* Hide scrollbar but keep scroll */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.auth-box::-webkit-scrollbar {
+    display: none;
+}
+
+/* Prevent body scroll when modal open */
+body:has(.auth-modal.active) {
+    overflow: hidden;
+}
+
+/* Fallback for browsers without :has() */
+.auth-modal.active ~ * {
+    pointer-events: none;
+}
+
+.auth-modal.active {
+    pointer-events: auto;
+}
+
+/* =========================================
+   MOBILE FIX - PREVENT CHOP OFF
+========================================= */
+
+@media (max-width: 768px) {
+    .auth-modal {
+        padding: 12px;
+        align-items: flex-start;
+        padding-top: 40px;
+    }
+    
+    .auth-box {
+        max-height: calc(100vh - 80px);
+        margin-bottom: 40px;
+    }
+}
+
+@media (max-height: 700px) {
+    .auth-box {
+        gap: 16px;
+        padding: 24px 28px;
+    }
+    
+    .signup-avatar-wrap {
+        padding: 4px 0;
+        gap: 12px;
+    }
+    
+    .avatar-upload-box,
+    .avatar-placeholder,
+    #avatarPreview {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .avatar-placeholder {
+        font-size: 28px;
+    }
+    
+    .avatar-edit-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+    }
+}
+/* =========================================
+   🔥 FORCE BUTTON SEPARATION OVERRIDE
+========================================= */
+
+.navbar .nav-auth,
+header .nav-auth,
+.nav-auth {
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+}
+
+/* Force space even if something sets gap: 0 */
+.navbar .nav-auth > *[data-auth="login"],
+header .nav-auth > *[data-auth="login"] {
+  margin-right: 14px !important;
+}
+
+.navbar .nav-auth button[data-auth="login"],
+.navbar .nav-auth a[data-auth="login"],
+header .nav-auth button[data-auth="login"],
+header .nav-auth a[data-auth="login"] {
+  margin-right: 14px !important;
+}
+
+/* Nuke any flex gap: 0 from wrappers */
+.auth-toggle,
+.auth-buttons {
+  gap: 14px !important;
+}
+/* Proper avatar silhouette - never shows broken image */
+#panelAvatar, #userAvatar, [data-user-avatar] {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #000;
+  border: 2px solid rgb(0, 225, 255);
+  display: block;
+}
+
+/* Fallback when image fails */
+#panelAvatar::after, #userAvatar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: #111 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230f0'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E") center/60% no-repeat;
+  border-radius: 50%;
+}
+
+/* Avatar preview in signup */
+#avatarPreview {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #111;
+  border: 2px solid rgb(0, 204, 255);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgb(0, 238, 255);
+  font-size: 32px;
+  overflow: hidden;
+}
+
+#avatarPreview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

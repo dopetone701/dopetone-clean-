@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<title>Liked & Cart | Dope Tone</title>
+
+
+<link rel="stylesheet" href="styles/main.css">
+<link rel="stylesheet" href="styles/liked-cart.css">
+
+
+</head>
+<body>
+
+
+<!-- ================= NAV ================= -->
+
+
+<header class="navbar">
+
+
+    <div class="nav-left">
+        <div class="logo">
+            <img src="images/logo.png">
+            <span>DOPE TONE</span>
+        </div>
+    </div>
+
+
+    <nav class="nav-links">
+        <a href="#">Beats</a>
+        <a href="#">Samples</a>
+        <a href="#">Packs</a>
+        <a href="#">Free Tools</a>
+    </nav>
+
+
+    <div class="nav-right">
+
+
+        <div class="auth-buttons">
+            <button>Login</button>
+            <button>Sign Up</button>
+        </div>
+
+
+    </div>
+
+
+</header>
+
+
+
+
+<!-- ================= VAULT ================= -->
+
+
+<section class="vault-wrapper">
+
+
+    <!-- ============ LIKED PANEL ============ -->
+
+
+    <div class="vault-panel active-panel" id="likedPanel">
+
+
+        <button class="vault-tab active-tab"
+        onclick="showLiked()">
+
+
+            ❤️ Liked
+
+
+        </button>
+
+
+        <button class="floating-tab"
+        onclick="showCart()">
+
+
+            🛒 Cart
+
+
+        </button>
+
+
+        <div class="panel-content">
+
+
+            <div class="beat-grid">
+
+
+                <div class="beat-card"></div>
+                <div class="beat-card"></div>
+                <div class="beat-card"></div>
+                <div class="beat-card"></div>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+
+
+    <!-- ============ CART PANEL ============ -->
+
+
+    <div class="vault-panel back-panel" id="cartPanel">
+
+
+        <button class="vault-tab active-tab right-tab"
+        onclick="showCart()">
+
+
+            🛒 Cart
+
+
+        </button>
+
+
+        <button class="floating-tab left-float"
+        onclick="showLiked()">
+
+
+            ❤️ Liked
+
+
+        </button>
+
+
+        <div class="panel-content">
+
+
+            <div class="beat-grid">
+
+
+                <div class="beat-card"></div>
+                <div class="beat-card"></div>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+</section>
+
+
+
+
+<script>
+
+
+const likedPanel = document.getElementById("likedPanel");
+const cartPanel = document.getElementById("cartPanel");
+
+
+function showLiked(){
+
+
+likedPanel.classList.add("active-panel");
+likedPanel.classList.remove("back-panel");
+
+
+cartPanel.classList.remove("active-panel");
+cartPanel.classList.add("back-panel");
+
+
+}
+
+
+function showCart(){
+
+
+cartPanel.classList.add("active-panel");
+cartPanel.classList.remove("back-panel");
+
+
+likedPanel.classList.remove("active-panel");
+likedPanel.classList.add("back-panel");
+
+
+}
+
+
+</script>
+
+
+</body>
+</html>

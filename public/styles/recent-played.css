@@ -1,0 +1,326 @@
+/* ===============================
+   🎵 RP UNIQUE - ZERO CONFLICTS
+   =============================== */
+
+.rp-wrap {
+  width: 100%;
+  padding: 24px 0 32px;
+  background: transparent;
+  position: relative;
+  display: none;
+}
+
+.rp-wrap.rp-active {
+  display: block;
+}
+
+.rp-head {
+  padding: 0 20px;
+  margin-bottom: 16px;
+}
+
+.rp-heading {
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+  letter-spacing: -0.3px;
+}
+
+/* SCROLL CONTAINER */
+#rpTrackMount {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+#rpTrackMount::-webkit-scrollbar {
+  display: none;
+}
+
+/* SCROLLER */
+.rp-scroll {
+  display: flex;
+  gap: 16px;
+  padding: 10px 20px 20px;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  width: max-content;
+}
+
+/* CARD */
+.rp-card {
+  flex: 0 0 140px;
+  scroll-snap-align: center;
+  cursor: pointer;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.3s ease;
+  user-select: none;
+}
+
+.rp-card:hover {
+  transform: translateY(-2px);
+}
+
+.rp-card.rp-inview {
+  transform: scale(1.05);
+}
+
+.rp-card.rp-inview:hover {
+  transform: scale(1.05) translateY(-2px);
+}
+
+/* COVER */
+.rp-cover {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #1a1a1a;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.rp-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.rp-card:hover.rp-cover img {
+  transform: scale(1.05);
+}
+
+/* PLAY BUTTON OVERLAY - APPLE PREMIUM */
+.rp-playbtn {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 2;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4),
+              inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* SHOW ON HOVER */
+.rp-card:hover .rp-playbtn {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* HOVER STATE */
+.rp-playbtn:hover {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: scale(1.05);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5),
+              inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* ACTIVE/PRESSED */
+.rp-playbtn:active {
+  transform: scale(0.95);
+  transition: all 0.1s ease;
+}
+
+/* PLAYING STATE */
+.rp-playbtn.rp-active {
+  opacity: 1;
+  transform: scale(1);
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+/* TRIANGLE ICON - BIGGER + PREMIUM */
+.rp-playbtn .rp-icon {
+  font-size: 0; /* Hide text */
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 12px 0 12px 18px;
+  border-color: transparent transparent transparent #fff;
+  margin-left: 3px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+  transition: all 0.2s ease;
+}
+
+/* PAUSE ICON WHEN ACTIVE */
+.rp-playbtn.rp-active .rp-icon {
+  width: 16px;
+  height: 18px;
+  border: none;
+  margin-left: 0;
+  background: linear-gradient(to right, 
+    #fff 0%, #fff 35%, 
+    transparent 35%, transparent 65%, 
+    #fff 65%, #fff 100%
+  );
+}
+
+
+/* TITLE */
+.rp-title {
+  margin-top: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0 4px;
+  line-height: 1.3;
+}
+
+/* FADE EDGES */
+.rp-wrap::before,
+.rp-wrap::after {
+  content: '';
+  position: absolute;
+  top: 60px;
+  bottom: 20px;
+  width: 40px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.rp-wrap::before {
+  left: 0;
+  background: linear-gradient(to right,
+    var(--bg-color, #0a0a0a) 0%,
+    transparent 100%
+  );
+}
+
+.rp-wrap::after {
+  right: 0;
+  background: linear-gradient(to left,
+    var(--bg-color, #0a0a0a) 0%,
+    transparent 100%
+  );
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+ .rp-wrap {
+    padding: 20px 0 28px;
+  }
+
+ .rp-heading {
+    font-size: 20px;
+  }
+
+ .rp-scroll {
+    gap: 12px;
+    padding: 8px 16px 16px;
+  }
+
+ .rp-card {
+    flex: 0 0 120px;
+  }
+ 
+ .rp-cover {
+    width: 120px;
+    height: 120px;
+    border-radius: 10px;
+  }
+
+ .rp-playbtn {
+    width: 44px;
+    height: 44px;
+    font-size: 18px;
+  }
+
+ .rp-title {
+    font-size: 12px;
+    margin-top: 8px;
+  }
+
+ .rp-wrap::before,
+ .rp-wrap::after {
+    width: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+ .rp-card {
+    flex: 0 0 110px;
+  }
+ 
+ .rp-cover {
+    width: 110px;
+    height: 110px;
+  }
+}
+#rpTrackMount {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+  cursor: grab; /* ADD THIS */
+}
+
+#rpTrackMount:active {
+  cursor: grabbing; /* ADD THIS */
+}
+/* ===============================
+   MORE CARD — LATEST SECTION
+=============================== */
+.more-card {
+  cursor: pointer;
+}
+
+.more-cover {
+  background: rgba(255,255,255,0.05)!important;
+  backdrop-filter: blur(20px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.more-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  width: 60px;
+  height: 60px;
+}
+
+.more-dot {
+  width: 100%;
+  height: 100%;
+  background: rgba(255,255,255,0.3);
+  border-radius: 3px;
+  transition: all 0.3s ease;
+}
+
+.more-card:hover.more-dot {
+  background: rgba(0,234,255,0.6);
+  transform: scale(1.1);
+}
+
+.more-card:hover.more-cover {
+  background: rgba(0,234,255,0.1)!important;
+  border: 1px solid rgba(0,234,255,0.3);
+}

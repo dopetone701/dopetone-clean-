@@ -1,0 +1,360 @@
+/* CARD BASE */
+.latest-card {
+  min-width: 240px;
+  flex-shrink: 0;
+
+  background: linear-gradient(145deg, #0f172a, #020617);
+  border-radius: 16px;
+  padding: 14px;
+
+  border: 1px solid rgba(255,255,255,0.06);
+
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* GLOW BORDER (signature vibe) */
+.latest-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  padding: 1px;
+  background: linear-gradient(120deg, #00f0ff, #7c3aed, #00f0ff);
+  -webkit-mask: 
+    linear-gradient(#000 0 0) content-box, 
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: 0.3s;
+}
+
+/* HOVER */
+.latest-card:hover {
+  transform: translateY(-8px) scale(1.03);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+}
+
+.latest-card:hover::before {
+  opacity: 1;
+}
+
+/* IMAGE */
+.latest-card img {
+  width: 100%;
+  height: 130px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+
+/* TITLE */
+.latest-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+}
+
+/* TAG */
+.latest-tag {
+  font-size: 12px;
+  color: #00f0ff;
+  opacity: 0.8;
+}
+
+/* PRICE ROW */
+.latest-price-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+/* OLD PRICE */
+.old-price {
+  text-decoration: line-through;
+  color: #888;
+  font-size: 13px;
+}
+
+/* NEW PRICE */
+.new-price {
+  color: #00f0ff;
+  font-weight: bold;
+  font-size: 15px;
+}
+
+/* BUTTON ROW */
+.latest-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+/* BUY BUTTON */
+.btn-buy {
+  flex: 1;
+  background: linear-gradient(135deg, #00f0ff, #7c3aed);
+  border: none;
+  padding: 8px;
+  border-radius: 8px;
+  color: white;
+  font-size: 13px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-buy:hover {
+  opacity: 0.8;
+}
+
+/* FREE BUTTON */
+.btn-free {
+  flex: 1;
+  background: transparent;
+  border: 1px solid #00f0ff;
+  padding: 8px;
+  border-radius: 8px;
+  color: #00f0ff;
+  font-size: 13px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-free:hover {
+  background: #00f0ff;
+  color: black;
+}
+.latest-container {
+  touch-action: pan-y; /* 🔥 allows vertical scroll always */
+}
+/* =========================
+   🔧 SYSTEM COMPATIBILITY
+========================= */
+
+/* prevent system padding breaking your layout */
+.latest-card .card-body {
+  padding: 0;
+}
+
+/* keep your image size */
+.latest-card .card-img {
+  height: 130px;
+}
+
+/* keep your hover strong */
+.latest-card:hover {
+  transform: translateY(-8px) scale(1.03);
+}
+/* make card positioning work */
+.latest-card {
+  position: relative;
+}
+
+/* wrapper for image */
+.latest-card > div:first-child {
+  position: relative;
+}
+
+/* 🔥 CENTER PLAY BUTTON */
+.play-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  width: 60px;
+  height: 60px;
+
+  border-radius: 50%;
+  border: none;
+
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(6px);
+
+  color: white;
+  font-size: 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  z-index: 10;
+
+  opacity: 0;
+  transition: 0.25s ease;
+}
+
+/* 🔥 SHOW ON HOVER */
+.latest-card:hover .play-btn {
+  opacity: 1;
+}
+
+/* optional hover effect */
+.play-btn:hover {
+  background: #00f0ff;
+  color: black;
+  transform: translate(-50%, -50%) scale(1.1);
+}
+/* ===============================
+   🎧 PLAY BUTTON (SHARED SYSTEM)
+=============================== */
+
+/* wrapper must be relative */
+.latest-media {
+  position: relative;
+}
+
+/* 🔥 button itself */
+.play-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  width: 60px;
+  height: 60px;
+
+  border-radius: 50%;
+  border: none;
+
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(6px);
+
+  color: #fff;
+  font-size: 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  z-index: 20;
+
+  opacity: 0;
+  transition: all 0.25s ease;
+}
+
+/* 🔥 show on hover */
+.latest-card:hover .play-btn {
+  opacity: 1;
+}
+
+/* 🔥 hover interaction */
+.play-btn:hover {
+  background: #00f0ff;
+  color: #000;
+  transform: translate(-50%, -50%) scale(1.1);
+}
+/* play button visibility */
+.latest-play {
+  opacity: 0;
+  transition: 0.25s ease;
+}
+
+.latest-card:hover .latest-play {
+  opacity: 1;
+}
+
+.latest-card.active .latest-play {
+  opacity: 1;
+}
+
+/* active highlight */
+.latest-card {
+  transition: all 0.3s ease;
+}
+
+.latest-card.active {
+  transform: scale(1.05);
+  box-shadow:
+    0 0 0 2px rgba(0, 240, 255, 0.4),
+    0 10px 30px rgba(0, 240, 255, 0.2);
+}
+/* WRAPPER: No scroll here */
+#latestWrap {
+  width: 100%;
+  overflow: visible;
+}
+
+/* VIEWPORT: This scrolls */
+#latestMount {
+  width: 100%;
+  overflow-x: auto !important;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+  cursor: grab;
+}
+
+#latestMount::-webkit-scrollbar {
+  display: none;
+}
+
+#latestMount:active {
+  cursor: grabbing;
+}
+
+/* SCROLLER: Grows wide */
+#latestMount .rp-scroll {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  gap: 16px;
+  padding: 10px 20px 20px;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  width: max-content !important;
+  min-width: 100%;
+}
+
+/* CARDS: Don't shrink */
+#latestMount .rp-scroll .rp-card {
+  flex: 0 0 140px !important;
+  width: 140px;
+  scroll-snap-align: center;
+}
+/* === LATEST TRACKS – MOBILE GAP + CENTER FIX === */
+@media (max-width: 768px) {
+  /* kill the old 240px .latest-card rule leaking in */
+  .latest-card,
+  #latestMount .rp-card,
+  #latestMount .rp-scroll .rp-card {
+    min-width: 140px !important;
+    width: 140px !important;
+    flex: 0 0 140px !important;
+  }
+
+  /* tighten the scroller */
+  #latestWrap { overflow: visible !important; }
+  #latestMount {
+    padding: 0 !important;
+    overflow-x: auto !important;
+  }
+  #latestMount .rp-scroll {
+    gap: 12px !important;
+    padding: 8px 12px 16px !important;
+  }
+
+  /* image square */
+  #latestMount .rp-card .rp-cover,
+  #latestMount .rp-card .rp-cover img {
+    width: 140px !important;
+    height: 140px !important;
+    object-fit: cover !important;
+    border-radius: 12px !important;
+  }
+
+  /* center the text under the card */
+  #latestMount .rp-card .rp-title {
+    text-align: center !important;
+    font-size: 13px !important;
+    margin-top: 8px !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

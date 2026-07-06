@@ -1,0 +1,375 @@
+/* ===============================
+   HERO BASE (CLEAN)
+================================ */
+
+.arsenal-hero {
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+
+  margin: 0;
+  padding: 50px 20px 50px;
+
+  width: 100%;
+  margin-top: 70px;
+}
+
+/* ===============================
+   WAVE IMAGE
+================================ */
+
+.arsenal-hero::before {
+  content: "";
+  position: absolute;
+
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: 100%;
+  height: 280px;
+
+  background:
+  url("/images/beats-wav-bg.png")
+  center/contain no-repeat;
+
+  opacity: 0.1;
+  filter: blur(1px);
+
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 15%,
+    black 85%,
+    transparent 100%
+  );
+
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 15%,
+    black 85%,
+    transparent 100%
+  );
+
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ===============================
+   RED CINEMATIC GLOW
+================================ */
+
+.arsenal-hero::after {
+  content: "";
+  position: absolute;
+
+  bottom: 0;
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  width: 700%;
+  height: 300px;
+
+  background: radial-gradient(
+    ellipse at center,
+    rgba(103, 0, 24, 0.35),
+    transparent 70%
+  );
+
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 20%,
+    black 80%,
+    transparent 100%
+  );
+
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 20%,
+    black 80%,
+    transparent 100%
+  );
+
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ===============================
+   CONTENT
+================================ */
+
+.arsenal-hero * {
+  position: relative;
+  z-index: 2;
+}
+
+/* ===============================
+   CENTER SYSTEM
+================================ */
+
+.arsenal-hero-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* ===============================
+   TITLE
+================================ */
+
+.arsenal-title {
+
+  font-family:
+  "Orbitron",
+  sans-serif;
+
+  font-size: 34px;
+  font-weight: 700;
+
+  color: #ffffff;
+
+  letter-spacing: 1px;
+  line-height: 1.2;
+
+  text-shadow:
+    0 0 10px rgba(0,255,200,0.25),
+    0 0 40px rgba(0,255,200,0.15);
+
+  position: relative;
+}
+
+/* glow line */
+.arsenal-title::after {
+
+  content: "";
+
+  position: absolute;
+
+  bottom: -8px;
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  width: 60%;
+  height: 2px;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #00ffc8,
+    transparent
+  );
+
+  opacity: 0.8;
+}
+
+/* ===============================
+   SUBTEXT
+================================ */
+
+.arsenal-sub {
+
+  margin-top: 18px;
+
+  font-size: 14px;
+
+  color:
+  rgba(255,255,255,0.7);
+
+  max-width: 520px;
+
+  line-height: 1.6;
+
+  opacity: 0.9;
+}
+
+/* ===============================
+   MOBILE
+================================ */
+
+@media (max-width: 768px) {
+
+  .arsenal-hero {
+    padding: 60px 15px 40px;
+    margin-top: 50px;
+  }
+
+  .arsenal-hero-inner {
+    padding-top: 20px;
+  }
+
+  .arsenal-title {
+    font-size: 24px;
+  }
+
+  .arsenal-sub {
+    font-size: 13px;
+    max-width: 280px;
+  }
+
+  .arsenal-hero::before {
+    height: 200px;
+  }
+
+  .arsenal-hero::after {
+    height: 180px;
+  }
+
+}
+html,
+body{
+    margin:0;
+    padding:0;
+}
+body{
+    overflow-x:hidden;
+}
+
+
+
+
+
+
+
+
+
+
+/* ===============================
+   GRID / LIST TOGGLE (FIXED)
+================================ */
+
+.view-toggle {
+  display: flex;
+  gap: 8px;
+
+  margin: 20px 0 10px;
+  padding: 4px;
+
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+
+  width: fit-content;
+}
+
+/* buttons */
+.view-toggle button {
+  border: none;
+  padding: 6px 14px;
+  border-radius: 8px;
+
+  font-size: 13px;
+  cursor: pointer;
+
+  background: transparent;
+  color: rgba(255,255,255,0.6);
+
+  transition: all 0.25s ease;
+}
+
+/* hover */
+.view-toggle button:hover {
+  color: #fff;
+}
+
+/* ACTIVE STATE 🔥 */
+.view-toggle button.active {
+  background: linear-gradient(135deg, #00eaff, #ff3c6f);
+  color: #fff;
+  box-shadow: 0 0 10px rgba(255, 60, 100, 0.4);
+}
+/* ===============================
+   SEARCH - OBEYS YOUR TOGGLE RULES
+   =============================== */
+.view-toggle .arsenal-search {
+  position: relative;
+  margin-left: auto;
+}
+
+.view-toggle #beatSearch {
+  border: none;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: 'Poppins', sans-serif;
+  cursor: text;
+  background: transparent;
+  color: rgba(255,255,255,0.6);
+  transition: all 0.25s ease;
+  width: 220px;
+  outline: none;
+}
+
+.view-toggle #beatSearch::placeholder {
+  color: rgba(255,255,255,0.4);
+}
+
+.view-toggle #beatSearch:hover {
+  color: #fff;
+}
+
+.view-toggle #beatSearch:focus {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.view-toggle .search-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 320px;
+  background: #0a0e1a;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 1000;
+  display: none;
+  margin-top: 8px;
+}
+
+.view-toggle .search-dropdown.active {
+  display: block;
+}
+/* ===== SCOFIELD: MENU PANEL WINS Z-INDEX WAR ===== */
+@media (max-width: 768px) {
+
+  /* SCOFIELD: Force menu + overlay to top */
+  .mobile-panel {
+    z-index: 99999 !important;
+  }
+
+  .overlay {
+    z-index: 99998 !important;
+  }
+
+  /* SCOFIELD: Nuke ALL toggle bars when menu opens */
+  body.menu-open .toggle-fixed,
+  body.menu-open .view-toggle,
+  body.menu-open .playlist-capsules,
+  body.menu-open .arsenal-search {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    z-index: 1 !important;
+    transition: opacity 0.2s ease !important;
+  }
+
+  /* SCOFIELD: Kill player too */
+  body.menu-open .global-player {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    transform: translateY(200px) !important;
+    z-index: 1 !important;
+  }
+
+  /* SCOFIELD: Make sure navbar stays under overlay */
+  .navbar {
+    z-index: 9997 !important;
+  }
+}

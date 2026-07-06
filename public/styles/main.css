@@ -1,3 +1,57 @@
+/* ===============================
+   🌌 SPACE DARK CINEMATIC BLUE
+================================ */
+
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+
+  /* 🔥 deeper, richer than before */
+  background:
+    radial-gradient(circle at 30% 20%, #030810 0%, transparent 40%),
+    radial-gradient(circle at 70% 80%, #020611 0%, transparent 50%),
+    linear-gradient(160deg, #00030a 0%, #01030b 50%, #00030a 100%) !important;
+}
+
+/* ✨ subtle cinematic lighting */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 200;
+  pointer-events: none;
+
+  background:
+    radial-gradient(circle at 20% 25%, rgba(0,120,255,0.12), transparent 45%),
+    radial-gradient(circle at 80% 35%, rgba(0,80,200,0.08), transparent 55%),
+    radial-gradient(circle at 50% 90%, rgba(0,180,255,0.05), transparent 65%);
+
+  z-index: -1;
+}
+
+/* ===============================
+   🧱 GLOBAL CONTAINER SYSTEM
+================================ */
+
+.container {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+/* ===============================
+   📏 SECTION SPACING SYSTEM
+================================ */
+
+.section {
+  margin-top: 70px;
+}
+
+.section-tight {
+  margin-top: 40px;
+}
+
 html, body {
   margin: 0;
   padding: 0;
@@ -16,293 +70,9 @@ body {
   font-family: Arial, sans-serif;
 }
 
-/* NAVBAR */
-.navbar {
-  position: fixed;
-  top: 0;
-  width: 100%;
-
-  background: rgba(5, 15, 35, 0.85); /* deep blue */
-  backdrop-filter: blur(14px);
-
-  border-bottom: 1px solid rgba(77,166,255,0.2);
-  z-index: 1000;
-}
-
-
-/* CONTAINER (THIS FIXES ALIGNMENT) */
-.nav-container {
-  max-width: 1200px;
-  margin: auto;
-  padding: 15px 20px;
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-/* LOGO */
-.logo {
-  font-size: 20px;
-  font-weight: bold;
-}
-
-/* LINKS */
-.nav-links {
-  display: flex;
-  gap: 20px;
-}
-
-.nav-links a {
-  text-decoration: none;
-  color: white;
-  font-size: 14px;
-}
-
-/* AUTH */
-.nav-auth {
-  display: flex;
-  gap: 15px;
-}
-
-.login {
-  text-decoration: none;
-  color: white;
-}
-
-.signup {
-  background: #4da6ff;
-  padding: 6px 14px;
-  border-radius: 20px;
-  text-decoration: none;
-  color: white;
-}
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 18px;
-  font-weight: bold;
-}
-
-.logo img {
-  width: 75px;
-  height: 75%;
-  object-fit: contain;
-}
-.logo span {
-  font-size: 18px;
-  font-weight: 600;
-}
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-/* DEFAULT FONT */
-body {
-  font-family: 'Poppins', sans-serif;
-}
-
-/* LOGO / BRAND */
-.logo span {
-  font-family: 'Orbitron', sans-serif;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-
-  background: linear-gradient(
-    120deg,
-    #ffffff,
-    #b0c4de,
-    #4da6ff,
-    #ffffff
-  );
-background-clip: text;
--webkit-background-clip: text;
--webkit-text-fill-color: transparent;
-
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-
-  text-shadow:
-    0 0 8px rgba(77,166,255,0.4),
-    0 0 15px rgba(77,166,255,0.2);
-}
-
-/* NAV LINKS */
-.nav-links a {
-  font-family: 'Poppins', sans-serif;
-}
-
-/* BUTTONS */
-
-.navbar::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 2px;
-
-  background: linear-gradient(90deg, #4da6ff, #ff4d4d);
-}
-.nav-links a {
-  position: relative;
-  text-decoration: none;
-  color: white;
-  font-size: 14px;
-  transition: 0.3s;
-}
-
-.nav-links a::after {
-  content: "";
-  position: absolute;
-  bottom: -5px;
-  left: 0;
-  width: 0%;
-  height: 2px;
-  background: #4da6ff;
-  transition: 0.3s;
-}
-
-.nav-links a:hover::after {
-  width: 100%;
-}
 
 
 
-body {
-  padding-top: 80px;
-}
-.navbar::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 2px;
-
-  background: linear-gradient(90deg, #4da6ff, #00c3ff, #ff4d4d);
-}
-.auth-buttons {
-  display: flex;
-  gap: 10px;
-}
-
-.auth-buttons a {
-  padding: 8px 18px;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  text-decoration: none;
-  color: #fff;
-
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.2);
-
-  backdrop-filter: blur(6px);
-  transition: all 0.3s ease;
-}
-
-.auth-buttons a:hover {
-  transform: translateY(-2px) scale(1.05);
-}
-.auth-buttons:hover a {
-  opacity: 0.5;
-}
-
-.auth-buttons a:hover {
-  opacity: 1;
-}
-.auth-toggle {
-  position: relative;
-  display: flex;
-  align-items: center;
-  border-radius: 30px;
-  padding: 4px;
-
-  background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(10px);
-
-  border: 1px solid rgba(255,255,255,0.15);
-}
-.auth-toggle a {
-  position: relative;
-  z-index: 2;
-
-  padding: 8px 18px;
-  border-radius: 20px;
-  text-decoration: none;
-  color: #fff;
-  font-size: 0.85rem;
-
-  transition: 0.3s;
-}
-.slider {
-  position: absolute;
-  top: 0;
-  left: 0;
-
-  width: 50%;
-  height: 100%;
-
-  border-radius: 30px;
-
-  background: linear-gradient(90deg, #00f0ff, #ff003c);
-
-  transition: transform 0.35s ease;
-
-  box-shadow:
-    0 0 10px rgba(0,240,255,0.4),
-    0 0 20px rgba(255,0,60,0.3);
-}
-
-
-.auth-toggle:hover .slider {
-  transform: translateX(100%);
-}
-.login,
-.signup {
-  background: none !important;
-  border: none !important;
-  box-shadow: none !important;
-}
-.slider {
-  width: 50%;
-}
-.auth-toggle {
-  position: relative;
-  display: flex;
-  border-radius: 30px;
-  padding: 4px;
-
-  background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.15);
-
-  overflow: hidden; /* 💀 THIS FIXES ESCAPING */
-}
-.auth-toggle:hover .slider {
-  transform: translateX(100%);
-}
-.auth-toggle {
-  gap: 0; /* remove any spacing */
-}
-.auth-toggle {
-  position: relative;
-  display: flex;
-  border-radius: 30px;
-
-  padding: 2px; /* smaller padding */
-
-  background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.15);
-
-  overflow: hidden;
-}
-.auth-toggle:hover .slider {
-  transform: translateX(100%);
-}
 
 /* ========================================
    NAVBAR (LOCKED — DO NOT TOUCH)
@@ -640,169 +410,13 @@ img {
   font-size: clamp(12px, 2.5vw, 16px);
 }
 
-/* =========================
-   NAVBAR FLEX FIX
-   ========================= */
 
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 20px;
-}
 
-/* =========================
-   MOBILE ONLY (CLEAN)
-   ========================= */
 
-@media (max-width: 768px) {
 
-  .top-line,
-  .bottom-line {
-    text-align: center;
-  }
 
-  .glass-panel {
-    backdrop-filter: blur(20px);
-  }
 
-}
-@media (max-width: 768px) {
 
-  .hero {
-    align-items: flex-start; /* push content up */
-    padding-top: 60px;
-  }
-
-  .glass-panel {
-    margin-top: -40px; /* pull it upward */
-  }
-
-}
-@media (max-width: 768px) {
-
-  .navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 16px;
-  }
-
-  /* Hide desktop links */
-  .nav-links {
-    display: none;
-  }
-
-  /* Center logo */
-  .logo {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-
-  /* Show hamburger */
-  .menu-toggle {
-    display: block;
-    font-size: 22px;
-  }
-
-  /* Basket left */
-  .cart {
-    display: block;
-  }
-
-}
-@media (min-width: 769px) {
-
-  .glass-panel {
-    width: 800px; /* your original desktop size */
-  }
-
-}
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 40px;
-}
-
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.nav-links {
-  display: flex;
-  gap: 30px;
-}
-
-.auth-buttons {
-  display: flex;
-  gap: 10px;
-}
-
-.menu-toggle,
-.cart {
-  display: none;
-}
-@media (max-width: 768px) {
-
-  /* NAV RESET */
-  .navbar {
-    padding: 12px 16px;
-  }
-
-  .nav-links,
-  .auth-buttons {
-    display: none !important;
-  }
-
-  .menu-toggle,
-  .cart {
-    display: block;
-  }
-
-  .navbar {
-    position: relative;
-  }
-
-  /* LEFT */
-  .cart {
-    font-size: 20px;
-  }
-
-  /* CENTER */
-  .logo {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-
-  /* RIGHT */
-  .menu-toggle {
-    font-size: 22px;
-  }
-
-}
-.navbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 1000;
-}
-.hero {
-  padding-top: 70px; /* same as navbar height */
-}
-body {
-  background: #000; /* or your dark gradient */
-}
-@media (max-width: 768px) {
-  .nav-links {
-    display: none !important;
-  }
-}
 @media (max-width: 768px) {
   body, html {
     margin: 0;
@@ -821,246 +435,8 @@ body {
 body {
   margin: 0;
 }
-.navbar {
-  position: absolute;
-  top: 0;
-  width: 100%;
-  z-index: 10;
-}
-.auth-buttons {
-  display: flex;
-  gap: 10px;
-}
-
-/* Base */
-.auth-buttons button {
-  padding: 8px 18px;
-  border-radius: 25px;
-  border: none;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-weight: 500;
-}
-
-/* LOGIN — BLUE GLASS 🔵 */
-.auth-buttons button:first-child {
-  background: rgba(0, 140, 255, 0.08);
-  color: #00cfff;
-  border: 1px solid rgba(0, 140, 255, 0.3);
-  backdrop-filter: blur(6px);
-}
-
-.auth-buttons button:first-child:hover {
-  background: rgba(0, 140, 255, 0.15);
-  box-shadow: 0 0 12px rgba(0, 140, 255, 0.6);
-}
-
-/* SIGN UP — BLUE → RED GRADIENT 🔥 */
-.auth-buttons button:last-child {
-  background: linear-gradient(45deg, #00cfff, #ff003c);
-  color: white;
-  box-shadow: 0 0 15px rgba(0, 200, 255, 0.6);
-}
-
-/* hover = power mix */
-.auth-buttons button:last-child:hover {
-  transform: scale(1.08);
-  box-shadow: 
-    0 0 20px rgba(0, 200, 255, 0.8),
-    0 0 25px rgba(255, 0, 60, 0.8);
-}
-@media (max-width: 768px) {
-
-  
-
-}
-.menu-toggle {
-  font-size: 26px;
-  cursor: pointer;
-
-  /* 🔥 COPY cart style */
-  color: inherit;
-}
-
-/* 🔥 MAKE BOTH USE SAME STYLE */
-.cart,
-.menu-toggle {
-  color: #00e0ff; /* adjust if needed */
-
-  text-shadow:
-    0 0 5px rgba(0, 200, 255, 0.8),
-    0 0 10px rgba(0, 200, 255, 0.6);
-}
-@media (max-width: 768px) {
-
-  .mobile-panel {
-    position: fixed;
-    top: 0;
-    right: -100%;
-
-    width: 90%;
-    height: 100vh;
-overflow-y: auto;
-
-    background: rgba(10, 10, 20, 0.85);
-    backdrop-filter: blur(12px);
-
-    display: flex;
-    flex-direction: column;
-   justify-content: flex-start;
-padding-top: 80px;
-
-    align-items: center;
-    gap: 30px;
-
-    transition: right 0.4s ease;
-    z-index: 9999;
-  }
-
-  .mobile-panel.active {
-    right: 0;
-  }
-
-  .mobile-panel a {
-    color: white;
-    font-size: 22px;
-    text-decoration: none;
-    transition: 0.3s;
-  }
-
-  .mobile-panel a:hover {
-    color: #00e0ff;
-  }
-
-}
-body.panel-open::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-  z-index: 9998;
-}
-.menu-toggle.active {
-  transform: rotate(90deg);
-}
-.mobile-panel a {
-  position: relative;
-}
-
-.mobile-panel a {
-  color: #ffffff;
-  font-size: 22px;
-  text-decoration: none;
-  transition: all 0.3s ease;
-}
-
-/* 💀 STRONG HOVER */
-.mobile-panel a:hover {
-  color: #00eaff !important;
-
-  text-shadow:
-    0 0 8px rgba(0, 200, 255, 0.9),
-    0 0 16px rgba(0, 200, 255, 0.7),
-    0 0 30px rgba(0, 200, 255, 0.5);
-
-  transform: scale(1.15);
-}
-
-.mobile-panel {
-  display: none;
-}
-@media (max-width: 768px) {
-  .mobile-panel {
-    display: flex;
-  }
-}
-.panel-top {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 40px;
-}
-
-.panel-top img {
-  width: 110px;
-  height: 110px;
 
 
-  object-fit: contain;
-
-  filter: drop-shadow(0 0 15px rgba(0, 240, 255, 0.7));
-}
-@media (min-width: 769px) {
-  .mobile-panel {
-    display: none;
-  }
-}
-.profile-link {
-  font-size: 24px;
-  margin-top: 30px;
-  padding: 10px 18px;
-  border-radius: 50px;
-
-  background: rgba(255,255,255,0.08);
-  backdrop-filter: blur(10px);
-
-  transition: all 0.3s ease;
-}
-
-.profile-link:hover {
-  background: rgba(0, 200, 255, 0.2);
-  transform: scale(1.1);
-}
-.mobile-panel a {
-  color: white;
-  text-decoration: none;
-  font-size: 20px;
-  transition: all 0.3s ease;
-}
-
-/* 🔥 HOVER IS BACK */
-.mobile-panel a:hover {
-  color: #00eaff;
-  text-shadow: 0 0 10px rgba(0, 200, 255, 0.8),
-               0 0 20px rgba(0, 200, 255, 0.6);
-  transform: scale(1.1);
-}
-
-.nav-links {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-
-  display: flex;
-  gap: 30px;
-}
-@media (max-width: 768px) {
-  .hero {
-    min-height: auto !important;
-    height: auto !important;
-    padding: 90px 20px 30px !important;
-
-  }
-}
-@media (max-width: 1024px) {
-  .navbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .logo {
-    flex-shrink: 0; /* 🚫 stops logo from pushing into links */
-  }
-
-  .nav-links {
-    display: flex;
-    gap: 20px;
-    margin-left: 20px;
-    flex-wrap: wrap; /* ✅ prevents overlap */
-  }
-}
 /* 🟦🟦🟦 CREATE SYSTEM UI 🟦🟦🟦 */
 
 /* 🟥 CREATE BUTTON */
@@ -1813,4 +1189,1010 @@ body {
   background: linear-gradient(45deg, #0f0f2f, #7a0000);
   color: white;
   border: none;
+}
+/* =========================
+   🔥 GLOBAL MOBILE SPACING FIX
+========================= */
+
+@media (max-width: 768px) {
+
+  .container {
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+
+}
+/* MOBILE DEBUG MODE - MAKE PAGE SCROLLABLE */
+@media (max-width: 768px) {
+  /* 1. Kill the bottom padding that was reserving space */
+  body {
+    padding-bottom: 0 !important;
+  }
+
+  /* 2. Make player flow with page instead of fixed */
+  .global-player {
+    position: relative !important;
+    bottom: auto !important;
+    left: auto !important;
+    transform: none !important;
+    margin: 20px auto !important;
+    width: 96% !important;
+  }
+
+  /* 3. Remove the root var that blocked scrolling */
+  :root {
+    --player-height: 0px !important;
+  }
+}
+/* MOBILE - FIX PROGRESS BAR + TIME OVERFLOW */
+@media (max-width: 768px) {
+  /* 1. Clip everything inside the player */
+  .global-player {
+    overflow: hidden !important;
+    padding: 10px 14px !important; /* 👈 More horizontal padding */
+  }
+
+  /* 2. Force progress wrap to stay inside */
+  .gp-center {
+    width: 100% !important;
+    padding: 0 4px !important; /* 👈 Inner breathing room */
+  }
+
+  .gp-progress-wrap {
+    width: 100% !important;
+    max-width: 100% !important;
+    gap: 8px !important;
+    align-items: center !important;
+  }
+
+  /* 3. Shrink time labels so they don't push out */
+  #gpCurrent,
+  #gpDuration {
+    font-size: 9px !important;
+    min-width: 24px !important;
+    flex-shrink: 0 !important;
+    line-height: 1 !important;
+  }
+
+  /* 4. Make sure bar doesn't overflow */
+  #gpProgress {
+    min-width: 0 !important; /* 👈 Lets flexbox shrink it */
+    height: 3px !important;
+    margin: 0 !important;
+  }
+
+  /* 5. Center the whole controls section */
+  .gp-controls {
+    margin-bottom: 2px !important;
+  }
+}
+/* MOBILE PROFILE */
+
+
+.mobile-profile-avatar,
+.mobile-default-avatar{
+
+
+width:52px;
+height:52px;
+
+
+border-radius:50%;
+
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+
+margin:auto;
+
+
+overflow:hidden;
+
+
+border:2px solid rgba(255,255,255,0.15);
+
+
+background:rgba(255,255,255,0.06);
+
+
+backdrop-filter:blur(20px);
+}
+
+
+.mobile-profile-avatar{
+object-fit:cover;
+}
+
+
+.mobile-default-avatar{
+font-size:20px;
+color:white;
+}
+
+
+/* =========================================
+   🔥 PERFECT SECTION LEVELING
+========================================= */
+
+
+/* Featured + Latest same level as Arsenal */
+.featured-section,
+.latest-section{
+
+
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+
+
+    margin-left: 0 !important;
+
+
+    box-sizing: border-box;
+}
+
+
+/* Arsenal alignment */
+.arsenal-section{
+
+
+    padding-left: 14px !important;
+
+
+    margin-left: 0 !important;
+}
+
+
+/* Remove random row offsets */
+.latest-row,
+.featured-container{
+
+
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+}
+
+
+/* =========================================
+   🔥 TITLE WRAPPERS
+========================================= */
+
+
+.section-title-wrap{
+
+
+    width: 100%;
+
+
+    padding-left: 0 !important;
+
+
+    margin-bottom: 18px;
+
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================
+   🔥 TITLE STYLE
+========================================= */
+
+
+.section-title{
+
+
+    position: relative;
+
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+
+    display: flex;
+    align-items: center;
+
+
+    gap: 10px;
+
+
+    width: fit-content;
+
+
+    color: #ffffff;
+
+
+    text-shadow:
+    0 0 10px rgba(255,140,0,.35),
+    0 0 20px rgba(255,80,0,.15);
+}
+
+
+/* =========================================
+   🔥 FIRE ICON
+========================================= */
+
+
+.title-icon{
+
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+
+    animation:
+    fireFloat 2.2s ease-in-out infinite;
+}
+
+
+/* =========================================
+   🔥 RED/YELLOW UNDERLINE
+========================================= */
+
+
+.section-title::after{
+
+
+    content: "";
+
+
+    position: absolute;
+
+
+    left: 0;
+    bottom: -8px;
+
+
+    width: 100%;
+
+
+    height: 3px;
+
+
+    border-radius: 999px;
+
+
+    background:
+    linear-gradient(
+        90deg,
+        #ff3300 0%,
+        #ff7b00 35%,
+        #ffd000 70%,
+        transparent 100%
+    );
+
+
+    box-shadow:
+    0 0 12px rgba(255,80,0,.45),
+    0 0 22px rgba(255,180,0,.25);
+
+
+    opacity: .95;
+}
+
+
+/* =========================================
+   🔥 FLOAT ANIMATION
+========================================= */
+
+
+@keyframes fireFloat{
+
+
+    0%{
+        transform:
+        translateY(0px)
+        scale(1);
+    }
+
+
+    50%{
+        transform:
+        translateY(-2px)
+        scale(1.06);
+    }
+
+
+    100%{
+        transform:
+        translateY(0px)
+        scale(1);
+    }
+}
+
+
+/* =========================================
+   🔥 GET UNIQUE — BURNING RED
+========================================= */
+
+
+.latest-card:first-child{
+
+
+    position: relative;
+
+
+    border:
+    1px solid rgba(255,60,0,.45) !important;
+
+
+    box-shadow:
+    0 0 18px rgba(255,40,0,.25),
+    0 0 40px rgba(255,0,0,.12);
+}
+
+
+/* burning aura */
+.latest-card:first-child::before{
+
+
+    content:"";
+
+
+    position:absolute;
+
+
+    inset:-2px;
+
+
+    border-radius: inherit;
+
+
+    background:
+    linear-gradient(
+        135deg,
+        rgba(255,30,0,.35),
+        rgba(255,140,0,.18),
+        rgba(255,0,0,.28)
+    );
+
+
+    filter: blur(18px);
+
+
+    opacity:.9;
+
+
+    z-index:-1;
+
+
+    animation:
+    burnPulse 2.2s ease-in-out infinite;
+}
+
+
+/* title glow */
+.latest-card:first-child .track-title,
+.latest-card:first-child h3{
+
+
+    color:#fff;
+
+
+    text-shadow:
+    0 0 10px rgba(255,60,0,.8),
+    0 0 24px rgba(255,120,0,.45);
+}
+
+
+/* price glow */
+.latest-card:first-child .new{
+
+
+    color:#ff5e00 !important;
+
+
+    text-shadow:
+    0 0 12px rgba(255,80,0,.7);
+}
+
+
+/* button glow */
+.latest-card:first-child .buy-btn,
+.latest-card:first-child button{
+
+
+    background:
+    linear-gradient(
+        135deg,
+        #ff2a00,
+        #ff7b00
+    ) !important;
+
+
+    box-shadow:
+    0 0 20px rgba(255,60,0,.45),
+    inset 0 -2px 5px rgba(0,0,0,.25);
+
+
+    color:#fff !important;
+}
+
+
+/* =========================================
+   🔥 BURN PULSE
+========================================= */
+
+
+@keyframes burnPulse{
+
+
+    0%{
+
+
+        opacity:.65;
+
+
+        transform:scale(1);
+    }
+
+
+    50%{
+
+
+        opacity:1;
+
+
+        transform:scale(1.015);
+    }
+
+
+    100%{
+
+
+        opacity:.65;
+
+
+        transform:scale(1);
+    }
+}
+
+
+/* =========================================
+   🔥 FEATURED SECTION BALANCE
+========================================= */
+
+
+.featured-track{
+
+
+    padding-left: 0 !important;
+    margin-left: 0 !important;
+}
+
+
+/* =========================================
+   🔥 LATEST SECTION BALANCE
+========================================= */
+
+
+.latest-track,
+.latest-row{
+
+
+    padding-left: 0 !important;
+    margin-left: 0 !important;
+}
+
+
+/* =========================================
+   📱 MOBILE BALANCE
+========================================= */
+
+
+@media(max-width:768px){
+
+
+    .featured-section,
+    .latest-section,
+    .arsenal-section{
+
+
+        padding-left:10px !important;
+        padding-right:10px !important;
+    }
+
+
+    .section-title-wrap{
+
+
+        margin-bottom:14px;
+    }
+
+
+    .section-title{
+
+
+        font-size:20px;
+    }
+
+
+}
+/* =========================================
+   🔥 LATEST TITLE SPACING FIX
+========================================= */
+
+
+.latest-section .section-title{
+
+
+    margin-bottom: 26px !important;
+
+
+    position: relative;
+    z-index: 20;
+}
+
+
+/* 🔥 extra breathing room above cards */
+.latest-row{
+
+
+    margin-top: 8px;
+}
+
+
+/* 📱 mobile */
+@media(max-width:768px){
+
+
+    .latest-section .section-title{
+
+
+        margin-bottom: 22px !important;
+    }
+
+
+}
+/* =========================================
+   🔥 CENTER FEATURED + LATEST TITLES
+   PC + MOBILE
+========================================= */
+
+
+/* =========================================
+   🔥 SECTION TITLE WRAP
+========================================= */
+
+
+.featured-section,
+.latest-section{
+
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+/* =========================================
+   🔥 TITLES CENTERED
+========================================= */
+
+
+.featured-section .section-title,
+.latest-section .section-title{
+
+
+    margin-left: auto !important;
+    margin-right: auto !important;
+
+
+    justify-content: center;
+    text-align: center;
+
+
+    width: fit-content;
+}
+
+
+/* =========================================
+   🔥 UNDERLINE CENTER
+========================================= */
+
+
+.featured-section .section-title::after,
+.latest-section .section-title::after{
+
+
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+
+/* =========================================
+   🔥 KEEP CONTENT FULL WIDTH
+========================================= */
+
+
+.featured-container,
+.latest-row{
+
+
+    width: 100%;
+}
+/* ===============================
+📱 CENTER ARSENAL + TRENDING TITLES
+=============================== */
+
+
+@media (max-width:768px){
+
+
+    .arsenal-section .section-title,
+    .right-panel .section-title{
+
+
+        width:100%;
+
+
+        display:flex;
+        align-items:center;
+        justify-content:center;
+
+
+        text-align:center;
+
+
+        margin-left:0 !important;
+        padding-left:0 !important;
+    }
+
+
+    /* 🔥 underline centered too */
+    .arsenal-section .section-title::after,
+    .right-panel .section-title::after{
+
+
+        left:50% !important;
+
+
+        transform:translateX(-50%);
+    }
+}
+/* ===============================
+   🔥 LATEST SCROLL — RP STRUCTURE
+=============================== */
+.latest-section {
+  overflow: visible !important;
+}
+
+/* WRAPPER: This is the viewport */
+#latestListWrap {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+  cursor: grab;
+}
+
+#latestListWrap::-webkit-scrollbar {
+  display: none;
+}
+
+#latestListWrap:active {
+  cursor: grabbing;
+}
+
+/* SCROLLER: This grows wide */
+#latestList.rp-scroll {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  gap: 16px;
+  padding: 10px 20px 20px;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  width: max-content !important; /* 🔥 KEY: Ignores parent width */
+}
+
+/* Cards must not shrink */
+#latestList.rp-scroll .rp-card {
+  flex: 0 0 140px !important;
+  scroll-snap-align: center;
+  width: 140px;
+}
+
+/* Kill old rules */
+.latest-section .latest-grid,
+.latest-section .latest-row {
+  display: none !important;
+}
+/* ================= DOWNLOAD GATE ================= */
+.download-gate {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 7, 20, 0.92);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.download-gate.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.gate-content {
+  background: linear-gradient(180deg, #0a0e27 0%, #050714 100%);
+  border: 1px solid rgba(0, 102, 255, 0.25);
+  border-radius: 24px;
+  padding: 40px 32px 28px;
+  width: 90%;
+  max-width: 380px;
+  position: relative;
+  box-shadow: 
+    0 25px 80px rgba(0, 0, 0, 0.9),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+    0 0 80px rgba(0, 102, 255, 0.12);
+  transform: translateY(24px) scale(0.96);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.download-gate.active .gate-content {
+  transform: translateY(0) scale(1);
+}
+
+.gate-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 50%;
+  color: #8892b0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  font-size: 14px;
+}
+
+.gate-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  transform: rotate(90deg);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.gate-icon {
+  width: 68px;
+  height: 68px;
+  margin: 0 auto 22px;
+  background: linear-gradient(135deg, #0066ff 0%, #e10600 100%);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 
+    0 10px 30px rgba(0, 102, 255, 0.35),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  position: relative;
+}
+
+.gate-icon::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(135deg, #0066ff, #e10600);
+  border-radius: 22px;
+  z-index: -1;
+  filter: blur(12px);
+  opacity: 0.5;
+}
+
+.gate-icon i {
+  font-size: 28px;
+  color: white;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+.gate-content h3 {
+  font-family: 'Orbitron', sans-serif;
+  color: white;
+  font-size: 22px;
+  font-weight: 700;
+  text-align: center;
+  margin: 0 0 8px;
+  letter-spacing: -0.3px;
+}
+
+.gate-subtitle {
+  font-family: 'Poppins', sans-serif;
+  color: #8892b0;
+  font-size: 14px;
+  text-align: center;
+  margin: 0 0 28px;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+.gate-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-group i {
+  position: absolute;
+  left: 16px;
+  color: #0066ff;
+  font-size: 14px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.input-group input {
+  width: 100%;
+  height: 50px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 0 16px 0 44px;
+  color: white;
+  font-size: 15px;
+  font-family: 'Poppins', sans-serif;
+  outline: none;
+  transition: all 0.25s;
+}
+
+.input-group input:focus {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: #0066ff;
+  box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.18);
+}
+
+.input-group input::placeholder {
+  color: #5a6480;
+}
+
+.gate-btn {
+  height: 50px;
+  background: linear-gradient(90deg, #0066ff 0%, #0052cc 100%);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.25s;
+  box-shadow: 0 4px 18px rgba(0, 102, 255, 0.28);
+  position: relative;
+  overflow: hidden;
+}
+
+.gate-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  transition: left 0.5s;
+}
+
+.gate-btn:hover::before {
+  left: 100%;
+}
+
+.gate-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(0, 102, 255, 0.38);
+}
+
+.gate-btn:active {
+  transform: translateY(0);
+}
+
+.gate-privacy {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: #5a6480;
+  font-size: 11.5px;
+  font-family: 'Poppins', sans-serif;
+  margin: 18px 0 0;
+  font-weight: 400;
+}
+
+.gate-privacy i {
+  font-size: 10px;
+}
+
+.gate-skip {
+  width: 100%;
+  background: none;
+  border: none;
+  color: #6b7690;
+  font-size: 13px;
+  font-family: 'Poppins', sans-serif;
+  margin-top: 10px;
+  padding: 8px;
+  cursor: pointer;
+  transition: color 0.2s;
+  font-weight: 400;
+}
+
+.gate-skip:hover {
+  color: #a0abc0;
+}
+/* PC ONLY - ADD RIGHT MARGIN TO MAIN LAYOUT */
+@media (min-width: 769px) {
+  .main-layout {
+    margin-right: 24px !important;
+    gap: 24px !important; /* Extra space between left-panel and right-panel */
+  }
+  
+  /* If you want just the right panel to have breathing room */
+  .right-panel {
+    margin-right: 24px !important;
+  }
+}
+/* iPAD AIR + TABLETS - FORCE RIGHT SPACING */
+@media only screen 
+  and (min-device-width: 768px) 
+  and (max-device-width: 1024px) {
+  
+  body {
+    padding-right: 24px !important; /* Hits the whole page */
+  }
+  
+  .main-layout {
+    max-width: calc(100% - 24px) !important;
+    padding-right: 24px !important;
+    box-sizing: border-box !important;
+  }
+  
+  /* Make sure right panel doesn't stick */
+  .right-panel,
+  .notice-board {
+    margin-right: 0 !important; /* Reset */
+    margin-left: 16px !important; /* Push it left instead */
+  }
+}
+/* HIDE TITLE ON MOBILE ONLY */
+@media (max-width: 768px) {
+  #globalPlayerUI #gpTitle {
+    display: none !important;
+  }
+  
+  #globalPlayerUI .gp-left {
+    gap: 0 !important;
+  }
+}
+/* MORE GAP BETWEEN PLAYER CONTROLS */
+#globalPlayerUI .gp-controls {
+  gap: 20px !important; /* Was probably 8-12px, now 20px */
+}
+
+/* If you want just prev/play/next with more space */
+#globalPlayerUI #gpPrev,
+#globalPlayerUI #gpPlay,
+#globalPlayerUI #gpNext {
+  margin: 0 4px !important; /* Extra 8px total between them */
 }

@@ -1,0 +1,1973 @@
+/* ===============================
+🎵 PLAYLIST SECTION
+=============================== */
+
+
+.playlist-section{
+    width:100%;
+    margin-top:42px;
+    padding:0 18px;
+}
+
+
+.playlist-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:22px;
+}
+
+
+.playlist-view-all{
+    color:#7fd6ff;
+    font-size:14px;
+    text-decoration:none;
+    font-family:'Poppins',sans-serif;
+}
+
+
+
+
+/* ===============================
+🔥 GRID
+=============================== */
+
+
+.playlist-grid{
+    display:grid;
+
+
+    grid-template-columns:
+    repeat(auto-fit,minmax(320px,1fr));
+
+
+    gap:22px;
+
+
+    align-items:start;
+}
+
+
+
+
+/* ===============================
+🎵 CARD
+=============================== */
+
+
+.playlist-card{
+    position:relative;
+
+
+    display:flex;
+    flex-direction:column;
+
+
+    min-height:340px;
+
+
+    overflow:hidden;
+
+
+    border-radius:26px;
+
+
+    padding:22px;
+
+
+    background:
+    linear-gradient(
+        145deg,
+        rgba(15,20,40,.95),
+        rgba(8,12,24,.98)
+    );
+
+
+    border:
+    1px solid rgba(90,160,255,.18);
+
+
+    box-shadow:
+    0 10px 40px rgba(0,0,0,.45);
+
+
+    transition:.35s;
+}
+
+
+.playlist-card:hover{
+    transform:
+    translateY(-6px);
+
+
+    border-color:
+    rgba(90,180,255,.45);
+}
+
+
+
+
+/* ===============================
+🎵 HEADER
+=============================== */
+
+
+.playlist-card-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+
+    margin-bottom:18px;
+}
+
+
+.playlist-name{
+    font-size:22px;
+    font-family:'Orbitron',sans-serif;
+    color:white;
+    margin-bottom:6px;
+}
+
+
+.playlist-count{
+    font-size:13px;
+    color:#8fa8c7;
+    font-family:'Poppins',sans-serif;
+}
+
+
+
+
+/* ===============================
+▶ PLAY BTN
+=============================== */
+
+
+.playlist-play-btn{
+    width:54px;
+    height:54px;
+
+
+    border-radius:50%;
+    border:none;
+
+
+    cursor:pointer;
+
+
+    background:
+    linear-gradient(
+        135deg,
+        #00c6ff,
+        #7b5cff
+    );
+
+
+    color:white;
+
+
+    font-size:20px;
+
+
+    flex-shrink:0;
+
+
+    box-shadow:
+    0 0 20px rgba(0,198,255,.35);
+}
+
+
+
+
+/* ===============================
+🎵 ROW AREA
+=============================== */
+
+
+.playlist-rows{
+    display:flex;
+    flex-direction:column;
+
+
+    gap:10px;
+
+
+    max-height:180px;
+
+
+    overflow-y:auto;
+
+
+    padding-right:4px;
+
+
+    margin-bottom:18px;
+}
+
+
+
+
+/* ===============================
+🔥 CUSTOM SCROLLBAR
+=============================== */
+
+
+.playlist-rows::-webkit-scrollbar{
+    width:4px;
+}
+
+
+.playlist-rows::-webkit-scrollbar-thumb{
+    background:
+    linear-gradient(
+        180deg,
+        #00f0ff,
+        #6a5cff
+    );
+
+
+    border-radius:999px;
+}
+
+
+
+
+/* ===============================
+🎵 ROW
+=============================== */
+
+
+.playlist-row{
+    display:flex;
+    align-items:center;
+
+
+    gap:12px;
+
+
+    min-height:64px;
+
+
+    padding:10px;
+
+
+    border-radius:16px;
+
+
+    background:
+    rgba(255,255,255,.04);
+
+
+    flex-shrink:0;
+}
+
+
+.playlist-row img{
+    width:52px;
+    height:52px;
+
+
+    object-fit:cover;
+
+
+    border-radius:12px;
+
+
+    flex-shrink:0;
+}
+
+
+
+
+/* ===============================
+🎵 INFO
+=============================== */
+
+
+.playlist-row-info{
+    flex:1;
+    min-width:0;
+}
+
+
+.playlist-row-info span{
+    display:block;
+
+
+    color:white;
+
+
+    font-size:14px;
+
+
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+
+
+    font-family:'Poppins',sans-serif;
+}
+
+
+
+
+/* ===============================
+▶ MINI PLAY
+=============================== */
+
+
+.playlist-mini-play{
+    width:38px;
+    height:38px;
+
+
+    border:none;
+    border-radius:50%;
+
+
+    cursor:pointer;
+
+
+    background:
+    rgba(255,255,255,.08);
+
+
+    color:white;
+
+
+    flex-shrink:0;
+}
+
+
+
+
+/* ===============================
+🔥 EMPTY
+=============================== */
+
+
+.playlist-empty{
+    min-height:64px;
+
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+
+    border-radius:16px;
+
+
+    text-align:center;
+
+
+    color:#7e8ca5;
+
+
+    background:
+    rgba(255,255,255,.03);
+}
+
+
+
+
+/* ===============================
+🔥 MORE ROW
+=============================== */
+
+
+.playlist-more-row{
+    min-height:58px;
+
+
+    border-radius:14px;
+
+
+    background:
+    rgba(255,255,255,.04);
+
+
+    border:
+    1px solid rgba(255,255,255,.06);
+
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+
+    padding:0 14px;
+
+
+    color:#8be7ff;
+
+
+    font-size:13px;
+
+
+    cursor:pointer;
+
+
+    transition:.25s;
+
+
+    flex-shrink:0;
+}
+
+
+.playlist-more-row:hover{
+    background:
+    rgba(0,240,255,.08);
+}
+
+
+
+
+/* ===============================
+🔥 FOOTER
+=============================== */
+
+
+.playlist-footer{
+    margin-top:auto;
+
+
+    display:flex;
+    align-items:center;
+
+
+    gap:10px;
+}
+
+
+
+
+/* ===============================
+🔥 OPEN BTN
+=============================== */
+
+
+.playlist-open-btn{
+    flex:1;
+
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+
+    height:50px;
+
+
+    border-radius:16px;
+
+
+    text-decoration:none;
+
+
+    color:white;
+
+
+    font-family:'Orbitron',sans-serif;
+
+
+    background:
+    linear-gradient(
+        90deg,
+        #00c6ff,
+        #7b5cff
+    );
+
+
+    box-shadow:
+    0 0 30px rgba(0,198,255,.18),
+    0 0 80px rgba(123,92,255,.12);
+}
+
+
+
+
+/* ===============================
+🔥 DELETE BTN
+=============================== */
+
+
+.playlist-delete-btn{
+    width:52px;
+    height:52px;
+
+
+    border:none;
+
+
+    border-radius:16px;
+
+
+    background:
+    rgba(255,0,80,.12);
+
+
+    color:#ff4d8d;
+
+
+    cursor:pointer;
+
+
+    transition:.25s;
+
+
+    font-size:18px;
+
+
+    flex-shrink:0;
+}
+
+
+.playlist-delete-btn:hover{
+    transform:scale(1.06);
+
+
+    background:
+    rgba(255,0,80,.22);
+}
+
+
+
+
+/* ===============================
+❤️ SYSTEM TAG
+=============================== */
+
+
+.playlist-system-tag{
+    margin-top:12px;
+
+
+    font-size:12px;
+
+
+    color:#ff77b7;
+
+
+    text-align:right;
+
+
+    font-family:'Poppins',sans-serif;
+}
+
+
+
+
+/* ===============================
+🔥 DELETE MODAL
+=============================== */
+
+
+#deletePlaylistModal{
+    position:fixed;
+    inset:0;
+    z-index:999999;
+}
+
+
+.delete-playlist-backdrop{
+    position:absolute;
+    inset:0;
+
+
+    backdrop-filter:blur(14px);
+
+
+    background:
+    rgba(0,0,0,.55);
+}
+
+
+.delete-playlist-modal{
+    position:absolute;
+
+
+    top:50%;
+    left:50%;
+
+
+    transform:
+    translate(-50%,-50%);
+
+
+    width:340px;
+
+
+    padding:28px;
+
+
+    border-radius:26px;
+
+
+    background:
+    linear-gradient(
+        180deg,
+        rgba(10,20,40,.96),
+        rgba(5,10,25,.96)
+    );
+
+
+    border:
+    1px solid rgba(255,255,255,.08);
+
+
+    box-shadow:
+    0 20px 80px rgba(0,0,0,.55);
+}
+
+
+.delete-title{
+    font-size:22px;
+    font-weight:700;
+    color:white;
+
+
+    margin-bottom:10px;
+}
+
+
+.delete-text{
+    color:#8ea2c9;
+
+
+    line-height:1.6;
+
+
+    margin-bottom:24px;
+}
+
+
+.delete-actions{
+    display:flex;
+    gap:12px;
+}
+
+
+.delete-cancel{
+    flex:1;
+
+
+    height:52px;
+
+
+    border:none;
+
+
+    border-radius:16px;
+
+
+    background:
+    rgba(255,255,255,.06);
+
+
+    color:white;
+
+
+    cursor:pointer;
+}
+
+
+.delete-confirm{
+    flex:1;
+
+
+    height:52px;
+
+
+    border:none;
+
+
+    border-radius:16px;
+
+
+    background:
+    linear-gradient(
+        90deg,
+        #ff2d75,
+        #ff4d8d
+    );
+
+
+    color:white;
+
+
+    font-weight:700;
+
+
+    cursor:pointer;
+}
+
+
+
+
+/* ===============================
+📱 MOBILE
+=============================== */
+
+
+@media(max-width:768px){
+
+
+    .playlist-grid{
+        grid-template-columns:1fr;
+    }
+
+
+    .playlist-name{
+        font-size:18px;
+    }
+
+
+    .playlist-card{
+        min-height:300px;
+    }
+}
+/* ===============================
+🔥 PLAYLIST EXPAND
+=============================== */
+
+
+.playlist-rows{
+
+
+    max-height:140px;
+
+
+    overflow-y:auto;
+
+
+    transition:.35s ease;
+}
+
+
+.playlist-card.playlist-expanded
+.playlist-rows{
+
+
+    max-height:420px;
+}
+
+
+
+
+
+
+/* ===============================
+🔥 SMOOTH SCROLL
+=============================== */
+
+
+.playlist-rows::-webkit-scrollbar{
+
+
+    width:4px;
+}
+
+
+.playlist-rows::-webkit-scrollbar-thumb{
+
+
+    background:
+    linear-gradient(
+        180deg,
+        #00e0ff,
+        #7a5cff
+    );
+
+
+    border-radius:999px;
+}
+
+
+
+
+
+
+/* ===============================
+🔥 DELETE MODAL
+=============================== */
+
+
+#deletePlaylistModal{
+
+
+    position:fixed;
+
+
+    inset:0;
+
+
+    z-index:999999;
+
+
+    animation:
+    fadeDelete .22s ease;
+}
+
+
+@keyframes fadeDelete{
+
+
+    from{
+        opacity:0;
+    }
+
+
+    to{
+        opacity:1;
+    }
+}
+
+
+.delete-playlist-backdrop{
+
+
+    position:absolute;
+
+
+    inset:0;
+
+
+    background:
+    rgba(0,0,0,.7);
+
+
+    backdrop-filter:
+    blur(14px);
+}
+
+
+.delete-playlist-modal{
+
+
+    position:absolute;
+
+
+    top:50%;
+
+
+    left:50%;
+
+
+    transform:
+    translate(-50%,-50%);
+
+
+    width:340px;
+
+
+    border-radius:28px;
+
+
+    padding:28px;
+
+
+    background:
+    linear-gradient(
+        145deg,
+        rgba(12,18,40,.98),
+        rgba(5,10,20,.98)
+    );
+
+
+    border:
+    1px solid rgba(255,255,255,.08);
+
+
+    box-shadow:
+    0 20px 80px rgba(0,0,0,.45);
+
+
+    animation:
+    deletePop .25s ease;
+}
+
+
+@keyframes deletePop{
+
+
+    from{
+
+
+        opacity:0;
+
+
+        transform:
+        translate(-50%,-50%)
+        scale(.85);
+    }
+
+
+    to{
+
+
+        opacity:1;
+
+
+        transform:
+        translate(-50%,-50%)
+        scale(1);
+    }
+}
+
+
+.delete-icon{
+
+
+    font-size:42px;
+
+
+    margin-bottom:12px;
+
+
+    text-align:center;
+}
+
+
+.delete-title{
+
+
+    color:white;
+
+
+    font-size:24px;
+
+
+    text-align:center;
+
+
+    margin-bottom:10px;
+
+
+    font-family:
+    'Orbitron',sans-serif;
+}
+
+
+.delete-text{
+
+
+    color:#8da2c8;
+
+
+    text-align:center;
+
+
+    line-height:1.6;
+
+
+    margin-bottom:24px;
+}
+
+
+.delete-actions{
+
+
+    display:flex;
+
+
+    gap:12px;
+}
+
+
+.delete-cancel,
+.delete-confirm{
+
+
+    flex:1;
+
+
+    height:54px;
+
+
+    border:none;
+
+
+    border-radius:16px;
+
+
+    cursor:pointer;
+
+
+    font-weight:600;
+}
+
+
+.delete-cancel{
+
+
+    background:
+    rgba(255,255,255,.06);
+
+
+    color:white;
+}
+
+
+.delete-confirm{
+
+
+    background:
+    linear-gradient(
+        90deg,
+        #ff2f75,
+        #ff4f8d
+    );
+
+
+    color:white;
+}
+/* ===============================
+🎵 LICENCE SAFE WRAP
+=============================== */
+
+
+.licence-playlists-shell{
+
+
+    position:relative;
+    width:100%;
+    z-index:20;
+
+
+    margin-top:120px;
+    margin-bottom:80px;
+
+
+    clear:both;
+    overflow:visible;
+}
+
+
+
+
+/* isolate from similar/explore systems */
+.licence-playlists-inner{
+
+
+    width:100%;
+    max-width:1600px;
+
+
+    margin:0 auto;
+
+
+    position:relative;
+    isolation:isolate;
+}
+
+
+
+
+/* licence title protection */
+.licence-playlists
+.playlist-top{
+
+
+    position:relative;
+    z-index:5;
+
+
+    margin-bottom:28px;
+}
+
+
+
+
+/* title hard lock */
+.licence-playlists
+.section-title{
+
+
+    display:flex !important;
+    align-items:center;
+    gap:12px;
+
+
+    opacity:1 !important;
+    visibility:visible !important;
+
+
+    position:relative;
+    z-index:30;
+
+
+    transform:none !important;
+}
+/* ===============================
+🔥 LICENCE PLAYLIST POWER-UP
+=============================== */
+
+
+.licence-playlists{
+
+
+    margin-top:40px;
+    margin-bottom:120px;
+
+
+    position:relative;
+    z-index:20;
+}
+
+
+
+
+/* title */
+.licence-playlists .section-title{
+
+
+    font-size:48px;
+    font-weight:800;
+
+
+    letter-spacing:-1px;
+
+
+    margin-bottom:34px;
+
+
+    color:white;
+
+
+    text-shadow:
+    0 0 20px rgba(0,255,255,.18);
+
+
+    display:flex;
+    align-items:center;
+    gap:14px;
+}
+
+
+
+
+/* icon */
+.licence-playlists .title-icon{
+
+
+    font-size:38px;
+
+
+    filter:
+    drop-shadow(
+    0 0 12px rgba(0,255,255,.45)
+    );
+}
+
+
+
+
+/* playlist grid */
+.licence-playlists .playlist-grid{
+
+
+    gap:34px;
+}
+
+
+
+
+/* playlist card */
+.licence-playlists .playlist-card{
+
+
+    background:
+    linear-gradient(
+    180deg,
+    rgba(22,25,40,.96),
+    rgba(10,12,20,.98)
+    );
+
+
+    border:
+    1px solid rgba(255,255,255,.08);
+
+
+    box-shadow:
+    0 20px 60px rgba(0,0,0,.45),
+    0 0 30px rgba(0,255,255,.06);
+
+
+    transform:scale(1);
+
+
+    transition:.35s;
+}
+
+
+
+
+/* hover */
+.licence-playlists .playlist-card:hover{
+
+
+    transform:
+    translateY(-6px)
+    scale(1.01);
+
+
+    border-color:
+    rgba(0,255,255,.22);
+
+
+    box-shadow:
+    0 30px 70px rgba(0,0,0,.55),
+    0 0 40px rgba(0,255,255,.12);
+}
+/* ===============================
+🔥 LICENCE PLAYLIST FINAL FORCE
+=============================== */
+
+
+.licence-playlists-shell{
+
+
+    margin-top:-40px !important;
+    margin-bottom:90px !important;
+
+
+    position:relative !important;
+    z-index:50 !important;
+}
+
+
+
+
+/* pull closer to explore */
+.licence-playlists{
+
+
+    margin-top:-30px !important;
+}
+
+
+
+
+/* TITLE */
+.licence-playlists .section-title,
+.licence-playlists h2{
+
+
+    font-size:58px !important;
+    font-weight:900 !important;
+
+
+    line-height:1 !important;
+
+
+    color:#fff !important;
+
+
+    margin-bottom:40px !important;
+
+
+    letter-spacing:-2px !important;
+
+
+    text-shadow:
+    0 0 30px rgba(0,255,255,.18) !important;
+
+
+    transform:none !important;
+
+
+    opacity:1 !important;
+}
+
+
+
+
+/* icon */
+.licence-playlists .title-icon{
+
+
+    font-size:44px !important;
+
+
+    margin-right:10px !important;
+}
+
+
+
+
+/* cards */
+.licence-playlists .playlist-card{
+
+
+    transform:scale(1.03) !important;
+
+
+    border-radius:30px !important;
+
+
+    border:
+    1px solid rgba(255,255,255,.1) !important;
+
+
+    background:
+    linear-gradient(
+    180deg,
+    rgba(20,24,40,.96),
+    rgba(10,12,20,.98)
+    ) !important;
+
+
+    box-shadow:
+    0 30px 80px rgba(0,0,0,.45),
+    0 0 50px rgba(0,255,255,.08) !important;
+}
+
+
+
+
+/* spacing */
+.licence-playlists .playlist-grid{
+
+
+    gap:38px !important;
+}
+/* ===============================
+🎵 ROW
+=============================== */
+.playlist-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:14px;
+
+
+    padding:12px 14px;
+    border-radius:16px;
+
+
+    background:rgba(255,255,255,.04);
+
+
+    transition:.25s;
+    overflow:hidden;
+}
+
+
+.playlist-row:hover{
+    background:rgba(255,255,255,.07);
+}
+
+
+
+
+/* ===============================
+🎵 LEFT SIDE
+=============================== */
+.playlist-row-left{
+    display:flex;
+    align-items:center;
+    gap:14px;
+
+
+    flex:1;
+    min-width:0;
+}
+
+
+
+
+/* ===============================
+🎵 COVER
+=============================== */
+.playlist-cover{
+    width:56px;
+    height:56px;
+
+
+    border-radius:12px;
+    object-fit:cover;
+
+
+    transition:.35s;
+}
+
+
+
+
+/* ===============================
+🎵 INFO
+=============================== */
+.playlist-row-info{
+    display:flex;
+    flex-direction:column;
+
+
+    min-width:0;
+
+
+    transition:.35s;
+}
+
+
+.playlist-track-title{
+    color:#fff;
+    font-weight:700;
+    font-size:15px;
+
+
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+
+.playlist-track-meta{
+    display:flex;
+    align-items:center;
+    gap:8px;
+
+
+    color:rgba(255,255,255,.55);
+    font-size:12px;
+
+
+    margin-top:4px;
+}
+
+
+
+
+/* ===============================
+▶ PLAY BTN
+=============================== */
+.playlist-track-play{
+    width:44px;
+    height:44px;
+
+
+    border:none;
+    border-radius:50%;
+
+
+    background:linear-gradient(
+        135deg,
+        #00e5ff,
+        #9b5cff
+    );
+
+
+    color:#fff;
+    font-size:14px;
+    font-weight:700;
+
+
+    cursor:pointer;
+
+
+    flex-shrink:0;
+
+
+    opacity:0;
+    transform:translateX(20px) scale(.8);
+
+
+    transition:.3s;
+}
+
+
+
+
+/* ===============================
+🔥 CLEAN HOVER
+=============================== */
+
+
+.playlist-track-play{
+    opacity:.75;
+    transform:none;
+}
+
+
+.playlist-row:hover .playlist-track-play{
+    opacity:1;
+}
+
+
+.playlist-row:hover{
+    background:rgba(255,255,255,.06);
+}
+/* ===============================
+🔥 PLAYLIST = BEATS ARSENAL DNA
+=============================== */
+
+
+/* ROW */
+.playlist-row{
+
+
+    position:relative;
+
+
+    display:flex;
+    align-items:center;
+
+
+    gap:10px;
+
+
+    overflow:hidden;
+
+
+    border-radius:14px;
+
+
+    background:
+    rgba(255,255,255,.03);
+
+
+    transition:
+    background .25s ease,
+    border-color .25s ease,
+    transform .25s ease;
+}
+
+
+/* HOVER */
+.playlist-row:hover{
+
+
+    background:
+    rgba(255,255,255,.05);
+}
+
+
+/* ACTIVE */
+.playlist-row.active{
+
+
+    background:
+    linear-gradient(
+        90deg,
+        rgba(255,0,60,.08),
+        rgba(0,240,255,.06)
+    );
+
+
+    border-left:
+    2px solid #ff003c;
+}
+
+
+/* WAVE */
+.playlist-wave{
+
+
+    flex:1;
+
+
+    min-width:0;
+
+
+    height:40px;
+
+
+    margin-left:-28px;
+
+
+    opacity:.72;
+
+
+    transition:
+    opacity .25s ease,
+    transform .25s ease;
+}
+
+
+/* ACTIVE WAVE */
+.playlist-row.active
+.playlist-wave{
+
+
+    opacity:1;
+}
+
+
+/* REAL BEATS ARSENAL GLOW */
+.playlist-wave canvas{
+
+
+    filter:
+    drop-shadow(
+        0 0 10px
+        rgba(0,240,255,.18)
+    );
+}
+
+
+/* PLAY BTN */
+.playlist-track-play{
+
+
+    flex-shrink:0;
+
+
+    width:42px;
+    height:42px;
+
+
+    border:none;
+    border-radius:50%;
+
+
+    background:
+    rgba(255,255,255,.06);
+
+
+    color:#fff;
+
+
+    transition:
+    transform .2s ease,
+    background .25s ease,
+    box-shadow .25s ease;
+}
+
+
+/* ACTIVE BTN */
+.playlist-track-play.active{
+
+
+    background:
+    linear-gradient(
+        135deg,
+        #00f0ff,
+        #0066ff
+    );
+
+
+    box-shadow:
+    0 0 16px
+    rgba(0,240,255,.35);
+}
+
+
+/* HOVER */
+.playlist-track-play:hover{
+
+
+    transform:scale(1.06);
+}
+
+
+/* TITLE */
+.playlist-track-title{
+
+
+    font-weight:700;
+
+
+    letter-spacing:.02em;
+}
+
+
+/* META */
+.playlist-track-meta{
+
+
+    opacity:.68;
+}
+
+
+/* DESKTOP ALIGN */
+@media (min-width:769px){
+
+
+    .playlist-row-left{
+
+
+        min-width:210px;
+        max-width:210px;
+    }
+
+
+    .playlist-wave{
+
+
+        margin-left:-34px;
+    }
+}
+/* ===============================
+🔥 FIX TEXT PUSHING WAVE
+=============================== */
+
+
+.playlist-row-left{
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+
+.playlist-row-info{
+  width: 140px;
+  min-width: 140px;
+  max-width: 140px;
+
+
+  overflow: hidden;
+}
+
+
+.playlist-track-title,
+.playlist-track-meta{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+/* 🔥 WAVE TAKES REST */
+.playlist-wave{
+  flex: 1;
+  min-width: 0;
+  margin-left: 10px;
+}
+/* ===============================
+🎵 PLAYLIST PICKER
+=============================== */
+
+
+#addPlaylistModal{
+    position: fixed;
+    inset: 0;
+    z-index: 999999;
+}
+
+
+/* BACKDROP */
+.playlist-picker-backdrop{
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,.72);
+    backdrop-filter: blur(18px);
+}
+
+
+/* BOX */
+.playlist-picker{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+
+
+    width: 420px;
+    max-width: 92vw;
+
+
+    padding: 24px;
+
+
+    border-radius: 26px;
+
+
+    background:
+    linear-gradient(
+        180deg,
+        rgba(30,30,40,.96),
+        rgba(15,15,22,.98)
+    );
+
+
+    border:
+    1px solid rgba(255,255,255,.08);
+
+
+    box-shadow:
+    0 20px 60px rgba(0,0,0,.6),
+    0 0 40px rgba(0,170,255,.15);
+
+
+    animation:
+    playlistPop .28s ease;
+}
+
+
+/* TITLE */
+.playlist-picker-title{
+    font-size: 24px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 20px;
+}
+
+
+/* LIST */
+.playlist-picker-list{
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+
+/* PLAYLIST BUTTON */
+.playlist-pick-item{
+    width: 100%;
+
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+
+    padding: 14px 16px;
+
+
+    border: none;
+    border-radius: 16px;
+
+
+    cursor: pointer;
+
+
+    color: white;
+    font-size: 15px;
+
+
+    background:
+    rgba(255,255,255,.06);
+
+
+    transition: .2s;
+}
+
+
+.playlist-pick-item:hover{
+    transform: scale(1.02);
+    background:
+    rgba(0,170,255,.18);
+}
+
+
+/* CREATE BTN */
+.playlist-create-new{
+    margin-top: 8px;
+
+
+    width: 100%;
+    padding: 14px;
+
+
+    border: none;
+    border-radius: 16px;
+
+
+    cursor: pointer;
+
+
+    font-size: 15px;
+    font-weight: 700;
+
+
+    color: white;
+
+
+    background:
+    linear-gradient(
+        90deg,
+        #00c6ff,
+        #7c4dff
+    );
+
+
+    transition: .2s;
+}
+
+
+.playlist-create-new:hover{
+    transform: scale(1.03);
+}
+
+
+/* POP ANIMATION */
+@keyframes playlistPop{
+
+
+    from{
+        opacity: 0;
+        transform:
+        translate(-50%,-50%)
+        scale(.86);
+    }
+
+
+    to{
+        opacity: 1;
+        transform:
+        translate(-50%,-50%)
+        scale(1);
+    }
+}
+
+/* ===============================
+🌊 WAVE STRETCH FINAL
+=============================== */
+
+
+.playlist-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:14px;
+}
+
+
+.playlist-row-left{
+    display:flex;
+    align-items:center;
+    flex:1;
+    min-width:0;
+    gap:12px;
+}
+
+
+.playlist-row-info{
+    flex:1;
+    min-width:0;
+}
+
+
+.playlist-wave{
+    width:100%;
+    margin-top:8px;
+    opacity:.95;
+}
+
+
+.playlist-track-play{
+    flex-shrink:0;
+}
+
+
+/* 📱 MOBILE */
+@media(max-width:768px){
+
+
+    .playlist-row{
+        gap:10px;
+    }
+
+
+    .playlist-row-left{
+        gap:10px;
+    }
+
+
+    .playlist-wave{
+        margin-top:6px;
+        transform:scaleY(1.15);
+    }
+
+
+}

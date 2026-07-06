@@ -3,15 +3,31 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Beat Licence</title>
+  <title>Dope Tone Licence</title>
 
-  <!-- YOUR CSS (UNCHANGED) -->
   <link rel="stylesheet" href="styles/licence.css" />
+  <link rel="stylesheet" href="styles/global-player.css">
+  <link rel="stylesheet" href="styles/player-overlay.css">
+  <link rel="stylesheet" href="styles/full-screen.css">
+  <link rel="stylesheet" href="styles/explore-row.css">
+  <link rel="stylesheet" href="styles/dopetone-footer.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+  <link rel="stylesheet" href="styles/auth.css">
+  <link rel="stylesheet" href="styles/playlist-modal.css">
+  <link rel="stylesheet" href="styles/playlists.css">
+  
+
+
 </head>
 
-<body>
+<body class="empty-mode licence-page">
 
-<div class="licence-page">
+  <!-- 🔥 EMPTY STATE -->
+  <div class="empty-state">
+    <h2>YOUR CART IS EMPTY</h2>
+    <p>Add beats to activate licence selection and build your sound arsenal.</p>
+  </div>
+
   <div class="licence-layout">
 
     <!-- LEFT -->
@@ -21,154 +37,367 @@
       <div class="licence-card free">
         <h3>Free</h3>
         <p>Tagged • Non-profit use only</p>
-
         <ul class="licence-features">
           <li>MP3 (tagged)</li>
-          <li>For demo / practice only</li>
+          <li>Practice only</li>
           <li>No monetization</li>
-          <li>No streaming platforms</li>
+          <li>No streaming</li>
         </ul>
-
-        <button class="free-btn">Download</button>
+        <div class="price">
+          <span class="old">$00</span>
+          <span class="new">$00</span>
+        </div>
+        <button class="explore-btn" onclick="window.location.href='beats.html'">Explore Beats</button>
+        <button class="pay-btn" data-name="Free" data-price="0">Select Licence</button>
       </div>
 
       <!-- BASIC -->
       <div class="licence-card basic">
         <h3>Basic</h3>
         <p>MP3 + WAV • Limited use</p>
-
         <ul class="licence-features">
-          <li>MP3 + WAV files</li>
-          <li>Up to 5,000 streams</li>
-          <li>Limited commercial use</li>
-          <li>No project files</li>
+          <li>MP3 + WAV</li>
+          <li>5,000 streams</li>
+          <li>Commercial use</li>
+          <li>No stems</li>
         </ul>
-
         <div class="price">
-          <span class="old">$29</span>
-          <span class="new">$19</span>
+          <span class="old">$00</span>
+          <span class="new">$00</span>
         </div>
-
-        <div class="pay-area">
-          <button class="pay-btn" data-price="19" data-name="Basic License">
-            Pay Now
-          </button>
-        </div>
+        <button class="explore-btn" onclick="window.location.href='index.html'">Explore Samples</button>
+        <button class="pay-btn" data-name="Basic" data-price="19">Select Licence</button>
       </div>
 
     </div>
 
-    <!-- CENTER (UNCHANGED UI) -->
+    <!-- CENTER -->
     <div class="beat-center">
-
       <div class="beat-card">
-        <div class="cover-wrapper">
-          <img id="cover" src="" />
-          <button id="playBtn">▶</button>
+        <div class="logo-card">
+          <div class="cover-wrapper">
+            <img id="cover" src="images/logo.png"/>
+            <button id="playBtn">▶</button>
+          </div>
         </div>
-
-        <h2 id="title">Loading...</h2>
+        <h2 id="title">CART EMPTY</h2>
+        <div id="playCount" class="beat-plays">0 plays</div>
 
         <div class="beat-actions">
-          <div class="action like" id="likeBtn">
-            <span id="heartIcon">♡</span>
-            <span id="likeCount">0</span>
-          </div>
+  <button class="action-btn like" id="likeBtn">
+    <svg id="heartIcon" viewBox="0 0 24 24" width="20" height="20">
+      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="none" stroke="currentColor" stroke-width="2"/>
+    </svg>
+    <span id="likeCount">0</span>
+  </button>
 
-          <div class="action add" id="addBtn">+</div>
-          <div class="action share" id="shareBtn">⤴</div>
-        </div>
+  
+<!-- Add Button -->
+<button id="addBtn" class="action-btn">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+    </svg>
+</button>
 
+<!-- Share Button -->
+<button id="shareBtn" class="action-btn">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="18" cy="5" r="3"></circle>
+        <circle cx="6" cy="12" r="3"></circle>
+        <circle cx="18" cy="19" r="3"></circle>
+        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+    </svg>
+</button>
+
+</div>
         <div class="meta">
-          <div class="meta-row">
-            <span class="label">Type Beat</span>
-            <span id="type"></span>
-          </div>
-
-          <div class="meta-row">
-            <span class="label">Genre</span>
-            <span id="genre"></span>
-          </div>
-
-          <div class="meta-row">
-            <span class="label">Mood</span>
-            <span id="mood"></span>
-          </div>
-
-          <div class="meta-row">
-            <span class="label">BPM</span>
-            <span id="bpm"></span>
-          </div>
-
-          <div class="meta-row">
-            <span class="label">Key</span>
-            <span id="key"></span>
-          </div>
+          <div class="meta-row"><span class="label">KEY</span><span id="key"></span></div>
+          <div class="meta-row"><span class="label">BPM</span><span id="bpm"></span></div>
+          <div class="meta-row"><span class="label">GENRE</span><span id="genre"></span></div>
+          <div class="meta-row"><span class="label">MOOD</span><span id="mood"></span></div>
+          <div class="meta-row"><span class="label">TYPE BEAT</span><span id="type"></span></div>
         </div>
       </div>
-
     </div>
 
     <!-- RIGHT -->
     <div class="licence-side right">
 
       <!-- PRO -->
-      <div class="licence-card pro">
+      <div class="licence-card pro active">
         <h3>🔥 Pro</h3>
-        <p>WAV + Project • Advanced use</p>
-
+        <p>WAV + stems • Advanced use</p>
         <ul class="licence-features">
-          <li>WAV + Project file</li>
-          <li>Up to 50,000 streams</li>
-          <li>Monetization allowed</li>
-          <li>No full ownership</li>
+          <li>WAV + stems</li>
+          <li>50,000 streams</li>
+          <li>Monetization</li>
+          <li>No ownership</li>
         </ul>
-
         <div class="price">
-          <span class="old">$79</span>
-          <span class="new">$49</span>
+          <span class="old">$00</span>
+          <span class="new">$00</span>
         </div>
-
-        <div class="pay-area">
-          <button class="pay-btn" data-price="49" data-name="Pro License">
-            Pay Now
-          </button>
-        </div>
+        <button class="explore-btn" onclick="window.location.href='index.html'">Explore Packs</button>
+        <button class="pay-btn" data-name="Pro" data-price="49">Select Licence</button>
       </div>
 
       <!-- EXCLUSIVE -->
       <div class="licence-card exclusive">
         <h3>👑 Exclusive</h3>
         <p>Full rights • Own the beat</p>
-
         <ul class="licence-features">
-          <li>WAV + Project files</li>
           <li>Unlimited streams</li>
-          <li>Full commercial rights</li>
-          <li>Beat removed from store</li>
-          <li>You own the sound</li>
+          <li>Commercial rights</li>
+          <li>Beat removed</li>
+          <li>Full ownership</li>
         </ul>
-
         <div class="price">
-          <span class="old">$299</span>
-          <span class="new">$199</span>
+          <span class="old">$00</span>
+          <span class="new">$00</span>
         </div>
-
-        <div class="pay-area">
-          <button class="pay-btn" data-price="199" data-name="Exclusive License">
-            Pay Now
-          </button>
-        </div>
+        <button class="explore-btn" onclick="window.location.href='index.html'">Creator Tools</button>
+        <button class="pay-btn" data-name="Exclusive" data-price="199">Select Licence</button>
       </div>
 
     </div>
 
   </div>
-</div>
+  <div id="cartBeatRow" class="cart-beat-row"></div>
 
-<!-- SCRIPTS (ORDER IS IMPORTANT) -->
-<script src="https://js.stripe.com/v3/"></script>
-<script src="js/licence/licence-page.js"></script>
+  <!-- ACTIVE STATE ONLY -->
+  <div class="selected-licence">
+    <div class="selected-top">
+      <h3>Selected Licence</h3>
+      <span id="selectedName">None</span>
+    </div>
+    <div class="selected-bottom">
+      <div class="total-box">
+        <span>Total</span>
+        <strong id="totalPrice">$0</strong>
+      </div>
+      <button id="checkoutBtn">Checkout</button>
+    </div>
+  </div>
+
+  <section class="similar-section">
+    <div class="section-head">
+      <h2 id="similarTitle">Similar Tracks</h2>
+    </div>
+    <div class="similar-wrap">
+      <button class="similar-arrow left" id="similarLeft">‹</button>
+      <div id="similarTrack" class="latest-container similar-scroll"></div>
+      <button class="similar-arrow right" id="similarRight">›</button>
+    </div>
+  </section>
+
+  <div class="dt-explore-wrap">
+    <div class="dt-explore-box">
+      <div class="dt-explore-left">
+        <img src="images/logo.png" class="dt-explore-logo"/>
+      </div>
+      <div class="dt-explore-info">
+        <div class="dt-explore-title">Explore More Tracks</div>
+        <div class="dt-explore-sub">Find similar vibes →</div>
+      </div>
+      <div class="dt-explore-center">
+        <div class="dt-explore-line"></div>
+      </div>
+      <div class="dt-explore-right">
+        <a href="beats.html" class="dt-explore-btn">Explore</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= PLAYLIST SAFE WRAP ================= -->
+  <div class="licence-playlists-shell">
+    <div class="licence-playlists-inner">
+      <section id="licencePlaylists"></section>
+    </div>
+  </div>
+
+  <!-- ================= GLOBAL PLAYER - SVG ONLY ================= -->
+  <div id="globalPlayerUI" class="global-player">
+        <div class="gp-left">
+            <img id="gpCover" src="images/logo.png" />
+            <div class="gp-text" id="gpInfo">
+                <div id="gpTitle">No track</div>
+                <button id="gpAdd">+</button>
+            </div>
+        </div>
+       
+        <div class="gp-center">
+            <div class="gp-controls">
+               <button id="gpShuffle" class="player-btn" title="Enable shuffle">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M10.59 9.17L5.41 4L4 5.41l5.17 5.17l1.42-1.41zM14.5 4l2.04 2.04L4 18.59L5.41 20L17.96 7.46L20 9.5V4h-5.5zm.33 9.41l-1.41 1.41l3.13 3.13L14.5 20H20v-5.5l-2.04 2.04l-3.13-3.13z"/>
+                    </svg>
+                </button>
+
+                <button id="gpPrev" class="player-btn" title="Previous">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
+                    </svg>
+                </button>
+
+                <button id="gpPlay" class="player-btn" title="Play" aria-label="Play/Pause">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                        <path id="gpPlayPath" d="M8 5v14l11-7z"/>
+                    </svg>
+                </button>
+
+                <button id="gpNext" class="player-btn" title="Next">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
+                    </svg>
+                </button>
+
+                <button id="gpRepeat" class="player-btn" title="Enable repeat">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/>
+                    </svg>
+                </button>
+
+                <button id="gpDownload" class="gp-side player-btn" title="Download">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                    </svg>
+                </button>
+                <button id="gpMore" class="gp-side player-btn" title="More">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                    </svg>
+                </button>
+
+            </div>
+           
+            <div class="gp-progress-wrap">
+                <span id="gpCurrent">0:00</span>
+                <div id="gpProgress"><div id="gpBar"></div></div>
+                <span id="gpDuration">0:00</span>
+            </div>
+        </div>
+       
+        <div class="gp-right">
+            <button id="loveTrackBtn" class="love-track-btn">
+                <span class="love-text">LOVE IT</span>
+                <span class="love-heart">♡</span>
+            </button>
+            <div class="wave-card player-cover-wrap">
+                <canvas id="liquidEq" width="54" height="54"></canvas>
+            </div>
+        </div>
+    </div>
+
+  <!-- ================= MOBILE PLAYER - SVG ONLY ================= -->
+  <<div id="mobilePlayer" class="mobile-player">
+        <div class="mp-header">
+            <span id="mpClose">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
+                </svg>
+            </span>
+        </div>
+        <img id="mpCover" src="images/logo.png">
+        <div id="mpTitle">No track</div>
+       
+        <div class="mp-controls">
+            <button id="mpPrev" class="player-btn">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
+                </svg>
+            </button>
+           
+            <button id="mpPlay" class="player-btn play-btn" title="Play" aria-label="Play/Pause">
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+        <path id="mpPlayPath" d="M8 5v14l11-7z"/>
+    </svg>
+</button>
+
+           
+            <button id="mpNext" class="player-btn">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
+                </svg>
+            </button>
+        </div>
+       
+        <div id="mpProgress"><div id="mpBar"></div></div>
+       
+        <div class="mp-time">
+            <span id="mpCurrent">0:00</span>
+            <span id="mpDuration">0:00</span>
+        </div>
+       
+        <div class="mp-actions">
+            <button id="mpLike" class="love-track-btn">
+                <span class="love-heart">♡</span>
+            </button>
+           
+            <button id="mpShuffle" class="player-btn" title="Shuffle">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M10.59 9.17L5.41 4L4 5.41l5.17 5.17l1.42-1.41zM14.5 4l2.04 2.04L4 18.59L5.41 20L17.96 7.46L20 9.5V4h-5.5zm.33 9.41l-1.41 1.41l3.13 3.13L14.5 20H20v-5.5l-2.04 2.04l-3.13-3.13z"/>
+                </svg>
+            </button>
+           
+            <button id="mpRepeat" class="player-btn" title="Repeat">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/>
+                </svg>
+            </button>
+           
+            <button id="mpDownload">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                </svg>
+            </button>
+           
+            <button id="mpBuy" class="player-btn" title="Buy Track">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
+    </svg>
+</button>
+
+
+
+            <button id="mpMore">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+
+  <script src="https://js.stripe.com/v3/"></script>
+  <script type="module" src="js/app.js"></script>
+  <script src="https://unpkg.com/wavesurfer.js"></script>
+  <script src="js/global-player.js"></script>
+  <script src="js/mini-eq.js"></script>
+  <script type="module" src="js/licence/licence-page.js"></script>
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+      const track = document.getElementById("similarTrack")
+      const left = document.getElementById("similarLeft")
+      const right = document.getElementById("similarRight")
+      if(!track || !left || !right) return
+      left.onclick = () => { track.scrollBy({ left:-320, behavior:"smooth" }) }
+      right.onclick = () => { track.scrollBy({ left:320, behavior:"smooth" }) }
+  })
+  </script>
+
+  <div id="footerMount"></div>
+  <script src="js/footer-loader.js"></script>
+  <script src="js/more-btn-override.js"></script>
+  <script type="module"></script>
+
+  <!-- ================= PLAYLIST SYSTEM ================= -->
+  <div id="playlistModalMount"></div>
+  <script type="module" src="js/playlists/playlist-storage.js"></script>
+  <script type="module" src="js/playlists/playlist-engine.js"></script>
+  <script type="module" src="js/playlists/playlist-render.js"></script>
+  <script type="module" src="js/playlists/playlist-modal.js"></script>
 
 </body>
 </html>

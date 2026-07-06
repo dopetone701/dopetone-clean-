@@ -1,942 +1,5261 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: sans-serif;
-}
+/* =========================================
+   RESET
+========================================= */
 
-body {
-  color: white;
-  background: #05070d;
-  overflow: hidden;
-}
 
-/* LAYOUT */
-.licence-layout {
-  display: grid;
-  grid-template-columns: 1fr 1.2fr 1fr;
-  align-items: center;
-  height: 100vh;
-  padding: 40px;
-}
-
-/* SIDES */
-.licence-side {
-  display: flex;
-  flex-direction: column;
-  gap: 25px;
-}
-
-/* CARDS */
-.licence-card {
-  padding: 20px;
-  border-radius: 15px;
-  background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255,255,255,0.1);
-  transition: 0.3s;
-}
-
-.licence-card:hover {
-  transform: scale(1.05);
-}
-
-/* HIGHLIGHT */
-.highlight {
-  border: 1px solid #00f0ff;
-  box-shadow: 0 0 20px rgba(0,240,255,0.3);
-}
-
-/* PRICE */
-.price {
-  margin-top: 10px;
-}
-
-.price .old {
-  text-decoration: line-through;
-  opacity: 0.5;
-  margin-right: 10px;
-}
-
-.price .new {
-  color: #00f0ff;
-  font-weight: bold;
-}
-
-/* CENTER */
-.beat-center {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-/* BEAT CARD */
-.beat-card {
-  width: 300px;
-  text-align: center;
-}
-
-/* COVER */
-.cover-wrapper {
-  position: relative;
-}
-
-#cover {
-  width: 100%;
-  height: 260px;
-  object-fit: cover;
-  border-radius: 15px;
-}
-
-#playBtn {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-
-  /* 🔥 REMOVE BUTTON LOOK */
-  background: none;
-  border: none;
-
-  /* 🎧 ICON STYLE */
-  font-size: 40px;
-  color: white;
-
-  cursor: pointer;
-  user-select: none;
-}
-#playBtn:hover {
-  transform: translate(-50%, -50%) scale(1.15);
-  opacity: 0.9;
-}
-#playBtn {
-  text-shadow: 0 0 15px rgba(255,255,255,0.6);
-}
-
-/* META */
-.meta {
-  margin-top: 10px;
-  font-size: 14px;
-  opacity: 0.7;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  justify-content: center;
-}
-
-/* BUTTON */
-.free-btn {
-  margin-top: 10px;
-  padding: 10px;
-  border: none;
-  border-radius: 10px;
-  background: #00f0ff;
-  cursor: pointer;
-}
-/* =========================
-   🍎 APPLE HARD GLASS (DEEP)
-   ========================= */
-
-body {
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:sans-serif;
 }
 
 
-/* MAIN GLASS */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 0;
+html,
+body{
+    width:100%;
+    min-height:100vh;
+    overflow-x:hidden;
+}
 
-  /* 💀 STRONG BLUR */
-  backdrop-filter: blur(90px) saturate(160%);
-  -webkit-backdrop-filter: blur(90px) saturate(160%);
 
-  /* 🔥 APPLE-STYLE DARK DEPTH */
-  background:
+/* =========================================
+   BODY
+========================================= */
+
+
+body{
+
+
+    color:white;
+
+
+    background:#05070d;
+
+
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+    background-attachment:fixed;
+}
+
+
+/* HARD GLASS */
+body::before{
+
+
+    content:"";
+
+
+    position:fixed;
+    inset:0;
+
+
+    z-index:0;
+
+
+    backdrop-filter:blur(90px) saturate(160%);
+    -webkit-backdrop-filter:blur(90px) saturate(160%);
+
+
+    background:
     linear-gradient(
-      rgba(3,6,15,0.8),
-      rgba(3,6,15,0.95)
+        rgba(3,6,15,.82),
+        rgba(3,6,15,.94)
     );
 
-  pointer-events: none;
+
+    pointer-events:none;
 }
 
 
-/* SUBTLE COLOR DEPTH (NOT FLASHY) */
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 0;
+/* DEPTH */
+body::after{
+
+
+    content:"";
+
+
+    position:fixed;
+    inset:0;
+
+
+    z-index:0;
+
+
+    background:
+    radial-gradient(circle at 20% 30%, rgba(0,150,255,.12), transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(255,0,120,.08), transparent 50%);
+
+
+    pointer-events:none;
+}
+
+
+/* =========================================
+   PAGE
+========================================= */
+
+
+.licence-page{
+
+
+    position:relative;
+
+
+    z-index:1;
+
+
+    min-height:100vh;
+
+
+    width:100%;
+}
+
+
+/* =========================================
+   EMPTY STATE
+========================================= */
+
+
+.empty-state{
+
+
+    position:absolute;
+
+
+    top:25px;
+
+
+    left:50%;
+
+
+    transform:translateX(-50%);
+
+
+    width:100%;
+
+
+    text-align:center;
+
+
+    z-index:999;
+}
+
+
+.empty-state h2{
+
+
+    font-size:58px;
+
+
+    font-weight:900;
+
+
+    letter-spacing:1px;
+
+
+    margin-bottom:12px;
+
+
+    text-shadow:
+    0 0 20px rgba(255,255,255,.2);
+}
+
+
+.empty-state p{
+
+
+    font-size:14px;
+
+
+    opacity:.6;
+}
+
+
+/* ACTIVE MODE HIDE */
+body:not(.empty-mode) .empty-state{
+
+
+    display:none;
+}
+
+
+/* =========================================
+   LAYOUT
+========================================= */
+
+
+.licence-layout{
+
+
+    display:grid;
+
+
+    grid-template-columns:1fr 1.2fr 1fr;
+
+
+    align-items:center;
+
+
+    gap:30px;
+
+
+    min-height:100vh;
+
+
+    padding:140px 40px 40px;
+}
+
+
+/* =========================================
+   SIDES
+========================================= */
+
+
+.licence-side{
+
+
+    display:flex;
+
+
+    flex-direction:column;
+
+
+    gap:25px;
+}
+
+
+/* =========================================
+   CARDS
+========================================= */
+
+
+.licence-card{
+
+
+    position:relative;
+
+
+    padding:20px;
+
+
+    border-radius:18px;
+
+
+     background:
+    linear-gradient(
+        145deg,
+        rgba(8,18,42,.78) 0%,
+        rgba(28,8,24,.72) 48%,
+        rgba(6,10,22,.86) 100%
+    );
+
+
+    border:
+    1px solid rgba(120,140,255,.14);
+
+
+    box-shadow:
+    0 12px 50px rgba(0,80,255,.12),
+    0 12px 50px rgba(255,0,90,.10),
+    inset 0 1px rgba(255,255,255,.05);
+
+
+    backdrop-filter:
+    blur(26px)
+    saturate(140%);
+
+}
+
+
+/* KEEP ORIGINAL SIZE */
+.licence-card{
+
+
+    width:auto !important;
+
+
+    min-width:auto !important;
+
+
+    max-width:none !important;
+}
+
+
+.licence-card:hover{
+
+
+    transform:scale(1.03);
+}
+
+
+/* =========================================
+   CARD GLOWS
+========================================= */
+
+
+.licence-card.free:hover{
+
+
+    box-shadow:
+    0 0 20px rgba(255,60,60,.25);
+}
+
+
+.licence-card.basic:hover{
+
+
+    box-shadow:
+    0 0 15px rgba(255,100,255,.25),
+    0 0 25px rgba(100,150,255,.25);
+}
+
+
+.licence-card.pro:hover{
+
+
+    box-shadow:
+    0 0 25px rgba(0,120,255,.55),
+    0 0 50px rgba(0,80,255,.35);
+}
+
+
+.licence-card.exclusive:hover{
+
+
+    box-shadow:
+    0 0 25px rgba(0,255,140,.5),
+    0 0 50px rgba(0,255,100,.35);
+}
+
+
+/* =========================================
+   ACTIVE / FADED
+========================================= */
+
+
+.licence-card.active{
+
+
+    transform:scale(1.03);
+
+
+    opacity:1 !important;
+}
+
+
+.licence-card.faded{
+
+
+    opacity:.28;
+
+
+    transform:scale(.97);
+}
+
+
+/* =========================================
+   TEXT
+========================================= */
+
+
+.licence-card h3{
+
+
+    font-size:24px;
+
+
+    margin-bottom:8px;
+}
+
+
+.licence-card p{
+
+
+    opacity:.7;
+
+
+    margin-bottom:14px;
+
+
+    font-size:14px;
+}
+
+
+/* =========================================
+   FEATURES
+========================================= */
+
+
+.licence-features{
+
+
+    list-style:none;
+
+
+    margin-top:10px;
+}
+
+
+.licence-features li{
+
+
+    position:relative;
+
+
+    padding-left:14px;
+
+
+    margin-bottom:8px;
+
+
+    opacity:.85;
+
+
+    font-size:13px;
+}
+
+
+.licence-features li::before{
+
+
+    content:"•";
+
+
+    position:absolute;
+
+
+    left:0;
+
+
+    color:#00ffc8;
+}
+
+
+/* =========================================
+   PRICE
+========================================= */
+
+
+.price{
+
+
+    margin-top:14px;
+}
+
+
+.old{
+
+
+    text-decoration:line-through;
+
+
+    opacity:.45;
+
+
+    margin-right:10px;
+}
+
+
+.new{
+
+
+    color:#00f0ff;
+
+
+    font-weight:bold;
+
+
+    font-size:24px;
+}
+
+
+/* =========================================
+   BUTTONS
+========================================= */
+
+
+.pay-btn,
+.explore-btn{
+
+
+    width:100%;
+
+
+    margin-top:14px;
+
+
+    padding:13px;
+
+
+    border:none;
+
+
+    border-radius:14px;
+
+
+    font-weight:700;
+
+
+    color:white;
+
+
+    cursor:pointer;
+
+
+    transition:.25s;
+}
+
+
+.pay-btn{
+
+
+    background:
+    linear-gradient(
+      135deg,
+      #00f0ff,
+      #6f7cff
+    );
+}
+
+
+.explore-btn{
+
+
+    display:none;
+
+
+    background:
+    linear-gradient(
+      135deg,
+      #00f0ff,
+      #8a5cff
+    );
+}
+
+
+.pay-btn:hover,
+.explore-btn:hover{
+
+
+    transform:scale(1.03);
+}
+
+
+/* =========================================
+   EMPTY MODE
+========================================= */
+
+
+/* blur info */
+body.empty-mode .licence-features,
+body.empty-mode .licence-card p{
+
+
+    filter:blur(6px);
+
+
+    opacity:.28;
+
+
+    user-select:none;
+}
+
+
+/* hide select btns */
+body.empty-mode .pay-btn{
+
+
+    display:none;
+}
+
+
+/* show explore */
+body.empty-mode .explore-btn{
+
+
+    display:block;
+}
+
+
+/* hide selected bar */
+body.empty-mode .selected-licence{
+
+
+    display:none;
+}
+
+
+/* force 00 look */
+body.empty-mode .old,
+body.empty-mode .new{
+
+
+    opacity:.9;
+}
+
+
+/* =========================================
+   CENTER
+========================================= */
+
+
+.beat-center{
+
+
+    display:flex;
+
+
+    flex-direction:column;
+
+
+    align-items:center;
+
+
+    justify-content:center;
+
+
+    text-align:center;
+}
+
+
+/* =========================================
+   BEAT CARD
+========================================= */
+
+
+.beat-card{
+
+
+    width:300px;
+
+
+    margin:0 auto;
+}
+
+
+/* =========================================
+   LOGO CARD
+========================================= */
+
+
+.logo-card{
+
+
+    padding:22px;
+
+
+    border-radius:24px;
+
+
+    background:
+    rgba(255,255,255,.05);
+
+
+    border:
+    1px solid rgba(255,255,255,.08);
+
+
+    backdrop-filter:blur(24px);
+}
+
+
+/* =========================================
+   COVER
+========================================= */
+
+
+.cover-wrapper{
+
+
+    position:relative;
+}
+
+
+#cover{
+
+
+    width:100%;
+
+
+    height:260px;
+
+
+    object-fit:cover;
+
+
+    border-radius:18px;
+}
+
+
+/* =========================================
+   PLAY BTN
+========================================= */
+
+
+#playBtn{
+
+
+    position:absolute;
+
+
+    top:50%;
+
+
+    left:50%;
+
+
+    transform:translate(-50%,-50%);
+
+
+    background:none;
+
+
+    border:none;
+
+
+    font-size:42px;
+
+
+    color:white;
+
+
+    cursor:pointer;
+
+
+    text-shadow:
+    0 0 15px rgba(255,255,255,.6);
+}
+
+
+#playBtn:hover{
+
+
+    transform:
+    translate(-50%,-50%)
+    scale(1.12);
+}
+
+
+/* =========================================
+   TITLE
+========================================= */
+
+
+#title{
+
+
+    margin-top:18px;
+
+
+    font-size:24px;
+}
+
+
+/* =========================================
+   ACTIONS
+========================================= */
+
+
+.beat-actions{
+
+
+    display:flex;
+
+
+    justify-content:center;
+
+
+    gap:18px;
+
+
+    margin:14px 0 18px;
+}
+
+
+.action{
+
+
+    padding:8px 14px;
+
+
+    border-radius:12px;
+
+
+    cursor:pointer;
+
+
+    background:
+    rgba(255,255,255,.05);
+
+
+    backdrop-filter:blur(10px);
+
+
+    transition:.2s;
+}
+
+
+.action:hover{
+
+
+    transform:scale(1.05);
+}
+
+
+.like.active{
+
+
+    color:red;
+}
+
+
+/* =========================================
+   META
+========================================= */
+
+
+.meta{
+
+
+    width:100%;
+
+
+    max-width:260px;
+
+
+    margin:0 auto;
+
+
+    display:flex;
+
+
+    flex-direction:column;
+
+
+    gap:8px;
+}
+
+
+.meta-row{
+
+
+    display:flex;
+
+
+    justify-content:space-between;
+
+
+    align-items:center;
+
+
+    padding:8px 12px;
+
+
+    border-radius:10px;
+
+
+    background:
+    rgba(255,255,255,.05);
+
+
+    font-size:13px;
+}
+
+
+.label{
+
+
+    opacity:.55;
+
+
+    font-size:11px;
+}
+
+
+/* =========================================
+   SELECTED BAR
+========================================= */
+
+
+.selected-licence{
+
+
+    position:fixed;
+
+
+    left:50%;
+
+
+    bottom:24px;
+
+
+    transform:translateX(-50%);
+
+
+    width:520px;
+
+
+    padding:18px 22px;
+
+
+    border-radius:22px;
+
+
+    background:
+    rgba(255,255,255,.06);
+
+
+    border:
+    1px solid rgba(255,255,255,.08);
+
+
+    backdrop-filter:blur(20px);
+
+
+    z-index:999;
+}
+
+
+.selected-top{
+
+
+    display:flex;
+
+
+    justify-content:space-between;
+
+
+    align-items:center;
+
+
+    margin-bottom:14px;
+}
+
+
+.selected-bottom{
+
+
+    display:flex;
+
+
+    justify-content:space-between;
+
+
+    align-items:center;
+}
+
+
+.total-box{
+
+
+    display:flex;
+
+
+    flex-direction:column;
+
+
+    gap:4px;
+}
+
+
+.total-box span{
+
+
+    opacity:.55;
+
+
+    font-size:12px;
+}
+
+
+#totalPrice{
+
+
+    font-size:28px;
+
+
+    color:#00f0ff;
+}
+
+
+#checkoutBtn{
+
+
+    padding:14px 24px;
+
+
+    border:none;
+
+
+    border-radius:14px;
+
+
+    background:
+    linear-gradient(
+      135deg,
+      #00f0ff,
+      #6f7cff
+    );
+
+
+    color:white;
+
+
+    font-weight:700;
+
+
+    cursor:pointer;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+
+@media(max-width:900px){
+
+
+    body{
+
+
+        overflow-y:auto;
+    }
+
+
+    .licence-layout{
+
+
+        display:flex;
+
+
+        flex-direction:column;
+
+
+        padding:140px 14px 120px;
+    }
+
+
+    .beat-center{
+
+
+        order:1;
+    }
+
+
+    .licence-side.left{
+
+
+        order:2;
+    }
+
+
+    .licence-side.right{
+
+
+        order:3;
+    }
+
+
+    .beat-card{
+
+
+        width:100%;
+    }
+
+
+    .licence-card{
+
+
+        width:100% !important;
+    }
+
+
+    .selected-licence{
+
+
+        width:calc(100% - 20px);
+    }
+
+
+    .empty-state h2{
+
+
+        font-size:40px;
+    }
+}
+/* ========================================
+   🔥 COUNTER BELOW CONTENT
+======================================== */
+
+
+.selected-licence{
+
+
+    position:relative !important;
+
+
+    left:auto !important;
+    bottom:auto !important;
+
+
+    transform:none !important;
+
+
+    margin:30px auto 0 auto !important;
+}
+
+
+/* desktop width */
+@media(min-width:901px){
+
+
+    .selected-licence{
+
+
+        width:520px;
+    }
+}
+/* ========================================
+   ❌ REMOVE LICENCE
+======================================== */
+
+
+#selectedName{
+
+
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+
+/* remove button */
+.remove-licence-btn{
+
+
+    width:28px;
+    height:28px;
+
+
+    border:none;
+    border-radius:50%;
+
+
+    background:
+    rgba(255,255,255,.08);
+
+
+    color:white;
+
+
+    cursor:pointer;
+
+
+    font-size:14px;
+
+
+    transition:.2s;
+}
+
+
+.remove-licence-btn:hover{
+
+
+    background:
+    rgba(255,80,80,.25);
+
+
+    transform:scale(1.08);
+}
+/* ========================================
+   ✨ PREMIUM COLLAPSING BUTTON
+======================================== */
+
+
+/* card smooth growth */
+.licence-card{
+
+
+    overflow:hidden;
+
+
+    transition:
+    all .35s ease;
+}
+
+
+/* hidden button area */
+.pay-btn{
+
+
+    opacity:0;
+
+
+    max-height:0;
+
+
+    margin-top:0;
+
+
+    padding:0 14px;
+
+
+    overflow:hidden;
+
+
+    border:none;
+
+
+    transition:
+    all .35s ease;
+}
+
+
+/* reveal on hover */
+.licence-card:hover .pay-btn{
+
+
+    opacity:1;
+
+
+    max-height:60px;
+
+
+    margin-top:14px;
+
+
+    padding:13px 14px;
+}
+
+
+/* keep open if active */
+.licence-card.active .pay-btn{
+
+
+    opacity:1;
+
+
+    max-height:60px;
+
+
+    margin-top:14px;
+
+
+    padding:13px 14px;
+}
+
+
+/* elegant lift */
+.licence-card:hover{
+
+
+    transform:
+    translateY(-6px);
+}
+
+
+/* premium selected */
+.licence-card.active{
+
+
+    transform:
+    translateY(-10px)
+    scale(1.02);
+}
+/* =========================================
+   🔥 PREMIUM BUTTON OVERDRIVE
+========================================= */
+
+
+/* BASE */
+.pay-btn{
+    position:relative;
+    overflow:hidden;
+
+
+    border:none;
+
+
+    color:white;
+    font-weight:700;
+    letter-spacing:.3px;
+
+
+    backdrop-filter:blur(18px);
+
+
+    transition:
+    transform .28s ease,
+    box-shadow .35s ease,
+    opacity .25s ease;
+
+
+    opacity:0;
+
+
+    transform:
+    translateY(12px);
+
+
+    pointer-events:none;
+}
+
+
+
+
+/* SHOW ON CARD HOVER */
+.licence-card:hover .pay-btn,
+.licence-card.active .pay-btn{
+
+
+    opacity:1;
+
+
+    transform:
+    translateY(0);
+
+
+    pointer-events:auto;
+}
+
+
+
+
+/* REMOVE DEAD SPACE */
+.licence-card{
+
+
+    padding-bottom:18px;
+}
+
+
+.pay-btn{
+
+
+    margin-top:12px;
+}
+
+
+
+
+/* =========================================
+   🔴 FREE
+========================================= */
+
+
+.free .pay-btn{
+
+
+    background:
+    linear-gradient(
+      135deg,
+      rgba(255,70,70,.95),
+      rgba(180,0,0,.95)
+    );
+
+
+    box-shadow:
+    0 0 15px rgba(255,60,60,.25);
+}
+
+
+.free .pay-btn:hover{
+
+
+    transform:
+    translateY(-2px)
+    scale(1.02);
+
+
+    box-shadow:
+    0 0 20px rgba(255,60,60,.45),
+    0 0 40px rgba(255,0,0,.25);
+}
+
+
+
+
+/* =========================================
+   🟣 BASIC
+========================================= */
+
+
+.basic .pay-btn{
+
+
+    background:
+    linear-gradient(
+      135deg,
+      rgba(190,90,255,.95),
+      rgba(120,70,255,.95)
+    );
+
+
+    box-shadow:
+    0 0 18px rgba(170,90,255,.28);
+}
+
+
+.basic .pay-btn:hover{
+
+
+    transform:
+    translateY(-2px)
+    scale(1.02);
+
+
+    box-shadow:
+    0 0 25px rgba(170,90,255,.45),
+    0 0 45px rgba(120,70,255,.28);
+}
+
+
+
+
+/* =========================================
+   🔵 PRO
+========================================= */
+
+
+.pro .pay-btn{
+
+
+    background:
+    linear-gradient(
+      135deg,
+      rgba(0,180,255,.98),
+      rgba(0,90,255,.98)
+    );
+
+
+    box-shadow:
+    0 0 20px rgba(0,140,255,.35);
+}
+
+
+.pro .pay-btn:hover{
+
+
+    transform:
+    translateY(-2px)
+    scale(1.03);
+
+
+    box-shadow:
+    0 0 30px rgba(0,160,255,.55),
+    0 0 60px rgba(0,90,255,.35);
+}
+
+
+
+
+/* =========================================
+   🟢 EXCLUSIVE
+========================================= */
+
+
+.exclusive .pay-btn{
+
+
+    background:
+    linear-gradient(
+      135deg,
+      rgba(0,255,140,.98),
+      rgba(0,180,90,.98)
+    );
+
+
+    box-shadow:
+    0 0 20px rgba(0,255,120,.28);
+}
+
+
+.exclusive .pay-btn:hover{
+
+
+    transform:
+    translateY(-2px)
+    scale(1.03);
+
+
+    box-shadow:
+    0 0 30px rgba(0,255,140,.55),
+    0 0 60px rgba(0,180,90,.35);
+}
+
+
+
+
+/* =========================================
+   ✨ GLOSS EFFECT
+========================================= */
+
+
+.pay-btn::before{
+
+
+    content:"";
+
+
+    position:absolute;
+
+
+    top:0;
+    left:-120%;
+
+
+    width:60%;
+    height:100%;
+
+
+    background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255,255,255,.28),
+      transparent
+    );
+
+
+    transform:skewX(-25deg);
+
+
+    transition:1s;
+}
+
+
+.pay-btn:hover::before{
+
+
+    left:150%;
+}
+
+
+
+
+/* =========================================
+   📱 MOBILE
+========================================= */
+
+
+@media(max-width:900px){
+
+
+    .pay-btn{
+
+
+        opacity:1;
+
+
+        transform:none;
+
+
+        pointer-events:auto;
+    }
+}
+/* =========================================
+   💳 PREMIUM CHECKOUT BUTTON
+========================================= */
+
+
+#checkoutBtn{
+
+
+    position:relative;
+    overflow:hidden;
+
+
+    padding:16px 28px;
+
+
+    border:none;
+    border-radius:18px;
+
+
+    color:white;
+    font-size:15px;
+    font-weight:800;
+    letter-spacing:.5px;
+
+
+    cursor:pointer;
+
+
+    backdrop-filter:blur(18px);
+
+
+    background:
+    linear-gradient(
+      135deg,
+      #00f0ff,
+      #5b7cff,
+      #8a5cff
+    );
+
+
+    background-size:200% 200%;
+
+
+    box-shadow:
+    0 0 18px rgba(0,240,255,.25),
+    0 0 40px rgba(90,120,255,.18);
+
+
+    transition:
+    transform .28s ease,
+    box-shadow .35s ease,
+    background-position .5s ease;
+}
+
+
+
+
+/* 🔥 HOVER */
+#checkoutBtn:hover{
+
+
+    transform:
+    translateY(-2px)
+    scale(1.03);
+
+
+    background-position:right center;
+
+
+    box-shadow:
+    0 0 25px rgba(0,240,255,.45),
+    0 0 55px rgba(90,120,255,.28),
+    0 0 80px rgba(138,92,255,.18);
+}
+
+
+
+
+/* 🔥 CLICK */
+#checkoutBtn:active{
+
+
+    transform:
+    scale(.97);
+}
+
+
+
+
+/* ✨ SHINE SWEEP */
+#checkoutBtn::before{
+
+
+    content:"";
+
+
+    position:absolute;
+
+
+    top:0;
+    left:-120%;
+
+
+    width:55%;
+    height:100%;
+
+
+    background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255,255,255,.35),
+      transparent
+    );
+
+
+    transform:skewX(-25deg);
+
+
+    transition:1s;
+}
+
+
+#checkoutBtn:hover::before{
+
+
+    left:160%;
+}
+
+
+
+
+/* 🌈 SUBTLE BORDER GLOW */
+#checkoutBtn::after{
+
+
+    content:"";
+
+
+    position:absolute;
+
+
+    inset:0;
+
+
+    border-radius:18px;
+
+
+    padding:1px;
+
+
+    background:
+    linear-gradient(
+      135deg,
+      rgba(255,255,255,.45),
+      rgba(255,255,255,0)
+    );
+
+
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+
+
+    -webkit-mask-composite:xor;
+
+
+    mask-composite:exclude;
+
+
+    pointer-events:none;
+}
+
+
+
+
+/* 📱 MOBILE */
+@media(max-width:900px){
+
+
+    #checkoutBtn{
+
+
+        width:100%;
+    }
+}
+/* =========================================
+   🌈 DYNAMIC CHECKOUT COLORS
+========================================= */
+
+
+#checkoutBtn{
+
+
+    --btn1:#00f0ff;
+    --btn2:#5b7cff;
+    --btn3:#8a5cff;
+
+
+    background:
+    linear-gradient(
+      135deg,
+      var(--btn1),
+      var(--btn2),
+      var(--btn3)
+    );
+
+
+    background-size:200% 200%;
+
+
+    transition:
+    background .45s ease,
+    box-shadow .45s ease,
+    transform .28s ease;
+}
+
+
+
+
+/* =========================================
+   🔴 FREE
+========================================= */
+
+
+.selected-free #checkoutBtn{
+
+
+    --btn1:#ff4b4b;
+    --btn2:#d10000;
+    --btn3:#8f0000;
+
+
+    box-shadow:
+    0 0 25px rgba(255,60,60,.45),
+    0 0 55px rgba(255,0,0,.25);
+}
+
+
+
+
+/* =========================================
+   🟣 BASIC
+========================================= */
+
+
+.selected-basic #checkoutBtn{
+
+
+    --btn1:#d06bff;
+    --btn2:#944dff;
+    --btn3:#5d36ff;
+
+
+    box-shadow:
+    0 0 25px rgba(180,90,255,.45),
+    0 0 55px rgba(120,70,255,.25);
+}
+
+
+
+
+/* =========================================
+   🔵 PRO
+========================================= */
+
+
+.selected-pro #checkoutBtn{
+
+
+    --btn1:#00d9ff;
+    --btn2:#008cff;
+    --btn3:#0059ff;
+
+
+    box-shadow:
+    0 0 28px rgba(0,170,255,.55),
+    0 0 65px rgba(0,90,255,.35);
+}
+
+
+
+
+/* =========================================
+   🟢 EXCLUSIVE
+========================================= */
+
+
+.selected-exclusive #checkoutBtn{
+
+
+    --btn1:#00ffb3;
+    --btn2:#00d97a;
+    --btn3:#009e52;
+
+
+    box-shadow:
+    0 0 28px rgba(0,255,140,.5),
+    0 0 65px rgba(0,180,90,.3);
+}
+
+
+
+
+/* =========================================
+   🌈 MIXED LICENCE STATES
+========================================= */
+
+
+/* BASIC + PRO */
+.selected-basic.selected-pro #checkoutBtn{
+
+
+    --btn1:#c86cff;
+    --btn2:#3b8dff;
+    --btn3:#006eff;
+}
+
+
+
+
+/* PRO + EXCLUSIVE */
+.selected-pro.selected-exclusive #checkoutBtn{
+
+
+    --btn1:#00e5ff;
+    --btn2:#00b8c4;
+    --btn3:#00ff8f;
+}
+
+
+
+
+/* BASIC + EXCLUSIVE */
+.selected-basic.selected-exclusive #checkoutBtn{
+
+
+    --btn1:#d96cff;
+    --btn2:#6f5cff;
+    --btn3:#00ff99;
+}
+
+
+
+
+/* FREE + PRO */
+.selected-free.selected-pro #checkoutBtn{
+
+
+    --btn1:#ff5555;
+    --btn2:#8d3cff;
+    --btn3:#008cff;
+}
+
+
+
+
+/* ALL MIXED */
+.selected-free.selected-basic.selected-pro.selected-exclusive #checkoutBtn{
+
+
+    --btn1:#ff4d4d;
+    --btn2:#7b61ff;
+    --btn3:#00ff99;
+
+
+    box-shadow:
+    0 0 35px rgba(255,255,255,.18),
+    0 0 80px rgba(120,120,255,.25);
+}
+/* =========================================
+   FULLSCREEN MOBILE CARDS
+========================================= */
+
+
+@media(max-width:900px){
+
+
+    .licence-layout{
+
+
+        width:100%;
+        padding:20px 12px 140px;
+
+
+        display:flex;
+        flex-direction:column;
+        gap:18px;
+    }
+
+
+    .licence-side{
+
+
+        width:100%;
+    }
+
+
+    .licence-card{
+
+
+        width:100% !important;
+        max-width:100% !important;
+
+
+        border-radius:24px;
+
+
+        padding:24px;
+
+
+        min-height:auto;
+    }
+
+
+    .beat-center{
+
+
+        width:100%;
+    }
+
+
+    .beat-card{
+
+
+        width:100% !important;
+        max-width:100% !important;
+    }
+
+
+    .logo-card{
+
+
+        width:100%;
+    }
+
+
+    #cover{
+
+
+        width:100%;
+        height:320px;
+    }
+
+
+    .selected-licence{
+
+
+        width:calc(100% - 20px);
+
+
+        left:10px;
+        right:10px;
+
+
+        transform:none;
+
+
+        bottom:10px;
+    }
+}
+/* =========================================
+   MOBILE CHECKOUT FIX
+========================================= */
+
+
+@media(max-width:900px){
+
+
+    .selected-licence{
+
+
+        padding:18px;
+    }
+
+
+    .selected-bottom{
+
+
+        display:flex;
+        flex-direction:column;
+
+
+        gap:16px;
+
+
+        align-items:stretch;
+    }
+
+
+    .total-box{
+
+
+        width:100%;
+    }
+
+
+    #checkoutBtn{
+
+
+        width:100%;
+
+
+        height:54px;
+
+
+        display:flex;
+        align-items:center;
+        justify-content:center;
+
+
+        text-align:center;
+
+
+        font-size:16px;
+
+
+        border-radius:18px;
+    }
+}
+/* =========================================
+   📱 FINAL MOBILE LAYOUT FIX
+========================================= */
+
+
+@media(max-width:900px){
+
+
+    html,
+    body{
+
+
+        overflow-x:hidden;
+        overflow-y:auto !important;
+
+
+        height:auto !important;
+    }
+
+
+    .licence-page{
+
+
+        min-height:auto !important;
+        height:auto !important;
+    }
+
+
+    .licence-layout{
+
+
+        width:100%;
+
+
+        display:flex;
+        flex-direction:column;
+
+
+        gap:18px;
+
+
+        padding:20px 12px 220px !important;
+    }
+
+
+    .licence-side{
+
+
+        width:100%;
+    }
+
+
+    .licence-side.right{
+
+
+        margin-bottom:120px;
+    }
+
+
+    .licence-card{
+
+
+        width:100% !important;
+        max-width:100% !important;
+
+
+        border-radius:24px;
+
+
+        padding:24px;
+
+
+        min-height:auto;
+
+
+        position:relative;
+        z-index:1;
+    }
+
+
+    .beat-center{
+
+
+        width:100%;
+    }
+
+
+    .beat-card{
+
+
+        width:100% !important;
+        max-width:100% !important;
+    }
+
+
+    .logo-card{
+
+
+        width:100%;
+    }
+
+
+    #cover{
+
+
+        width:100%;
+        height:320px;
+
+
+        object-fit:cover;
+    }
+
+
+    /* =========================
+       CHECKOUT BAR
+    ========================= */
+
+
+    .selected-licence{
+
+
+        position:relative !important;
+
+
+        left:auto !important;
+        right:auto !important;
+        bottom:auto !important;
+
+
+        transform:none !important;
+
+
+        width:100% !important;
+        max-width:100% !important;
+
+
+        margin-top:22px !important;
+
+
+        padding:18px;
+
+
+        border-radius:22px;
+
+
+        z-index:2;
+    }
+
+
+    .selected-top{
+
+
+        margin-bottom:14px;
+    }
+
+
+    .selected-bottom{
+
+
+        display:flex;
+        flex-direction:column;
+
+
+        gap:14px;
+
+
+        align-items:stretch;
+    }
+
+
+    .total-box{
+
+
+        width:100%;
+    }
+
+
+    #checkoutBtn{
+
+
+        width:100%;
+
+
+        height:56px;
+
+
+        display:flex;
+        align-items:center;
+        justify-content:center;
+
+
+        border-radius:18px;
+
+
+        font-size:16px;
+
+
+        text-align:center;
+    }
+}
+/* =========================================
+   EMPTY STATE FIX
+========================================= */
+
+
+.empty-mode .licence-layout{
+    align-items: stretch;
+}
+
+
+.empty-mode .licence-card{
+    height: 100%;
+    min-height: 420px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+
+.empty-mode .licence-card .pay-btn{
+    margin-top: auto;
+}
+
+
+.empty-mode .licence-card.pro{
+    transform: none;
+}
+/* =========================================
+   📱 MOBILE EMPTY STATE PERFECT FIX
+========================================= */
+
+
+@media(max-width:900px){
+
+
+    body.empty-mode .licence-layout{
+
+
+        display:flex;
+        flex-direction:column;
+
+
+        align-items:center;
+
+
+        gap:16px;
+
+
+        padding:
+        95px 12px 120px !important;
+    }
+
+
+    body.empty-mode .empty-state{
+
+
+        position:relative;
+
+
+        top:auto !important;
+        left:auto !important;
+
+
+        transform:none !important;
+
+
+        width:100%;
+
+
+        margin-bottom:8px;
+
+
+        text-align:center;
+    }
+
+
+    body.empty-mode .empty-state h2{
+
+
+        font-size:42px;
+
+
+        line-height:.9;
+
+
+        margin-bottom:10px;
+    }
+
+
+    body.empty-mode .empty-state p{
+
+
+        font-size:12px;
+
+
+        line-height:1.4;
+
+
+        padding:0 8px;
+    }
+
+
+    body.empty-mode .beat-center{
+
+
+        width:100%;
+
+
+        order:1;
+    }
+
+
+    body.empty-mode .beat-card{
+
+
+        width:100%;
+
+
+        max-width:340px;
+
+
+        margin:auto;
+    }
+
+
+    body.empty-mode .logo-card{
+
+
+        padding:14px;
+    }
+
+
+    body.empty-mode #cover{
+
+
+        height:170px;
+
+
+        object-fit:contain;
+
+
+        padding:8px;
+    }
+
+
+    body.empty-mode #title{
+
+
+        font-size:28px;
+
+
+        margin-top:12px;
+    }
+
+
+    body.empty-mode .meta{
+
+
+        max-width:100%;
+
+
+        gap:6px;
+    }
+
+
+    body.empty-mode .meta-row{
+
+
+        padding:7px 10px;
+    }
+
+
+    body.empty-mode .licence-side{
+
+
+        width:100%;
+    }
+
+
+    body.empty-mode .licence-card{
+
+
+        width:100% !important;
+
+
+        max-width:340px;
+
+
+        min-height:auto;
+
+
+        margin:auto;
+
+
+        padding:20px;
+
+
+        border-radius:22px;
+    }
+
+
+    body.empty-mode .licence-features li{
+
+
+        font-size:12px;
+    }
+
+
+    body.empty-mode .explore-btn{
+
+
+        margin-top:14px;
+    }
+
+
+    body.empty-mode .selected-licence{
+
+
+        display:none !important;
+    }
+}
+/* =========================================
+   🔥 REMOVE EMPTY GAP
+========================================= */
+
+
+@media(max-width:900px){
+
+
+    body.empty-mode .empty-state{
+
+
+        margin-bottom:-12px !important;
+    }
+
+
+    body.empty-mode .beat-center{
+
+
+        margin-top:-18px;
+    }
+
+
+    body.empty-mode .beat-card{
+
+
+        margin-top:0 !important;
+    }
+
+
+    body.empty-mode .logo-card{
+
+
+        padding-top:10px;
+    }
+}
+/* =========================================
+   📱 LOWER MOBILE EMPTY TITLE
+========================================= */
+
+
+@media(max-width:900px){
+
+
+    body.empty-mode .empty-state{
+
+
+        margin-top:38px !important;
+    }
+
+
+    body.empty-mode .empty-state h2{
+
+
+        font-size:42px;
+
+
+        line-height:.92;
+    }
+}
+#cartPreview{
+
+
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+
+
+    margin-bottom:22px;
+}
+
+
+.mini-cart-card{
+
+
+    display:flex;
+    align-items:center;
+    gap:12px;
+
+
+    background:
+    rgba(255,255,255,.05);
+
+
+    padding:12px;
+
+
+    border-radius:18px;
+}
+
+
+.mini-cart-card img{
+
+
+    width:60px;
+    height:60px;
+
+
+    border-radius:14px;
+
+
+    object-fit:cover;
+}
+
+
+.mini-cart-card h4{
+    color:white;
+    margin:0;
+}
+
+
+.mini-cart-card p{
+    color:rgba(255,255,255,.6);
+    margin:4px 0 0;
+}
+/* =========================================
+🔥 MULTI CART ROW
+========================================= */
+
+
+.cart-beat-row{
+
+
+    width:100%;
+
+
+    display:flex;
+    gap:14px;
+
+
+    overflow-x:auto;
+
+
+    padding:18px 0;
+
+
+    margin-top:10px;
+
+
+    scrollbar-width:none;
+
+
+}
+
+
+.cart-beat-row::-webkit-scrollbar{
+    display:none;
+}
+
+
+/* =========================================
+🔥 TRACK CARD
+========================================= */
+
+
+.cart-beat-card{
+
+
+    position:relative;
+
+
+    min-width:110px;
+    max-width:110px;
+
+
+    padding:8px;
+
+
+    border-radius:18px;
+
+
+    background:
+    rgba(255,255,255,.05);
+
+
+    border:
+    1px solid rgba(255,255,255,.08);
+
+
+    cursor:pointer;
+
+
+    transition:.28s ease;
+
+
+    flex-shrink:0;
+
+
+    backdrop-filter:blur(18px);
+
+
+}
+
+
+/* HOVER */
+
+
+.cart-beat-card:hover{
+
+
+    transform:
+    translateY(-4px);
+
+
+    border-color:
+    rgba(0,240,255,.45);
+
+
+}
+
+
+/* =========================================
+🔥 ACTIVE TRACK
+========================================= */
+
+
+.cart-beat-card.active{
+
+
+    transform:translateY(-4px);
+
+
+    border-color:
+    rgba(0,240,255,.65);
+
+
+    background:
+    rgba(0,240,255,.06);
+
+
+    box-shadow:
+    0 0 18px rgba(0,240,255,.18);
+
+
+}
+
+
+
+/* =========================================
+🖼 IMAGE
+========================================= */
+
+
+.cart-beat-card img{
+
+
+    width:100%;
+    aspect-ratio:1/1;
+
+
+    border-radius:12px;
+
+
+    object-fit:cover;
+
+
+    display:block;
+
+
+}
+
+
+/* =========================================
+🎵 TITLE
+========================================= */
+
+
+.cart-beat-card h4{
+
+
+    color:white;
+
+
+    font-size:12px;
+
+
+    font-weight:600;
+
+
+    margin-top:8px;
+
+
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+
+
+}
+
+
+
+
+/* =========================================
+📱 MOBILE
+========================================= */
+
+
+@media(max-width:900px){
+
+
+    .cart-beat-row{
+
+
+        padding:14px 2px;
+
+
+        gap:12px;
+
+
+    }
+
+
+    .cart-beat-card{
+
+
+        min-width:92px;
+        max-width:92px;
+
+
+        border-radius:16px;
+
+
+    }
+
+
+    .cart-beat-card h4{
+
+
+        font-size:11px;
+
+
+    }
+
+
+}
+
+
+/* =========================================
+🔥 SELECTED BAR IMPROVEMENT
+========================================= */
+
+
+.selected-licence{
+
+
+    width:min(620px,100%);
+
+
+    margin:24px auto 0;
+
+
+}
+
+
+/* =========================================
+🔥 CURRENT TRACK TEXT
+========================================= */
+
+
+#selectedName{
+
+
+    display:flex;
+    align-items:center;
+    gap:10px;
+
+
+    color:#00f0ff;
+
+
+    font-weight:700;
+
+
+}
+
+
+/* =========================================
+🔥 EMPTY ROW AUTO HIDE
+========================================= */
+
+
+.cart-beat-row:empty{
+    display:none;
+}
+/* ========================================
+   ❌ REMOVE TRACK BUTTON
+======================================== */
+
+
+.remove-cart-track{
+
+
+    position:absolute;
+    top:6px;
+    right:6px;
+
+
+    width:22px;
+    height:22px;
+
+
+    border:none;
+    border-radius:50%;
+
+
+    background:rgba(255,255,255,.12);
+
+
+    color:white;
+
+
+    font-size:12px;
+    font-weight:700;
+
+
+    cursor:pointer;
+
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+
+    backdrop-filter:blur(10px);
+
+
+    transition:.25s;
+
+
+    z-index:5;
+
+
+}
+
+
+
+
+.remove-cart-track:hover{
+
+
+    background:#ff3b5c;
+
+
+    transform:scale(1.08);
+
+
+}
+
+
+
+
+/* ========================================
+   🔥 CARD POSITION FIX
+======================================== */
+
+
+.cart-beat-card{
+
+
+    position:relative;
+
+
+}
+/* =========================================
+💀 SELECTED LICENCE MAGIC
+========================================= */
+
+
+.selected-licence{
+
+
+    width:min(760px,100%);
+
+
+    padding:24px;
+
+
+    border-radius:28px;
+
+
+    background:
+    linear-gradient(
+        145deg,
+        rgba(255,255,255,.06),
+        rgba(255,255,255,.03)
+    );
+
+
+    border:
+    1px solid rgba(255,255,255,.08);
+
+
+    backdrop-filter:blur(30px);
+
+
+    box-shadow:
+    0 15px 60px rgba(0,0,0,.35),
+    inset 0 1px rgba(255,255,255,.06);
+
+
+}
+
+
+
+
+/* =========================================
+🔥 VERTICAL LICENCE STACK
+========================================= */
+
+
+#selectedName{
+
+
+    display:flex;
+
+
+    flex-direction:column;
+
+
+    align-items:flex-start;
+
+
+    gap:14px;
+
+
+}
+
+
+
+
+/* =========================================
+🔥 TRACK ROW
+========================================= */
+
+
+.selected-track-line{
+
+
+    width:100%;
+
+
+    display:flex;
+
+
+    align-items:center;
+
+
+    justify-content:space-between;
+
+
+    padding:12px 14px;
+
+
+    border-radius:18px;
+
+
+    background:
+    rgba(255,255,255,.04);
+
+
+    border:
+    1px solid rgba(255,255,255,.05);
+
+
+}
+
+
+
+
+/* =========================================
+🎵 TRACK TITLE
+========================================= */
+
+
+.selected-track-line strong{
+
+
+    display:block;
+
+
+    font-size:15px;
+
+
+    margin-bottom:4px;
+
+
+    color:white;
+
+
+}
+
+
+
+
+/* =========================================
+✨ LICENCE TEXT
+========================================= */
+
+
+.selected-track-line span{
+
+
+    font-size:13px;
+
+
+    font-weight:700;
+
+
+    opacity:.95;
+
+
+}
+
+
+
+
+
+
+
+
+
+/* =========================================
+🔵 PRO
+========================================= */
+
+
+.selected-track-line:has(span:contains("Pro")) span{
+
+
+    color:#00cfff;
+
+
+}
+
+
+
+
+/* =========================================
+🟢 EXCLUSIVE
+========================================= */
+
+
+.selected-track-line:has(span:contains("Exclusive")) span{
+
+
+    color:#00ff9d;
+
+
+}
+
+
+
+
+/* =========================================
+🔴 FREE
+========================================= */
+
+
+.selected-track-line:has(span:contains("Free")) span{
+
+
+    color:#ff5d73;
+
+
+}
+
+
+
+
+/* =========================================
+💰 TOTAL
+========================================= */
+
+
+#totalPrice{
+
+
+    font-size:42px;
+
+
+    font-weight:900;
+
+
+    letter-spacing:-1px;
+
+
+    color:#dffcff;
+
+
+    text-shadow:
+    0 0 18px rgba(0,240,255,.25);
+
+
+}
+
+
+
+
+/* =========================================
+🔥 METALLIC CHECKOUT BUTTON
+========================================= */
+
+
+#checkoutBtn{
+
+
+    position:relative;
+
+
+    overflow:hidden;
+
+
+    border:none;
+
+
+    border-radius:22px;
+
+
+    padding:18px 34px;
+
+
+    color:white;
+
+
+    font-weight:800;
+
+
+    letter-spacing:1px;
+
+
+    cursor:pointer;
+
+
+    background:
+    linear-gradient(
+        135deg,
+        #0d1117 0%,
+        #173b6d 25%,
+        #2b5cff 45%,
+        #7f1dff 62%,
+        #ff3b5c 82%,
+        #ff5d5d 100%
+    );
+
+
+    background-size:300% 300%;
+
+
+    box-shadow:
+    0 0 25px rgba(0,120,255,.28),
+    0 0 50px rgba(255,60,90,.18);
+
+
+    transition:
+    transform .28s ease,
+    box-shadow .35s ease,
+    background-position .6s ease;
+
+
+}
+
+
+
+
+/* hover */
+#checkoutBtn:hover{
+
+
+    transform:
+    translateY(-3px)
+    scale(1.03);
+
+
+    background-position:right center;
+
+
+    box-shadow:
+    0 0 35px rgba(0,140,255,.35),
+    0 0 80px rgba(255,60,90,.25);
+
+
+}
+
+
+
+
+/* click */
+#checkoutBtn:active{
+
+
+    transform:scale(.98);
+
+
+}
+
+
+
+
+/* =========================================
+✨ METAL SHINE
+========================================= */
+
+
+#checkoutBtn::before{
+
+
+    content:"";
+
+
+    position:absolute;
+
+
+    top:0;
+    left:-120%;
+
+
+    width:45%;
+    height:100%;
+
+
+    background:
+    linear-gradient(
+        90deg,
+        transparent,
+        rgba(255,255,255,.4),
+        transparent
+    );
+
+
+    transform:skewX(-25deg);
+
+
+    transition:1s;
+
+
+}
+
+
+
+
+#checkoutBtn:hover::before{
+
+
+    left:160%;
+
+
+}
+
+
+
+
+/* =========================================
+📱 MOBILE
+========================================= */
+
+
+@media(max-width:900px){
+
+
+    .selected-licence{
+
+
+        width:100%;
+
+
+        padding:18px;
+
+
+    }
+
+
+    #checkoutBtn{
+
+
+        width:100%;
+
+
+    }
+
+
+}
+/* =========================================
+🎨 LICENCE COLORS
+========================================= */
+
+
+.licence-color-free{
+
+
+    color:#ff5d73;
+
+
+}
+
+
+.licence-color-basic{
+
+
+    color:#c86cff;
+
+
+}
+
+
+.licence-color-pro{
+
+
+    color:#00cfff;
+
+
+}
+
+
+.licence-color-exclusive{
+
+
+    color:#00ff9d;
+
+
+}
+/* =========================================
+💀 BALANCE LEFT SIDE PERFECTLY
+========================================= */
+
+
+.selected-licence{
+
+
+    display:flex;
+
+
+    align-items:flex-start;
+
+
+    justify-content:space-between;
+
+
+    gap:28px;
+
+
+}
+
+
+
+
+/* LEFT SIDE */
+.selected-left{
+
+
+    display:flex;
+
+
+    flex-direction:column;
+
+
+    justify-content:space-between;
+
+
+    min-height:190px;
+
+
+}
+
+
+
+
+/* TITLE */
+.selected-left h3{
+
+
+    font-size:38px;
+
+
+    line-height:.95;
+
+
+    font-weight:900;
+
+
+    letter-spacing:-1px;
+
+
+}
+
+
+
+
+/* TOTAL AREA */
+.total-box{
+
+
+    margin-top:auto;
+
+
+}
+
+
+
+
+.total-box span{
+
+
+    display:block;
+
+
+    margin-bottom:8px;
+
+
+    opacity:.6;
+
+
+    font-size:14px;
+
+
+}
+
+
+
+
+#totalPrice{
+
+
+    font-size:56px;
+
+
+    font-weight:900;
+
+
+    line-height:1;
+
+
+}
+
+
+
+
+/* RIGHT SIDE */
+.selected-right{
+
+
+    flex:1;
+
+
+    display:flex;
+
+
+    flex-direction:column;
+
+
+    justify-content:space-between;
+
+
+    gap:18px;
+
+
+}
+
+
+
+
+/* TRACK LIST */
+#selectedName{
+
+
+    width:100%;
+
+
+}
+
+
+
+
+/* BUTTON ALIGN */
+#checkoutBtn{
+
+
+    align-self:flex-end;
+
+
+    min-width:280px;
+
+
+}
+
+
+
+
+/* =========================================
+📱 MOBILE
+========================================= */
+
+
+@media(max-width:900px){
+
+
+    .selected-licence{
+
+
+        flex-direction:column;
+
+
+    }
+
+
+    .selected-left{
+
+
+        min-height:auto;
+
+
+    }
+
+
+    #checkoutBtn{
+
+
+        width:100%;
+
+
+        min-width:100%;
+
+
+    }
+
+
+}
+/* ========================================
+❌ REMOVE SELECTED LICENCE
+======================================== */
+
+
+.selected-track-line{
+
+
+    display:flex;
+
+
+    align-items:center;
+
+
+    justify-content:space-between;
+
+
+    gap:12px;
+
+
+    padding:12px 14px;
+
+
+    border-radius:16px;
+
+
+    background:
+    rgba(255,255,255,.04);
+
+
+    margin-bottom:10px;
+
+
+    border:
+    1px solid rgba(255,255,255,.05);
+
+
+}
+
+
+
+
+.selected-track-info{
+
+
+    display:flex;
+
+
+    flex-direction:column;
+
+
+    gap:4px;
+
+
+}
+
+
+
+
+.selected-track-info strong{
+
+
+    color:white;
+
+
+    font-size:15px;
+
+
+}
+
+
+
+
+.selected-track-info span{
+
+
+    font-size:14px;
+
+
+    font-weight:700;
+
+
+}
+
+
+
+
+/* ========================================
+🎨 LICENCE COLORS
+======================================== */
+
+
+.licence-color-free{
+    color:#ff5c5c;
+}
+
+
+.licence-color-basic{
+    color:#c86cff;
+}
+
+
+.licence-color-pro{
+    color:#00bfff;
+}
+
+
+.licence-color-exclusive{
+    color:#00ff99;
+}
+
+
+
+
+/* ========================================
+❌ REMOVE BTN
+======================================== */
+
+
+.remove-selected-licence{
+
+
+    width:26px;
+    height:26px;
+
+
+    border:none;
+    border-radius:50%;
+
+
+    background:
+    rgba(255,255,255,.08);
+
+
+    color:white;
+
+
+    font-size:13px;
+
+
+    cursor:pointer;
+
+
+    transition:.22s;
+
+
+    flex-shrink:0;
+
+
+}
+
+
+
+
+.remove-selected-licence:hover{
+
+
+    background:#ff3b5c;
+
+
+    transform:scale(1.08);
+
+
+}
+/* =========================================
+💀 PULL TRACK ROW UP
+========================================= */
+
+
+@media(max-width:900px){
+
+
+    .cart-beat-row{
+
+
+        margin-top:-310px !important;
+
+
+        padding-top:0 !important;
+
+
+        position:relative;
+
+
+        z-index:5;
+    }
+
+
+    .selected-licence{
+
+
+        margin-top:10px !important;
+    }
+
+
+}
+/* =========================================
+💀 FIX ACTIVE CARD GLOW CUT OFF
+========================================= */
+
+
+.cart-beat-row{
+    overflow-x:auto !important;
+    overflow-y:visible !important;
+}
+
+
+.cart-beat-card{
+    overflow:visible !important;
+}
+
+
+.licence-layout{
+    overflow:visible !important;
+}
+
+
+.beat-center{
+    overflow:visible !important;
+}
+.cart-beat-row{
+    padding:20px 0 24px !important;
+}
+/* =========================================
+💀 FULL WIDTH MOBILE SELECTED BAR
+========================================= */
+
+
+@media(max-width:900px){
+
+
+    .selected-licence{
+
+
+        width:calc(100vw - 24px) !important;
+
+
+        max-width:calc(100vw - 24px) !important;
+
+
+        margin:14px auto 0 auto !important;
+
+
+        left:auto !important;
+        right:auto !important;
+
+
+        transform:none !important;
+
+
+        border-radius:28px !important;
+
+
+        padding:28px 22px 34px !important;
+
+
+        display:flex !important;
+
+
+        flex-direction:column !important;
+
+
+        align-items:center !important;
+
+
+        justify-content:center !important;
+
+
+        text-align:center !important;
+    }
+
+
+
+
+
+    /* LEFT SIDE */
+    .selected-left{
+
+
+        width:100%;
+
+
+        display:flex;
+
+
+        flex-direction:column;
+
+
+        align-items:center !important;
+
+
+        justify-content:center !important;
+
+
+        text-align:center !important;
+
+
+        min-height:auto !important;
+    }
+
+
+    .selected-left h3{
+
+
+        width:100%;
+
+
+        text-align:center !important;
+
+
+        font-size:52px !important;
+
+
+        line-height:.92;
+    }
+
+
+    /* TOTAL */
+    .total-box{
+
+
+        width:100%;
+
+
+        margin-top:14px !important;
+
+
+        display:flex;
+
+
+        flex-direction:column;
+
+
+        align-items:center;
+
+
+        justify-content:center;
+    }
+
+
+    .total-box span{
+
+
+        text-align:center;
+    }
+
+
+    #totalPrice{
+
+
+        text-align:center;
+
+
+        font-size:72px !important;
+    }
+
+
+    /* RIGHT SIDE */
+    .selected-right{
+
+
+        width:100%;
+
+
+        display:flex;
+
+
+        flex-direction:column;
+
+
+        align-items:center;
+
+
+        justify-content:center;
+
+
+        gap:18px;
+    }
+
+
+    /* LICENCE STACK */
+    #selectedName{
+
+
+        width:100%;
+
+
+        align-items:center !important;
+    }
+
+
+    .selected-track-line{
+
+
+        width:100%;
+    }
+
+
+    .selected-track-info{
+
+
+        text-align:left;
+    }
+
+
+    /* CHECKOUT */
+    #checkoutBtn{
+
+
+        width:auto !important;
+
+
+        min-width:260px !important;
+
+
+        align-self:center !important;
+
+
+        margin-top:10px;
+
+
+        padding:18px 32px !important;
+    }
+}
+/* =========================================
+   🔥 SOFTER GLASS DEPTH
+========================================= */
+
+
+body::before{
+
+
+    backdrop-filter:
+    blur(55px)
+    saturate(135%);
+
+
+    -webkit-backdrop-filter:
+    blur(55px)
+    saturate(135%);
+
+
+    background:
+    linear-gradient(
+        rgba(3,6,15,.62),
+        rgba(3,6,15,.78)
+    );
+}
+
+
+
+
+/* subtle cover visibility */
+body::after{
+
+
+    opacity:.72;
+}
+#similarTrack{
+  display:flex;
+  gap:16px;
+  overflow-x:auto;
+  padding:10px 0 20px;
+}
+
+
+#similarTrack::-webkit-scrollbar{
+  display:none;
+}
+/* ========================================
+🔥 SIMILAR TRACKS
+======================================== */
+
+
+#similarTrack{
+  display:flex;
+  gap:18px;
+  overflow-x:auto;
+  padding:20px 0;
+}
+
+
+#similarTrack::-webkit-scrollbar{
+  display:none;
+}
+
+
+#similarTrack .latest-card{
+  min-width:280px;
+  max-width:280px;
+  flex-shrink:0;
+}
+
+
+#similarTrack .latest-media{
+  position:relative;
+  width:100%;
+  height:180px;
+  overflow:hidden;
+  border-radius:18px;
+}
+
+
+#similarTrack .latest-media img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+
+#similarTrack .latest-title{
+  margin-top:12px;
+}
+/* ========================================
+🔥 USE HOMEPAGE CARD STYLE
+======================================== */
+
+
+#similarTrack .latest-card{
+
+
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+
+
+  border-radius: 22px;
+
+
+  padding: 12px;
+
+
+  backdrop-filter: blur(12px);
+
+
+  box-shadow:
+  0 10px 30px rgba(0,0,0,.35);
+
+
+  transition: .25s;
+
+
+  min-width: 240px;
+  max-width: 240px;
+
+
+  flex-shrink: 0;
+}
+
+
+#similarTrack .latest-card:hover{
+
+
+  transform: translateY(-6px);
+
+
+  border-color:
+  rgba(0,255,255,.35);
+}
+
+
+/* IMAGE */
+
+
+#similarTrack .latest-media{
+
+
+  position: relative;
+
+
+  width: 100%;
+  height: 150px;
+
+
+  overflow: hidden;
+
+
+  border-radius: 18px;
+}
+
+
+#similarTrack .latest-media img{
+
+
+  width: 100%;
+  height: 100%;
+
+
+  object-fit: cover;
+
+
+  display: block;
+}
+
+
+/* TITLE */
+
+
+#similarTrack .latest-title{
+
+
+  margin-top: 12px;
+
+
+  font-size: 15px;
+  font-weight: 700;
+
+
+  color: white;
+}
+
+
+/* TAG */
+
+
+#similarTrack .latest-tag{
+
+
+  margin-top: 4px;
+
+
+  color: #8cf;
+
+
+  font-size: 13px;
+}
+
+
+/* PRICE */
+
+
+#similarTrack .latest-price-row{
+
+
+  display: flex;
+
+
+  gap: 10px;
+
+
+  margin-top: 10px;
+}
+
+
+#similarTrack .old-price{
+
+
+  color: #999;
+
+
+  text-decoration: line-through;
+}
+
+
+#similarTrack .new-price{
+
+
+  color: #6fffb0;
+
+
+  font-weight: 700;
+}
+
+
+/* BUTTON */
+
+
+#similarTrack .btn-buy{
+
+
+  width: 100%;
+
+
+  margin-top: 12px;
+
+
+  border: none;
+
+
+  height: 42px;
+
+
+  border-radius: 14px;
+
 
   background:
-    radial-gradient(circle at 20% 30%, rgba(0,150,255,0.10), transparent 50%),
-    radial-gradient(circle at 80% 70%, rgba(255,0,120,0.08), transparent 50%);
+  linear-gradient(
+    90deg,
+    #00e5ff,
+    #6f7dff,
+    #ff4fd8
+  );
 
-  pointer-events: none;
+
+  color: white;
+
+
+  font-weight: 700;
+
+
+  cursor: pointer;
+}
+/* ========================================
+🔥 SIMILAR TRACK PLAY BUTTON
+======================================== */
+
+
+.similar-section .latest-media{
+    position: relative;
 }
 
 
-/* KEEP CONTENT ABOVE */
-.licence-page {
-  position: relative;
-  z-index: 1;
-}
-.meta {
-  margin-top: 15px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
+.similar-section .latest-play{
+    position: absolute;
+    inset: 0;
+    margin: auto;
 
-.meta-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 6px 10px;
-  border-radius: 8px;
-  background: rgba(255,255,255,0.05);
-  font-size: 13px;
-}
 
-.meta-row .label {
-  opacity: 0.6;
-  font-size: 11px;
-  text-transform: uppercase;
-}
+    width: 58px;
+    height: 58px;
 
-.meta-row span:last-child {
-  color: #e5faff;
-}
 
-/* licence cards keep your current styles — no conflict */
-/* 🔥 MOBILE / SMALL SCREEN FIX */
-@media (max-width: 900px) {
+    border: none;
+    border-radius: 50%;
 
-  .licence-layout {
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-  }
 
-  /* beat card stays centered */
-  .beat-center {
-    width: 100%;
-    max-width: 400px;
-  }
+    background: rgba(0,0,0,.65);
 
-  /* licence cards go BELOW, not sides */
-  .licence-left,
-  .licence-right {
-    width: 100%;
+
+    backdrop-filter: blur(12px);
+
+
     display: flex;
+    align-items: center;
     justify-content: center;
-    gap: 15px;
-    flex-wrap: wrap; /* 🔥 prevents overlap */
-  }
 
-  .licence-card {
-    width: 160px;
-  }
+
+    cursor: pointer;
+
+
+    z-index: 20;
+
+
+    opacity: 0;
+
+
+    transition: .25s;
 }
-@media (max-width: 768px) {
 
-  .licence-page {
-    padding: 15px;
-  }
 
-  .licence-layout {
+.similar-section .latest-media:hover .latest-play{
+    opacity: 1;
+}
+
+
+.similar-section .play-icon{
+    color: white;
+    font-size: 18px;
+}
+/* ========================================
+🔥 SPOTIFY SIMILAR TRACKS FINAL
+======================================== */
+
+
+/* PAGE FIX */
+body{
+    overflow-x:hidden;
+}
+
+
+.licence-page{
+    overflow:visible !important;
+}
+
+
+
+
+/* ========================================
+SECTION
+======================================== */
+
+
+.similar-section{
+
+
+    position:relative;
+
+
+    width:100%;
+
+
+    margin-top:70px;
+
+
+    overflow:visible !important;
+}
+
+
+
+
+/* TITLE */
+.section-head{
+
+
+    margin-bottom:22px;
+
+
+    padding-left:24px;
+}
+
+
+.section-head h2{
+
+
+    color:white;
+
+
+    font-size:42px;
+
+
+    font-weight:800;
+
+
+    letter-spacing:-1px;
+}
+
+
+
+
+/* ========================================
+WRAPPER
+======================================== */
+
+
+.latest-wrapper{
+
+
+    position:relative;
+
+
+    width:100%;
+
+
+    overflow:visible !important;
+}
+
+
+
+
+/* ========================================
+TRACK ROW
+======================================== */
+
+
+.latest-container{
+
+
+    display:flex;
+
+
+    align-items:stretch;
+
+
+    gap:22px;
+
+
+    width:100%;
+
+
+    overflow-x:auto;
+    overflow-y:visible;
+
+
+    scroll-behavior:smooth;
+
+
+    scrollbar-width:none;
+
+
+    box-sizing:border-box;
+
+
+    padding:
+    12px
+    110px;
+}
+
+
+.latest-container::-webkit-scrollbar{
+    display:none;
+}
+
+
+
+
+/* ========================================
+CARDS
+======================================== */
+
+
+.latest-card{
+
+
+    flex:0 0 auto;
+
+
+    width:260px;
+
+
+    min-width:260px;
+}
+
+
+
+
+/* ========================================
+🔥 FLOATING ARROWS
+======================================== */
+
+
+.similar-arrow{
+
+
+    position:absolute;
+
+
+    top:50%;
+
+
+    transform:translateY(-50%);
+
+
+    z-index:999999;
+
+
+    width:84px;
+    height:84px;
+
+
+    border:none;
+    border-radius:50%;
+
+
+    background:transparent;
+
+
+
+
+    color:white;
+
+
+    font-size:58px;
+    font-weight:200;
+
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+
+    cursor:pointer;
+
+
+    backdrop-filter:none;
+
+    box-shadow:none;
+
+    transition:.22s ease;
+}
+
+
+
+
+/* LEFT */
+.similar-arrow.left{
+
+
+    left:10px;
+}
+
+
+
+
+/* RIGHT */
+.similar-arrow.right{
+
+
+    right:10px;
+}
+
+
+
+
+/* HOVER */
+.similar-arrow:hover{
+
+
+    transform:
+    translateY(-50%)
+    scale(1.0);
+
+
+}
+
+
+
+
+/* ========================================
+📱 MOBILE
+======================================== */
+
+
+@media(max-width:768px){
+
+
+    .section-head{
+
+
+        padding-left:14px;
+    }
+
+
+    .section-head h2{
+
+
+        font-size:30px;
+    }
+
+
+    .latest-container{
+
+
+        gap:14px;
+
+
+        padding:
+        10px
+        64px;
+    }
+
+
+    .latest-card{
+
+
+        width:220px;
+        min-width:220px;
+    }
+
+
+    .similar-arrow{
+
+
+
+
+
+
+
+
+    display:none !important;
+
+
+
+
+
+
+
+
+    opacity:0 !important;
+
+
+
+
+
+
+
+
+    visibility:hidden !important;
+
+
+
+
+
+
+
+
+    pointer-events:none !important;
+}
+
+
+
+    .similar-arrow.left{
+
+
+        left:4px;
+    }
+
+
+    .similar-arrow.right{
+
+
+        right:4px;
+    }
+}
+/* ========================================
+🔥 DRAG CURSOR
+======================================== */
+
+
+.latest-container{
+
+
+    cursor:grab;
+
+
+    user-select:none;
+}
+
+
+.latest-container.dragging{
+
+
+    cursor:grabbing;
+}
+body.licence-page #waveList .wave-row:not(.explore-row){
+    display:none;
+}
+/* ===============================
+🔥 FINAL EMPTY MODE FIX
+=============================== */
+
+
+.empty-mode .licence-explore-row{
+    opacity:1 !important;
+    visibility:visible !important;
+    display:flex !important;
+
+
+    transform:none !important;
+    filter:none !important;
+
+
+    pointer-events:auto !important;
+}
+#cartBeatRow{
+
+
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 25px;
-  }
-
-  .beat-center {
-    width: 100%;
-    max-width: 100%;
-  }
-}
-@media (max-width: 768px) {
-
-  #cover {
-    width: 100%;
-    height: auto;
-    border-radius: 16px;
-  }
-
-  .beat-center h1 {
-    font-size: 20px;
-    text-align: center;
-  }
-}
-@media (max-width: 768px) {
-
-  .meta-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px 12px;
-    border-radius: 10px;
-    margin-bottom: 8px;
-  }
-
-  .label {
-    opacity: 0.6;
-    font-size: 12px;
-  }
-}
-@media (max-width: 768px) {
-
-  .licence-left,
-  .licence-right {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    width: 100%;
-  }
-
-  .licence-card {
-    width: 100%;
-    padding: 12px;
-    border-radius: 14px;
-  }
-}
-.licence-card {
-  backdrop-filter: blur(12px);
-  transition: 0.3s;
-}
-
-.licence-card:active {
-  transform: scale(0.97);
-}
-/* ===== MOBILE FULL FIX (FORCE EXPAND) ===== */
-@media (max-width: 768px) {
-
-  body {
-    padding: 0 !important;
-  }
-
-  .licence-page {
-    width: 100% !important;
-    padding: 10px !important;
-  }
-
-  .licence-layout {
-    max-width: 100% !important;
-    width: 100% !important;
-    margin: 0 !important;
-
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: stretch !important;
-  }
-
-  .beat-center {
-    width: 100% !important;
-  }
-
-  #cover {
-    width: 100% !important;
-    height: auto !important;
-  }
-
-  /* 🔥 THIS FIXES THE SMALL CENTER ISSUE */
-  .licence-left,
-  .licence-right {
-    width: 100% !important;
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    gap: 10px !important;
-  }
-
-  .licence-card {
-    width: 100% !important;
-  }
-
-}
-
-/* ===== MOBILE FIX (PUT AT VERY BOTTOM) ===== */
-@media (max-width: 768px) {
-  /* all the code I sent */
-}
-html, body {
-  height: auto !important;
-  overflow-y: auto !important;
-}
-.licence-page,
-.licence-layout {
-  height: auto !important;
-  min-height: 100vh;
-}
-@media (max-width: 768px) {
-  body {
-    overflow-y: auto !important;
-  }
-}
-/* ===== SMOOTH BASE ===== */
-.licence-card {
-  transition: all 0.35s ease;
-  position: relative;
-}
-
-/* ===== FREE — subtle red ===== */
-.licence-card.free:hover {
-  box-shadow: 0 0 20px rgba(255, 60, 60, 0.25);
-}
-
-/* ===== BASIC — pink/blue soft glow ===== */
-.licence-card.basic:hover {
-  box-shadow:
-    0 0 15px rgba(255, 100, 255, 0.25),
-    0 0 25px rgba(100, 150, 255, 0.25);
-}
-
-/* ===== PRO — deep blue strong ===== */
-.licence-card.pro:hover {
-  box-shadow:
-    0 0 25px rgba(0, 120, 255, 0.6),
-    0 0 50px rgba(0, 80, 255, 0.4);
-}
-
-/* ===== EXCLUSIVE — bright green premium ===== */
-.licence-card.exclusive:hover {
-  box-shadow:
-    0 0 25px rgba(0, 255, 140, 0.6),
-    0 0 50px rgba(0, 255, 100, 0.4);
-}
-/* ===== PRO ATTENTION SHAKE ===== */
-@keyframes proShake {
-  0% { transform: translateX(0); }
-  20% { transform: translateX(-3px); }
-  40% { transform: translateX(3px); }
-  60% { transform: translateX(-2px); }
-  80% { transform: translateX(2px); }
-  100% { transform: translateX(0); }
-}
-
-/* trigger class */
-.pro.attention {
-  animation: proShake 0.5s ease;
-}
-/* ===== ACTION BAR ===== */
-.beat-actions {
-  display: flex;
-  gap: 15px;
-  justify-content: center;
-  margin-top: 10px;
-}
-
-.action {
-  padding: 8px 14px;
-  border-radius: 12px;
-  cursor: pointer;
-  backdrop-filter: blur(10px);
-  transition: 0.2s;
-}
-
-.action:hover {
-  transform: scale(1.05);
-}
-
-/* ❤️ like glow */
-.action.like.active {
-  color: #ff4d6d;
-  box-shadow: 0 0 15px rgba(255, 70, 100, 0.5);
-}
-
-/* dropdown */
-.more-menu {
-  display: none;
-  margin-top: 10px;
-  border-radius: 12px;
-  padding: 10px;
-  backdrop-filter: blur(12px);
-}
-
-.more-menu.show {
-  display: block;
-}
-
-.menu-item {
-  padding: 8px;
-  cursor: pointer;
-}
-
-.menu-item:hover {
-  opacity: 0.7;
-}
-/* ACTION BAR */
-.beat-actions {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  margin: 10px 0 15px;
-}
-
-/* BUTTON BASE */
-.action {
-  cursor: pointer;
-  padding: 8px 14px;
-  border-radius: 12px;
-  font-size: 16px;
-  backdrop-filter: blur(10px);
-  background: rgba(255,255,255,0.05);
-  transition: all 0.2s ease;
-}
-
-/* ❤️ HEART */
-.like {
-  color: rgba(255,255,255,0.6);
-}
-
-.like.active {
-  color: red;
-}
-
-/* ➕ BUTTON */
-.add {
-  font-size: 22px;
-  font-weight: bold;
-}
-
-/* ➡️ SHARE */
-.share {
-  font-size: 18px;
-}
-
-/* PANEL */
-.playlist-panel {
-  display: none;
-  margin-top: 10px;
-  padding: 10px;
-  border-radius: 12px;
-  background: rgba(0,0,0,0.4);
-  backdrop-filter: blur(10px);
-  text-align: center;
-}
-
-.playlist-panel.show {
-  display: block;
-}
-
-.playlist-item {
-  padding: 8px;
-  cursor: pointer;
-}
-html, body {
-  width: 100%;
-  max-width: 100%;
-  overflow-x: hidden;
-}
-
-/* =========================
-   🔥 PERFECT SPLIT ORDER
-========================= */
-
-@media (max-width: 900px) {
-
-  .licence-layout {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-  }
-
-  .beat-center {
-    width: 100%;
-    max-width: 400px;
-  }
-
-  .licence-left,
-  .licence-right {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    align-items: center;
-  }
-
-  .licence-card {
-    width: 160px;
-  }
-
-}
-@media (max-width: 900px) {
-
-  .licence-left {
-    margin-top: 25px; /* pushes Free + Basic down */
-  }
-
-}
-/* ============================= */
-/* 🔥 FINAL MOBILE FIX (CLEAN) */
-/* ============================= */
-
-@media (max-width: 900px) {
-
-  .licence-layout {
-    display: flex;
-    flex-direction: column;
-  }
-
-  /* 🎧 Beat card FIRST */
-  .beat-center {
-    order: 1;
-  }
-
-  /* 📊 Beat details SECOND */
-  .beat-center .meta {
-    order: 2;
-  }
-
-  /* 🟢 Free + Basic THIRD */
-  .licence-side.left {
-    order: 3;
-  }
-
-  /* 🔥 Pro + Exclusive LAST */
-  .licence-side.right {
-    order: 4;
-  }
-
-}
-/* ============================= */
-/* 🔥 FULL WIDTH LICENSE CARDS */
-/* ============================= */
-
-@media (max-width: 900px) {
-
-  /* make side containers full width */
-  .licence-side {
-    width: 100%;
-    max-width: 100%;
-  }
-
-  /* stack cards properly */
-  .licence-side.left,
-  .licence-side.right {
-    display: flex;
-    flex-direction: column;
     gap: 14px;
-  }
 
-  /* 🔥 THIS IS THE MAIN FIX */
-  .licence-card {
-    width: 100%;
-    max-width: 100%;
-  }
 
-}
-/* ============================= */
-/* 🔥 TRUE EDGE-TO-EDGE FIX */
-/* ============================= */
+    overflow-x: auto;
+    overflow-y: hidden;
 
-@media (max-width: 900px) {
 
-  /* remove global page padding restriction */
-  .licence-page,
-  .licence-layout {
-    padding: 0 !important;
-    margin: 0 !important;
-    width: 100% !important;
-    max-width: 100% !important;
-  }
+    scroll-behavior: smooth;
 
-  /* keep beat section centered nicely */
-  .beat-center {
-    padding: 0 16px !important;
-  }
 
-  /* 🔥 break licence sections out */
-  .licence-side {
-    width: 100vw !important;
-    max-width: 100vw !important;
+    padding-bottom: 10px;
 
-    margin-left: calc(-50vw + 50%) !important;
-    margin-right: calc(-50vw + 50%) !important;
 
-    padding: 0 10px !important; /* premium spacing */
-  }
+    cursor: grab;
 
-  /* 🔥 cards full width but clean */
-  .licence-card {
-    width: 100% !important;
-    max-width: 100% !important;
 
-    margin-bottom: 12px !important;
-    border-radius: 14px !important; /* premium look */
-  }
+    user-select: none;
+
 
 }
-/* ============================= */
-/* 🔥 FIX SHIFT + KEEP BEAT CENTERED */
-/* ============================= */
 
-@media (max-width: 900px) {
 
-  /* ✅ restore proper centering for beat section */
-  .beat-center {
-    width: 100% !important;
-    max-width: 420px !important;
-    margin: 0 auto !important; /* CENTER FIX */
-    padding: 0 16px !important;
-  }
-
-  /* ✅ also keep meta/details centered */
-  .meta {
-    width: 100% !important;
-    max-width: 420px !important;
-    margin: 0 auto !important;
-  }
-
-  /* 🔥 ONLY stretch licence cards (not whole side anymore) */
-  .licence-side {
-    margin: 0 !important;
-    width: 100% !important;
-    padding: 0 10px !important;
-  }
-
-  /* 🔥 edge-to-edge cards WITHOUT shifting layout */
-  .licence-card {
-    width: calc(100vw - 20px) !important;
-    margin-left: calc(50% - 50vw + 10px) !important;
-    margin-right: calc(50% - 50vw + 10px) !important;
-
-    border-radius: 14px !important;
-  }
-
-}
-@media (max-width: 900px) {
-  .beat-center {
-    margin-top: 24px !important; /* adjust: 16 / 24 / 32 */
-  }
-}
-.licence-features {
-  list-style: none;
-  padding: 0;
-  margin-top: 10px;
+/* 🔥 hide scrollbar */
+#cartBeatRow::-webkit-scrollbar{
+    height: 0px;
 }
 
-.licence-features li {
-  font-size: 13px;
-  opacity: 0.85;
-  margin-bottom: 6px;
-  padding-left: 14px;
-  position: relative;
+
+/* 🔥 while dragging */
+#cartBeatRow.dragging{
+    cursor: grabbing;
+}
+/* =========================================
+🔥 FINAL META FIX
+========================================= */
+
+
+.meta{
+    position:relative;
+    z-index:20;
 }
 
-.licence-features li::before {
-  content: "•";
-  position: absolute;
-  left: 0;
-  color: #00ffc8;
+
+.meta-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+
+    padding:10px 14px;
+
+
+    border-radius:12px;
+
+
+    background:rgba(255,255,255,.06);
+
+
+    font-size:13px;
+
+
+    overflow:visible;
 }
-/* CENTER COLUMN FIX */
-.beat-center {
+
+
+.meta-row span{
+    filter:none !important;
+    opacity:1 !important;
+
+
+    visibility:visible !important;
+
+
+    color:white !important;
+
+
+    font-size:14px !important;
+
+
+    line-height:1.2 !important;
+
+
+    text-shadow:none !important;
+}
+
+
+.meta-row .label{
+    opacity:.55 !important;
+    font-size:11px !important;
+}
+
+
+#type,
+#genre,
+#mood,
+#bpm,
+#key{
+    display:inline-block !important;
+
+
+    min-width:40px;
+
+
+    text-align:right;
+
+
+    font-weight:700;
+
+
+    color:#ffffff !important;
+}
+/* =========================================
+🔥 CLEAN META ALIGNMENT
+========================================= */
+
+
+.meta{
+    width:100%;
+    max-width:320px;
+
+
+    margin:0 auto;
+
+
+    display:flex;
+    flex-direction:column;
+
+
+    gap:12px;
+}
+
+
+.meta-row{
+
+
+    display:grid;
+
+
+    grid-template-columns:110px 1fr;
+
+
+    align-items:center;
+
+
+    padding:14px 18px;
+
+
+    border-radius:16px;
+
+
+    background:rgba(255,255,255,.06);
+
+
+    backdrop-filter:blur(12px);
+
+
+    min-height:56px;
+}
+
+
+
+
+/* LEFT LABEL */
+.meta-row .label{
+
+
+    font-size:11px;
+
+
+    letter-spacing:1px;
+
+
+    opacity:.55;
+
+
+    text-align:left;
+}
+
+
+
+
+/* RIGHT VALUE */
+.meta-row span:not(.label){
+
+
+    text-align:right;
+
+
+    font-size:15px;
+
+
+    font-weight:700;
+
+
+    line-height:1.3;
+
+
+    word-break:break-word;
+}
+
+
+
+
+/* LONG TEXT FIX */
+#type{
+
+
+    font-size:14px !important;
+
+
+    line-height:1.4;
+
+
+    max-width:160px;
+
+
+    justify-self:end;
+}
+.meta{
+
+
+    gap:14px;
+
+
+    max-width:320px;
+}
+/* ========================================
+   🎵 QUICK PLAYLIST PANEL
+======================================== */
+
+
+.action-wrap{
+    position:relative;
+}
+
+
+.quick-playlist-panel{
+
+
+    position:absolute;
+
+
+    top:120%;
+    left:50%;
+
+
+    transform:
+    translateX(-50%)
+    translateY(10px);
+
+
+    min-width:220px;
+
+
+    background:
+    rgba(10,10,14,.96);
+
+
+    border:
+    1px solid
+    rgba(255,255,255,.08);
+
+
+    border-radius:18px;
+
+
+    backdrop-filter:
+    blur(24px);
+
+
+    padding:10px;
+
+
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+
+
+    opacity:0;
+    pointer-events:none;
+
+
+    transition:
+    .28s ease;
+
+
+    z-index:9999;
+}
+
+
+.quick-playlist-panel.active{
+
+
+    opacity:1;
+
+
+    pointer-events:auto;
+
+
+    transform:
+    translateX(-50%)
+    translateY(0);
+}
+
+
+.quick-playlist-item{
+
+
+    border:none;
+
+
+    background:
+    rgba(255,255,255,.04);
+
+
+    color:white;
+
+
+    padding:12px 14px;
+
+
+    border-radius:12px;
+
+
+    text-align:left;
+
+
+    cursor:pointer;
+
+
+    transition:.2s;
+}
+
+
+.quick-playlist-item:hover{
+
+
+    background:
+    rgba(255,255,255,.09);
+}
+#title {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    color: #ffffff !important;
+    font-size: 28px !important;
+    font-weight: 700 !important;
+    text-align: center !important;
+    margin: 15px 0 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    position: relative !important;
+    z-index: 10 !important;
+}
+.beat-actions {
   display: flex;
-  flex-direction: column;
-  align-items: center;   /* force horizontal center */
-  justify-content: center;
-  text-align: center;
-  width: 100%;
-}
-
-/* BEAT CARD */
-.beat-card {
-  margin: 0 auto;        /* hard center */
-}
-
-/* DETAILS BLOCK */
-.meta {
-  width: 100%;
-  max-width: 260px;      /* keeps it tight like your design */
-  margin: 12px auto 0 auto; /* center under beat */
-}
-
-/* EACH ROW ALIGN CLEAN */
-.meta-row {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 40px;
+  min-width: 40px;
+  padding: 0 14px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 20px;
+  color: rgba(255,255,255,0.85);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+}
+
+.action-btn:hover {
+  background: rgba(255,255,255,0.14);
+  border-color: rgba(255,255,255,0.2);
+  transform: translateY(-1px);
+}
+
+.action-btn:active {
+  transform: translateY(0);
+}
+
+.action-btn.like {
+  padding: 0 16px;
+}
+
+.action-btn.like.liked svg path {
+  fill: #1DB954;
+  stroke: #1DB954;
+}
+
+.action-btn svg {
+  flex-shrink: 0;
+}
+
+#likeCount {
+  font-variant-numeric: tabular-nums;
+  min-width: 16px;
   text-align: left;
 }
-.beat-center {
-  gap: 10px;
+.action-btn {
+  height: 44px;  /* was 40px */
+  padding: 0 18px;  /* was 14px */
+}
+.action-btn {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 24px;
+    padding: 10px 18px;
+    color: rgba(255,255,255,0.8);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    backdrop-filter: blur(10px);
+    min-width: 70px;
+    justify-content: center;
 }
 
-.meta {
-  backdrop-filter: blur(6px);
-  border-radius: 12px;
-}
-/* BASE */
-.licence-card {
-  position: relative;
-  transition: all 0.4s ease;
-  cursor: pointer;
+.action-btn:hover {
+    background: rgba(255,255,255,0.14);
+    transform: translateY(-1px);
 }
 
-/* HIDDEN PAY AREA */
-.pay-area {
-  max-height: 0;
-  overflow: hidden;
-  opacity: 0;
-  transition: all 0.4s ease;
+.action-btn svg {
+    flex-shrink: 0;
 }
 
-/* PAY BUTTON */
-.pay-btn {
-  width: 100%;
-  padding: 12px;
-  margin-top: 12px;
-  border: none;
-  border-radius: 10px;
-  font-weight: bold;
-  background: linear-gradient(135deg, #00ffc8, #00aaff);
-  color: #000;
+#likeBtn.liked svg {
+    fill: #ff3b5c;
+    stroke: #ff3b5c;
+    color: #ff3b5c;
+}
+.licence-card.locked {
+    filter: grayscale(0.8);
+    cursor: not-allowed !important;
 }
 
-/* ACTIVE CARD */
-.licence-card.active {
-  transform: scale(0.96); /* shrink first */
-  z-index: 10;
+.licence-card.locked .pay-btn {
+    display: none !important;
 }
 
-/* EXPANDED */
-.licence-card.expanded {
-  transform: scale(1);
+.licence-card.auto-selected {
+    border: 2px solid #3b82f6 !important;
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3) !important;
 }
 
-/* SHOW PAY */
-.licence-card.expanded .pay-area {
-  max-height: 120px;
-  opacity: 1;
+.licence-card.auto-selected::after {
+    content: 'AUTO-SELECTED';
+    position: absolute;
+    top: -8px;
+    right: 10px;
+    background: #3b82f6;
+    color: white;
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+@media (max-width: 768px) {
+  #globalPlayerUI #gpTitle {
+    display: none !important;
+  }
+  
+  #globalPlayerUI .gp-left {
+    gap: 0 !important;
+  }
+}
+/* MORE GAP BETWEEN PLAYER CONTROLS */
+#globalPlayerUI .gp-controls {
+  gap: 20px !important; /* Was probably 8-12px, now 20px */
 }
 
-/* FADE OTHERS */
-.licence-card.faded {
-  opacity: 0.3;
-  transform: scale(0.95);
-}
-/* RESET BASE (no glow until active) */
-.licence-card {
-  box-shadow: 0 0 0 rgba(0,0,0,0);
-  transition: all 0.4s ease, box-shadow 0.5s ease;
-}
-
-/* 🔴 FREE — RED */
-.licence-card.active.free {
-  box-shadow:
-    0 0 10px rgba(255, 60, 60, 0.6),
-    0 0 25px rgba(255, 0, 0, 0.5),
-    0 0 45px rgba(255, 0, 0, 0.4);
-}
-
-/* 💗 BASIC — PINK */
-.licence-card.active.basic {
-  box-shadow:
-    0 0 10px rgba(255, 120, 200, 0.6),
-    0 0 25px rgba(255, 0, 150, 0.5),
-    0 0 45px rgba(255, 0, 150, 0.4);
-}
-
-/* 🔵 PRO — DEEP BRIGHT BLUE */
-.licence-card.active.pro {
-  box-shadow:
-    0 0 10px rgba(0, 180, 255, 0.7),
-    0 0 30px rgba(0, 120, 255, 0.6),
-    0 0 55px rgba(0, 80, 255, 0.5);
-}
-
-/* 🟢 EXCLUSIVE — BRIGHT GREEN */
-.licence-card.active.exclusive {
-  box-shadow:
-    0 0 10px rgba(0, 255, 120, 0.7),
-    0 0 30px rgba(0, 255, 80, 0.6),
-    0 0 55px rgba(0, 255, 80, 0.5);
-}
-/* ============================= */
-/* 🔥 FULL BACKGROUND + HARD GLASS */
-/* ============================= */
-
-/* background image (dynamic cover) */
-body {
-  margin: 0;
-  padding: 0;
-
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-
-/* 🔥 GLASS LAYER */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-
-  backdrop-filter: blur(80px) saturate(140%);
-  -webkit-backdrop-filter: blur(80px) saturate(140%);
-
-  background: rgba(5, 7, 13, 0.65);
-
-  pointer-events: none;
-}
-
-/* OPTIONAL DEPTH LIGHTING */
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-
-  background:
-    radial-gradient(circle at 20% 30%, rgba(0,150,255,0.15), transparent 50%),
-    radial-gradient(circle at 80% 70%, rgba(255,0,120,0.12), transparent 50%);
-
-  pointer-events: none;
-}
-
-/* content stays above glass */
-.licence-page {
-  position: relative;
-  z-index: 1;
-}
-/* 🔥 HARD GLASS FULL SCREEN FIX */
-.licence-page {
-  position: relative;
-  min-height: 100vh;
-  width: 100%;
-  overflow: hidden;
-}
-
-/* GLASS LAYER (the blur surface) */
-.licence-page::before {
-  content: "";
-  position: fixed; /* 👈 KEY */
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-
-  backdrop-filter: blur(30px);
-  -webkit-backdrop-filter: blur(30px);
-
-  background: rgba(255, 255, 255, 0.05);
-
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* MAKE CONTENT FLOAT ABOVE GLASS */
-.licence-layout {
-  position: relative;
-  z-index: 1;
+/* If you want just prev/play/next with more space */
+#globalPlayerUI #gpPrev,
+#globalPlayerUI #gpPlay,
+#globalPlayerUI #gpNext {
+  margin: 0 4px !important; /* Extra 8px total between them */
 }

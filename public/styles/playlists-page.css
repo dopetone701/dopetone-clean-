@@ -1,0 +1,1492 @@
+/* ===============================
+   HERO BASE (CLEAN)
+================================ */
+
+
+.arsenal-hero {
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+
+
+  margin: 0;
+  padding: 50px 20px 50px;
+
+
+  width: 100%;
+  margin-top: 70px;
+}
+
+
+/* ===============================
+   WAVE IMAGE
+================================ */
+
+
+.arsenal-hero::before {
+  content: "";
+  position: absolute;
+
+
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+
+
+  width: 100%;
+  height: 280px;
+
+
+  background:
+  url("/images/beats-wav-bg.png")
+  center/contain no-repeat;
+
+
+  opacity: 0.1;
+  filter: blur(1px);
+
+
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 15%,
+    black 85%,
+    transparent 100%
+  );
+
+
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 15%,
+    black 85%,
+    transparent 100%
+  );
+
+
+  pointer-events: none;
+  z-index: 1;
+}
+
+
+/* ===============================
+   RED CINEMATIC GLOW
+================================ */
+
+
+.arsenal-hero::after {
+  content: "";
+  position: absolute;
+
+
+  bottom: 0;
+  left: 50%;
+
+
+  transform: translateX(-50%);
+
+
+  width: 700%;
+  height: 300px;
+
+
+  background: radial-gradient(
+    ellipse at center,
+    rgba(103, 0, 24, 0.35),
+    transparent 70%
+  );
+
+
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 20%,
+    black 80%,
+    transparent 100%
+  );
+
+
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 20%,
+    black 80%,
+    transparent 100%
+  );
+
+
+  pointer-events: none;
+  z-index: 1;
+}
+
+
+/* ===============================
+   CONTENT
+================================ */
+
+
+.arsenal-hero * {
+  position: relative;
+  z-index: 2;
+}
+
+
+/* ===============================
+   CENTER SYSTEM
+================================ */
+
+
+.arsenal-hero-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+
+/* ===============================
+   TITLE
+================================ */
+
+
+.arsenal-title {
+
+
+  font-family:
+  "Orbitron",
+  sans-serif;
+
+
+  font-size: 34px;
+  font-weight: 700;
+
+
+  color: #ffffff;
+
+
+  letter-spacing: 1px;
+  line-height: 1.2;
+
+
+  text-shadow:
+    0 0 10px rgba(0,255,200,0.25),
+    0 0 40px rgba(0,255,200,0.15);
+
+
+  position: relative;
+}
+
+
+/* glow line */
+.arsenal-title::after {
+
+
+  content: "";
+
+
+  position: absolute;
+
+
+  bottom: -8px;
+  left: 50%;
+
+
+  transform: translateX(-50%);
+
+
+  width: 60%;
+  height: 2px;
+
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #00ffc8,
+    transparent
+  );
+
+
+  opacity: 0.8;
+}
+
+
+/* ===============================
+   SUBTEXT
+================================ */
+
+
+.arsenal-sub {
+
+
+  margin-top: 18px;
+
+
+  font-size: 14px;
+
+
+  color:
+  rgba(255,255,255,0.7);
+
+
+  max-width: 520px;
+
+
+  line-height: 1.6;
+
+
+  opacity: 0.9;
+}
+
+
+/* ========================================
+📱 FULL MOBILE PLAYLIST TOOLBAR
+======================================== */
+
+
+/* ========================================
+📱 MOBILE PLAYLIST TOOLBAR
+======================================== */
+
+
+@media(max-width:768px){
+
+
+    .playlist-toolbar{
+        width:100%;
+        overflow-x:auto;
+overflow-y:hidden;
+
+
+        padding:0 14px;
+        margin-top:10px;
+    }
+
+
+    .view-toggle{
+    display:flex;
+    align-items:center;
+    gap:12px;
+
+    overflow-x:auto;
+    overflow-y:visible;
+    -webkit-overflow-scrolling:touch;
+
+    white-space:nowrap;
+
+    scrollbar-width:none;
+
+    -webkit-overflow-scrolling:touch;
+}
+
+
+    .view-toggle::-webkit-scrollbar{
+        display:none;
+    }
+
+
+    #listBtn,
+    #gridBtn,
+    .playlist-capsules,
+    #playlistMiniAdd{
+
+
+        flex-shrink:0;
+    }
+
+
+    .playlist-capsules{
+
+
+        display:flex;
+        align-items:center;
+        gap:12px;
+    }
+
+
+    .playlist-capsules button{
+        flex-shrink:0;
+    }
+}
+
+
+
+
+    /* =========================
+       ADD BUTTON
+    ========================= */
+
+
+    #playlistMiniAdd{
+
+
+        flex-shrink:0;
+    }
+
+
+
+
+/* ========================================
+🔥 PLAYLIST GRID = SAME AS SIMILAR TRACKS
+======================================== */
+
+
+#gridContainer{
+
+
+    display:flex;
+    flex-wrap:wrap;
+    gap:22px;
+
+
+    padding:24px;
+
+
+    align-items:flex-start;
+}
+
+
+/* ========================================
+🔥 CARD
+======================================== */
+
+
+#gridContainer .beat-card{
+
+
+    position:relative;
+
+
+    width:260px;
+    min-width:260px;
+
+
+    background:
+    rgba(255,255,255,.04);
+
+
+    border:
+    1px solid rgba(255,255,255,.08);
+
+
+    border-radius:22px;
+
+
+    padding:12px;
+
+
+    overflow-x:auto;
+overflow-y:hidden;
+
+
+    backdrop-filter:blur(12px);
+
+
+    box-shadow:
+    0 10px 30px rgba(0,0,0,.35);
+
+
+    transition:.25s;
+}
+
+
+#gridContainer .beat-card:hover{
+
+
+    transform:translateY(-6px);
+
+
+    border-color:
+    rgba(0,255,255,.35);
+}
+
+
+/* ========================================
+🖼 IMAGE
+======================================== */
+
+
+#gridContainer .beat-cover-wrap{
+
+
+    position:relative;
+
+
+    width:100%;
+    height:150px;
+
+
+    overflow:hidden;
+
+
+    border-radius:18px;
+}
+
+
+#gridContainer .beat-cover{
+
+
+    width:100%;
+    height:100%;
+
+
+    object-fit:cover;
+
+
+    display:block;
+}
+
+
+/* ========================================
+▶ PLAY BUTTON
+======================================== */
+
+
+#gridContainer .beat-play-btn{
+
+
+    position:absolute;
+
+
+    inset:0;
+
+
+    margin:auto;
+
+
+    width:58px;
+    height:58px;
+
+
+    border:none;
+    border-radius:50%;
+
+
+    background:
+    rgba(0,0,0,.65);
+
+
+    backdrop-filter:blur(12px);
+
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+
+    color:white;
+
+
+    font-size:18px;
+
+
+    cursor:pointer;
+
+
+    z-index:20;
+
+
+    opacity:0;
+
+
+    transition:.25s;
+}
+
+
+#gridContainer .beat-cover-wrap:hover
+.beat-play-btn{
+
+
+    opacity:1;
+}
+
+
+/* ========================================
+🎵 TITLE
+======================================== */
+
+
+#gridContainer .beat-title{
+
+
+    margin-top:12px;
+
+
+    font-size:15px;
+    font-weight:700;
+
+
+    color:white;
+
+
+    text-transform:uppercase;
+}
+
+
+/* ========================================
+🏷 TAG
+======================================== */
+
+
+#gridContainer .beat-meta{
+
+
+    margin-top:4px;
+
+
+    color:#8cf;
+
+
+    font-size:13px;
+
+
+    text-transform:uppercase;
+}
+
+
+/* ========================================
+💰 PRICE
+======================================== */
+
+
+#gridContainer .beat-price-row{
+
+
+    display:flex;
+
+
+    gap:10px;
+
+
+    margin-top:10px;
+}
+
+
+#gridContainer .beat-old-price{
+
+
+    color:#999;
+
+
+    text-decoration:line-through;
+}
+
+
+#gridContainer .beat-price{
+
+
+    color:#6fffb0;
+
+
+    font-weight:700;
+}
+
+
+/* ========================================
+🛒 BUTTON
+======================================== */
+
+
+#gridContainer .beat-buy-btn{
+
+
+    width:100%;
+
+
+    margin-top:12px;
+
+
+    border:none;
+
+
+    height:42px;
+
+
+    border-radius:14px;
+
+
+    background:
+    linear-gradient(
+        90deg,
+        #00e5ff,
+        #6f7dff,
+        #ff4fd8
+    );
+
+
+    color:white;
+
+
+    font-weight:700;
+
+
+    cursor:pointer;
+
+
+    transition:.25s;
+}
+
+
+#gridContainer .beat-buy-btn:hover{
+
+
+    transform:translateY(-2px);
+
+
+    opacity:.92;
+}
+
+
+/* ========================================
+📱 MOBILE
+======================================== */
+
+
+@media(max-width:768px){
+
+
+    #gridContainer{
+
+
+        justify-content:center;
+
+
+        gap:14px;
+
+
+        padding:14px;
+    }
+
+
+    #gridContainer .beat-card{
+
+
+        width:220px;
+        min-width:220px;
+    }
+}
+/* ========================================
+📱 MOBILE GRID = ALL BEATS STYLE
+======================================== */
+
+
+@media(max-width:768px){
+
+
+    #gridContainer{
+
+
+        display:grid !important;
+
+
+        grid-template-columns:
+        repeat(3,minmax(0,1fr));
+
+
+        gap:12px;
+
+
+        padding:12px;
+
+
+        align-items:start;
+    }
+
+
+    /* =========================
+       CARD
+    ========================== */
+
+
+    #gridContainer .beat-card{
+
+
+        width:100% !important;
+        min-width:0 !important;
+
+
+        border-radius:18px;
+
+
+        padding:8px;
+
+
+        background:
+        rgba(255,255,255,.04);
+
+
+        border:
+        1px solid rgba(255,255,255,.08);
+
+
+        backdrop-filter:blur(12px);
+
+
+        box-shadow:
+        0 10px 24px rgba(0,0,0,.28);
+
+
+        overflow:hidden;
+    }
+
+
+    /* =========================
+       IMAGE
+    ========================== */
+
+
+    #gridContainer .beat-cover-wrap{
+
+
+        width:100%;
+        height:110px;
+
+
+        border-radius:14px;
+
+
+        overflow:hidden;
+    }
+
+
+    #gridContainer .beat-cover{
+
+
+        width:100%;
+        height:100%;
+
+
+        object-fit:cover;
+    }
+
+
+    /* =========================
+       PLAY BTN
+    ========================== */
+
+
+    #gridContainer .beat-play-btn{
+
+
+        width:42px;
+        height:42px;
+
+
+        font-size:14px;
+
+
+        opacity:1;
+
+
+        background:
+        rgba(0,0,0,.45);
+
+
+        backdrop-filter:blur(10px);
+    }
+
+
+    /* =========================
+       TITLE
+    ========================== */
+
+
+    #gridContainer .beat-title{
+
+
+        margin-top:10px;
+
+
+        font-size:11px;
+
+
+        line-height:1.3;
+
+
+        font-weight:700;
+
+
+        color:white;
+
+
+        text-transform:uppercase;
+    }
+
+
+    /* =========================
+       META
+    ========================== */
+
+
+    #gridContainer .beat-meta{
+
+
+        margin-top:4px;
+
+
+        font-size:10px;
+
+
+        color:#8cf;
+
+
+        text-transform:uppercase;
+    }
+
+
+    /* =========================
+       PRICE
+    ========================== */
+
+
+    #gridContainer .beat-price-row{
+
+
+        margin-top:8px;
+
+
+        gap:6px;
+
+
+        font-size:11px;
+    }
+
+
+    #gridContainer .beat-old-price{
+
+
+        color:#777;
+
+
+        text-decoration:line-through;
+    }
+
+
+    #gridContainer .beat-price{
+
+
+        color:#6fffb0;
+
+
+        font-weight:700;
+    }
+
+
+    /* =========================
+       BUTTON
+    ========================== */
+
+
+    #gridContainer .beat-buy-btn{
+
+
+        width:100%;
+
+
+        height:34px;
+
+
+        margin-top:8px;
+
+
+        border:none;
+
+
+        border-radius:12px;
+
+
+        font-size:11px;
+
+
+        font-weight:700;
+
+
+        background:
+        linear-gradient(
+            90deg,
+            #00e5ff,
+            #6f7dff,
+            #ff4fd8
+        );
+
+
+        color:white;
+    }
+}
+/* ========================================
+🌍 GLOBAL PERFECT SIDE BALANCE FIX
+======================================== */
+
+
+html,
+body{
+
+
+    overflow-x:hidden;
+}
+
+
+/* ========================================
+GLOBAL CONTAINERS
+======================================== */
+
+
+.container,
+.section,
+.wave-section,
+.playlist-section,
+.latest-section,
+.beats-section,
+#waveList,
+.wave-list,
+.playlist-wave-list,
+#gridContainer{
+
+
+    width:100%;
+
+
+    box-sizing:border-box;
+
+
+    padding-left:14px !important;
+    padding-right:14px !important;
+}
+
+
+/* ========================================
+ROWS
+======================================== */
+
+
+.wave-row,
+.beat-row,
+.latest-row{
+
+
+    width:100% !important;
+
+
+    margin-left:0 !important;
+    margin-right:0 !important;
+}
+
+
+/* ========================================
+CARDS
+======================================== */
+
+
+.wave-card,
+.beat-card,
+.latest-card{
+
+
+    box-sizing:border-box;
+}
+
+
+/* ========================================
+📱 MOBILE
+======================================== */
+
+
+@media(max-width:768px){
+
+
+    .container,
+    .section,
+    .wave-section,
+    .playlist-section,
+    .latest-section,
+    .beats-section,
+    #waveList,
+    .wave-list,
+    .playlist-wave-list,
+    #gridContainer{
+
+
+        padding-left:14px !important;
+        padding-right:14px !important;
+    }
+
+
+}
+/* ===============================
+   🔥 PLAYER MORE SLIDEOUT PANEL
+=============================== */
+#playerMorePanel {
+  position: fixed;
+  top: 0;
+  right: -320px;
+  width: 320px;
+  height: 100vh;
+  background: rgba(10, 10, 15, 0.98);
+  backdrop-filter: blur(40px);
+  border-left: 1px solid rgba(255,255,255,0.08);
+  z-index: 99999;
+  transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+
+#playerMorePanel.active {
+  right: 0;
+}
+
+
+/* HEADER */
+.more-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+
+.more-panel-header img {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+
+.more-panel-info {
+  flex: 1;
+  min-width: 0;
+}
+
+
+.more-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+.more-artist {
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  margin-top: 2px;
+}
+
+
+.more-close {
+  background: rgba(255,255,255,0.06);
+  border: none;
+  color: rgba(255,255,255,0.7);
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: 0.2s;
+}
+
+
+.more-close:hover {
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+}
+
+
+/* ACTIONS */
+.more-panel-actions {
+  flex: 1;
+  padding: 12px;
+  overflow-y: auto;
+}
+
+
+.more-item {
+  width: 100%;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.8);
+  padding: 14px 16px;
+  border-radius: 12px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+
+.more-item span {
+  font-size: 18px;
+}
+
+
+.more-item:hover {
+  background: rgba(0, 240, 255, 0.08);
+  border-color: rgba(0, 240, 255, 0.2);
+  color: #fff;
+  transform: translateX(-4px);
+}
+
+
+.more-item.buy {
+  background: linear-gradient(135deg, #00f0ff, #7c3aed);
+  border: none;
+  color: #000;
+  font-weight: 600;
+}
+
+
+.more-item.buy:hover {
+  transform: translateX(-4px) scale(1.02);
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+}
+
+
+.more-item.delete {
+  background: rgba(255, 77, 77, 0.08);
+  border-color: rgba(255, 77, 77, 0.2);
+  color: #ff4d4d;
+}
+
+
+.more-item.delete:hover {
+  background: rgba(255, 77, 77, 0.15);
+}
+
+
+/* MOBILE */
+@media(max-width:768px){
+  #playerMorePanel {
+    width: 100%;
+    right: -100%;
+  }
+}
+/* ===============================
+   ➕ PREMIUM ADD PLAYLIST BTN
+=============================== */
+.add-playlist-btn {
+    position: relative;
+    background: #0A0A0F; /* premium space black */
+    border: 1px solid rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.6);
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+
+.add-playlist-btn .plus-icon {
+    font-size: 18px;
+    font-weight: 300;
+    transition: opacity 0.2s ease;
+}
+
+
+.add-playlist-btn .hover-text {
+    position: absolute;
+    opacity: 0;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: opacity 0.2s ease;
+}
+
+
+/* HOVER STATE */
+.add-playlist-btn:hover {
+    width: auto;
+    padding: 0 14px;
+    background: #0A0A0F; /* stay space black */
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #FFFFFF; /* sable/white text */
+}
+
+
+.add-playlist-btn:hover .plus-icon {
+    opacity: 0;
+}
+
+
+.add-playlist-btn:hover .hover-text {
+    opacity: 1;
+    position: relative;
+}
+
+
+/* ===============================
+   📱 MOBILE
+=============================== */
+@media(max-width:768px){
+    .add-playlist-btn {
+        width: 36px;
+        height: 36px;
+    }
+   
+    .add-playlist-btn:hover {
+        padding: 0 16px;
+    }
+   
+    .add-playlist-btn .hover-text {
+        font-size: 11px;
+    }
+}
+.playlist-controls-wrap {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+#playlistMiniAdd,
+#playlistRemoveBtn {
+  min-width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #0A0A0F;
+  border: 1px solid rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.6);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+#playlistMiniAdd {
+  width: 32px;
+}
+
+
+#playlistMiniAdd {
+  position: relative;
+  overflow: hidden;
+}
+
+#playlistMiniAdd .plus-icon {
+  font-size: 18px;
+  font-weight: 300;
+  transition: opacity 0.2s ease;
+}
+
+#playlistMiniAdd .hover-text {
+  position: absolute;
+  opacity: 0;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+#playlistMiniAdd:hover {
+  width: auto;
+  padding: 0 14px;
+  border-color: rgba(255,255,255,0.15);
+  color: #FFF;
+}
+
+#playlistMiniAdd:hover .plus-icon {
+  opacity: 0;
+}
+
+#playlistMiniAdd:hover .hover-text {
+  opacity: 1;
+  position: relative;
+}
+
+#playlistRemoveBtn {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+#playlistRemoveBtn:hover,
+#playlistRemoveBtn.active {
+  border-color: rgba(255,255,255,0.15);
+  color: #FFF;
+}
+
+.playlist-remove-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.remove-dropdown {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  background: #0A0A0F;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 8px;
+  min-width: 180px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-8px);
+  transition: 0.2s ease;
+  z-index: 9999;
+}
+
+.remove-dropdown.active {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.remove-option {
+  width: 100%;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.8);
+  padding: 12px 14px;
+  border-radius: 10px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.remove-option:last-child {
+  margin-bottom: 0;
+}
+
+.remove-option:hover {
+  background: rgba(255, 77, 77, 0.12);
+  border-color: rgba(255, 77, 77, 0.3);
+  color: #ff4d4d;
+}
+/* ===============================
+   📱 MOBILE HAMBURGER - NEXT TO BUTTON
+=============================== */
+@media(max-width:768px){
+  .playlist-remove-wrap {
+    position: relative;
+  }
+  
+  .remove-dropdown {
+    position: absolute;
+    top: 40px;
+    right: 0;
+    left: auto;
+    bottom: auto;
+    width: 180px;
+    min-width: 180px;
+    transform: translateY(-8px);
+  }
+  
+  .remove-dropdown.active {
+    transform: translateY(0);
+  }
+  
+  #playlistMiniAdd,
+  #playlistRemoveBtn {
+    width: 36px;
+    height: 36px;
+  }
+}
+/* ===============================
+   🔥 SIMILAR TRACKS - FEATURED STYLE
+   Uses your .featured-card styles
+=============================== */
+
+#similarTrack {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  padding: 20px 4px 40px;
+  scrollbar-width: none;
+  perspective: 1200px;
+}
+
+#similarTrack::-webkit-scrollbar {
+  display: none;
+}
+
+/* Override absolute positioning for scroll */
+#similarTrack .featured-card {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  flex: 0 0 240px;
+  min-width: 240px;
+  max-width: 240px;
+  transform: none !important;
+  margin: 0;
+}
+
+#similarTrack .featured-card:hover {
+  transform: translateY(-6px) !important;
+}
+
+@media (max-width: 768px) {
+  #similarTrack .featured-card {
+    flex: 0 0 180px;
+    min-width: 180px;
+    max-width: 180px;
+  }
+}
+/* 🔥 DRAG CURSOR */
+#similarTrack {
+  cursor: grab;
+}
+
+#similarTrack.dragging {
+  cursor: grabbing;
+  user-select: none;
+}
+
+#similarTrack.dragging .featured-card {
+  pointer-events: none; /* prevents clicking while dragging */
+}
+
+#similarTrack .featured-card {
+  cursor: pointer;
+}
+.featured-buy {
+  position: relative;
+  z-index: 20 !important;
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+
+.featured-buy:hover {
+  transform: scale(1.05);
+}
+
+.featured-buy.added {
+  background: rgba(255, 60, 100, 0.2);
+  border: 1px solid rgba(255, 60, 100, 0.4);
+  color: #ff3c6f;
+}
+
+.featured-content {
+  position: relative;
+  z-index: 10;
+  pointer-events: auto;
+}
+
+/* Make sure card doesn't block clicks */
+.featured-card {
+  pointer-events: auto;
+}
+
+.featured-card img {
+  pointer-events: none;
+}

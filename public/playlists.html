@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playlists • Dope Tone</title>
+
+    <!-- FOUC FIX - MUST BE FIRST -->
+    <style>
+        html {
+            visibility: hidden;
+            opacity: 0;
+        }
+        html.loaded {
+            visibility: visible;
+            opacity: 1;
+            transition: opacity 0.15s ease;
+        }
+    </style>
+
+    <!-- FONTS -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- CROPPER.JS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+
+    <!-- MAIN -->
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/navbar.css">
+    <link rel="stylesheet" href="styles/auth.css">
+    <link rel="stylesheet" href="styles/playlist-modal.css">
+
+    <!-- PLAYER -->
+    <link rel="stylesheet" href="styles/global-player.css">
+    <link rel="stylesheet" href="styles/player-overlay.css">
+    <link rel="stylesheet" href="styles/full-screen.css">
+
+    <!-- PLAYLIST PAGE -->
+    <link rel="stylesheet" href="styles/playlists.css">
+    <link rel="stylesheet" href="styles/playlists-page.css">
+    <link rel="stylesheet" href="styles/arsenal-premium.css">
+    <link rel="stylesheet" href="styles/arsenal.css">
+    <link rel="stylesheet" href="styles/beats.css">
+    <link rel="stylesheet" href="styles/grid-beats.css">
+    <link rel="stylesheet" href="styles/components.css">
+    <link rel="stylesheet" href="styles/featured.css">
+    <link rel="stylesheet" href="styles/trending.css">
+    <link rel="stylesheet" href="styles/recent-played.css">
+    <link rel="stylesheet" href="styles/dopetone-footer.css">
+
+    <style>
+        /* Fix: make room for fixed global player */
+        body {
+            padding-bottom: 110px;
+        }
+       
+        /* ===============================
+           SEARCH - OBEYS YOUR TOGGLE RULES
+           =============================== */
+        .view-toggle .arsenal-search {
+          position: relative;
+          margin-left: auto;
+        }
+
+        .view-toggle #beatSearch {
+          border: none;
+          padding: 6px 14px;
+          border-radius: 8px;
+          font-size: 13px;
+          font-family: 'Poppins', sans-serif;
+          cursor: text;
+          background: transparent;
+          color: rgba(255,255,255,0.6);
+          transition: all 0.25s ease;
+          width: 220px;
+          outline: none;
+        }
+
+        .view-toggle #beatSearch::placeholder {
+          color: rgba(255,255,255,0.4);
+        }
+
+        .view-toggle #beatSearch:hover {
+          color: #fff;
+        }
+
+        .view-toggle #beatSearch:focus {
+          color: #fff;
+          background: rgba(255, 255, 255, 0.05);
+        }
+
+        .view-toggle .search-dropdown {
+          position: absolute;
+          top: 100%;
+          right: 0;
+          width: 320px;
+          background: #0a0e1a;
+          border: 1px solid rgba(255, 255, 255, 0.05);
+          border-radius: 8px;
+          max-height: 300px;
+          overflow-y: auto;
+          z-index: 1000;
+          display: none;
+          margin-top: 8px;
+        }
+
+        .view-toggle .search-dropdown.active {
+          display: block;
+        }
+       
+        .search-item {
+          display: flex;
+          align-items: center;
+          padding: 10px 12px;
+          gap: 10px;
+          cursor: pointer;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+          transition: background 0.2s ease;
+        }
+       
+        .search-item:hover {
+          background: rgba(255, 255, 255, 0.05);
+        }
+       
+        .search-item img {
+          width: 40px;
+          height: 40px;
+          border-radius: 6px;
+          object-fit: cover;
+        }
+       
+        .search-item-info {
+          flex: 1;
+        }
+       
+        .search-item-title {
+          font-size: 13px;
+          font-family: 'Poppins', sans-serif;
+          color: #fff;
+          margin-bottom: 2px;
+        }
+       
+        .search-item-meta {
+          font-size: 11px;
+          font-family: 'Poppins', sans-serif;
+          color: rgba(255, 255, 255, 0.5);
+        }
+       
+        .search-item-play {
+          width: 28px;
+          height: 28px;
+          border-radius: 50%;
+          background: rgba(0, 234, 255, 0.1);
+          border: 1px solid rgba(0, 234, 255, 0.3);
+          color: #00eaff;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- ================= NAVBAR ================= -->
+<div id="navbarMount"></div>
+
+<!-- ================= AUTH ================= -->
+<div id="authMount"></div>
+
+<!-- ================= HERO ================= -->
+<section class="arsenal-hero">
+    <div class="page-wrap">
+        <div class="arsenal-hero-inner">
+            <h1 class="arsenal-title">Your Playlists Arsenal</h1>
+            <p class="arsenal-sub">Your liked tracks and custom sound collections</p>
+        </div>
+    </div>
+</section>
+
+<!-- ===============================
+     🎵 RECENTLY PLAYED - UNIQUE
+     =============================== -->
+<section id="recentPlayedWrap" class="rp-wrap">
+  <div class="rp-head">
+    <h2 class="rp-heading">Recently Played</h2>
+  </div>
+  <div id="rpTrackMount"></div>
+</section>
+
+<!-- ================= TOOLBAR ================= -->
+<div class="playlist-toolbar">
+    <div class="view-toggle">
+        <div class="toggle-fixed">
+            <button id="listBtn" class="active">List</button>
+            <button id="gridBtn">Grid</button>
+        </div>
+       
+        <!-- 🔥 SEARCH - SITS INSIDE YOUR TOGGLE -->
+        <div class="arsenal-search">
+          <input
+            type="search"
+            name="beat_search_qt7x9f"
+            id="beatSearch"
+            placeholder="Search..."
+            autocomplete="off"
+            role="searchbox"
+            readonly
+            onfocus="this.removeAttribute('readonly')"
+            data-lpignore="true"
+            data-1p-ignore="true"
+            data-bwignore="true"
+            data-form-type="other"
+          >
+          <div class="search-dropdown" id="searchDropdown"></div>
+        </div>
+       
+        <div id="playlistCapsules" class="playlist-capsules"></div>
+
+        <div class="playlist-controls-wrap">
+            <button id="playlistMiniAdd" class="add-playlist-btn">
+                <span class="plus-icon">+</span>
+                <span class="hover-text">Add Playlist</span>
+            </button>
+           
+            <div class="playlist-remove-wrap">
+                <button id="playlistRemoveBtn">⋮</button>
+                <div class="remove-dropdown">
+                    <button class="remove-option" data-action="playlist">
+                        <span>🗑</span> Remove Playlist
+                    </button>
+                    <button class="remove-option" data-action="track">
+                        <span>❌</span> Remove Track
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ================= LIST VIEW ================= -->
+<section id="arsenalSection" class="arsenal-section">
+    <div id="waveList" class="wave-list">
+        <p class="loading-playlists">Loading playlist beats...</p>
+    </div>
+</section>
+
+<!-- ================= GRID VIEW ================= -->
+<section id="gridSection" class="grid-section" style="display:none;">
+    <div id="gridContainer" class="grid-container"></div>
+</section>
+
+<!-- ===============================
+   🔥 SIMILAR TRACKS
+=============================== -->
+<section class="similar-section">
+    <div class="section-header">
+        <h2 class="section-title" id="similarTitle">Similar Tracks</h2>
+    </div>
+    <div id="similarTrack" class="latest-scroll"></div>
+</section>
+
+<!-- ================= GLOBAL PLAYER - SVG ONLY ================= -->
+<div id="globalPlayerUI" class="global-player">
+        <div class="gp-left">
+            <img id="gpCover" src="images/logo.png" />
+            <div class="gp-text" id="gpInfo">
+                <div id="gpTitle">No track</div>
+                <button id="gpAdd">+</button>
+            </div>
+        </div>
+       
+        <div class="gp-center">
+            <div class="gp-controls">
+               <button id="gpShuffle" class="player-btn" title="Enable shuffle">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M10.59 9.17L5.41 4L4 5.41l5.17 5.17l1.42-1.41zM14.5 4l2.04 2.04L4 18.59L5.41 20L17.96 7.46L20 9.5V4h-5.5zm.33 9.41l-1.41 1.41l3.13 3.13L14.5 20H20v-5.5l-2.04 2.04l-3.13-3.13z"/>
+                    </svg>
+                </button>
+
+                <button id="gpPrev" class="player-btn" title="Previous">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
+                    </svg>
+                </button>
+
+                <button id="gpPlay" class="player-btn" title="Play" aria-label="Play/Pause">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                        <path id="gpPlayPath" d="M8 5v14l11-7z"/>
+                    </svg>
+                </button>
+
+                <button id="gpNext" class="player-btn" title="Next">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
+                    </svg>
+                </button>
+
+                <button id="gpRepeat" class="player-btn" title="Enable repeat">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/>
+                    </svg>
+                </button>
+
+                <button id="gpDownload" class="gp-side player-btn" title="Download">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                    </svg>
+                </button>
+                <button id="gpMore" class="gp-side player-btn" title="More">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                    </svg>
+                </button>
+
+            </div>
+           
+            <div class="gp-progress-wrap">
+                <span id="gpCurrent">0:00</span>
+                <div id="gpProgress"><div id="gpBar"></div></div>
+                <span id="gpDuration">0:00</span>
+            </div>
+        </div>
+       
+        <div class="gp-right">
+            <button id="loveTrackBtn" class="love-track-btn">
+                <span class="love-text">LOVE IT</span>
+                <span class="love-heart">♡</span>
+            </button>
+            <div class="wave-card player-cover-wrap">
+                <canvas id="liquidEq" width="54" height="54"></canvas>
+            </div>
+        </div>
+    </div>
+
+
+<!-- ================= MOBILE PLAYER - SVG ONLY ================= -->
+<div id="mobilePlayer" class="mobile-player">
+        <div class="mp-header">
+            <span id="mpClose">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
+                </svg>
+            </span>
+        </div>
+        <img id="mpCover" src="images/logo.png">
+        <div id="mpTitle">No track</div>
+       
+        <div class="mp-controls">
+            <button id="mpPrev" class="player-btn">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
+                </svg>
+            </button>
+           
+            <button id="mpPlay" class="player-btn play-btn" title="Play" aria-label="Play/Pause">
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+        <path id="mpPlayPath" d="M8 5v14l11-7z"/>
+    </svg>
+</button>
+
+           
+            <button id="mpNext" class="player-btn">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
+                </svg>
+            </button>
+        </div>
+       
+        <div id="mpProgress"><div id="mpBar"></div></div>
+       
+        <div class="mp-time">
+            <span id="mpCurrent">0:00</span>
+            <span id="mpDuration">0:00</span>
+        </div>
+       
+        <div class="mp-actions">
+            <button id="mpLike" class="love-track-btn">
+                <span class="love-heart">♡</span>
+            </button>
+           
+            <button id="mpShuffle" class="player-btn" title="Shuffle">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M10.59 9.17L5.41 4L4 5.41l5.17 5.17l1.42-1.41zM14.5 4l2.04 2.04L4 18.59L5.41 20L17.96 7.46L20 9.5V4h-5.5zm.33 9.41l-1.41 1.41l3.13 3.13L14.5 20H20v-5.5l-2.04 2.04l-3.13-3.13z"/>
+                </svg>
+            </button>
+           
+            <button id="mpRepeat" class="player-btn" title="Repeat">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/>
+                </svg>
+            </button>
+           
+            <button id="mpDownload">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                </svg>
+            </button>
+           
+            <button id="mpBuy" class="player-btn" title="Buy Track">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
+    </svg>
+</button>
+
+
+
+            <button id="mpMore">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+
+<!-- ================= NAVBAR LOADER - SCOFIELD FIXED ================= -->
+<script>
+fetch("navbar.html")
+.then(res => res.text())
+.then(html => {
+    document.getElementById("navbarMount").innerHTML = html
+
+    // SCOFIELD: Re-bind menu AFTER navbar HTML exists
+    setTimeout(() => {
+        if (typeof initMobileMenu === 'function') {
+            initMobileMenu()
+        }
+        // SCOFIELD: Also fire custom event for other scripts
+        window.dispatchEvent(new Event('navbarLoaded'))
+    }, 50)
+})
+</script>
+
+
+<!-- ================= AUTH LOADER ================= -->
+<script>
+fetch("auth.html")
+.then(res => res.text())
+.then(html => {
+    document.getElementById("authMount").innerHTML = html
+    const script = document.createElement("script")
+    script.src = "js/auth.js"
+    script.onload = () => {
+        if(window.initAuth){
+            window.initAuth()
+        }
+    }
+    document.body.appendChild(script)
+})
+</script>
+
+<!-- ================= LIBS ================= -->
+<script src="https://unpkg.com/wavesurfer.js"></script>
+
+<!-- ================= PLAYLIST SYSTEM - LOAD FIRST ================= -->
+<script type="module" src="js/playlists/playlist-storage.js"></script>
+<script type="module" src="js/playlists/playlist-engine.js"></script>
+<script type="module" src="js/playlists/playlist-render.js"></script>
+<script type="module" src="js/playlists/playlist-modal.js"></script>
+<script type="module" src="js/playlists/recent-played.js"></script>
+
+<!-- ================= PAGE ================= -->
+<script type="module" src="js/playlists/playlists-page.js"></script>
+
+<!-- ================= PLAYER CORE - LOAD LAST SO IT DOESN'T BREAK PAGE ================= -->
+<script src="js/global-player.js" defer></script>
+<script src="js/mini-eq.js" defer></script>
+
+<!-- FOUC FIX - SHOW PAGE WHEN LOADED -->
+<script>
+  window.addEventListener('load', () => {
+    document.documentElement.classList.add('loaded');
+  });
+</script>
+
+<!-- ===============================
+🔥 DOPE TONE FOOTER
+=============================== -->
+<footer class="dt-footer">
+    <!-- glow -->
+    <div class="dt-footer-glow"></div>
+
+    <div class="dt-footer-top">
+        <!-- BRAND -->
+        <div class="dt-footer-brand">
+            <h2>DOPE TONE</h2>
+            <p>Premium beats, futuristic sound, dark energy & industry vibes.</p>
+            <div class="footer-socials">
+                <a href="#" class="footer-social ig" target="_blank">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="#" class="footer-social yt" target="_blank">
+                    <i class="fab fa-youtube"></i>
+                </a>
+                <a href="#" class="footer-social tk" target="_blank">
+                    <i class="fab fa-tiktok"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- LINKS -->
+        <div class="dt-footer-links">
+            <div class="dt-footer-col">
+                <h4>Explore</h4>
+                <a href="beats.html">Beats</a>
+                <a href="index.html">Samples</a>
+                <a href="#">Trending</a>
+            </div>
+           
+            <div class="dt-footer-col">
+                <h4>Support</h4>
+                <a href="#">Licensing</a>
+                <a href="#">Terms</a>
+                <a href="#">Contact</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- bottom -->
+    <div class="dt-footer-bottom">
+        <span>© 2026 DOPE TONE — All Rights Reserved</span>
+        <span class="footer-dna">SOUND • FUTURE • CULTURE</span>
+    </div>
+</footer>
+<!-- ================= SCOFIELD: MOBILE MENU INLINE ================= -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  
+  // Wait for navbar to inject
+  const checkNav = setInterval(() => {
+    const toggle = document.querySelector(".menu-toggle")
+    const panel = document.querySelector(".mobile-panel")
+    const overlay = document.querySelector(".overlay")
+    const closeBtn = document.getElementById("panelCloseBtn")
+
+    if (!toggle ||!panel ||!overlay) return
+
+    clearInterval(checkNav)
+
+    if (panel.dataset.navReady === "true") return
+    panel.dataset.navReady = "true"
+
+    let startX = 0, currentX = 0, dragging = false
+
+    function openMenu() {
+      panel.classList.add("active")
+      overlay.classList.add("active")
+      document.body.classList.add("menu-open")
+      document.body.classList.add("panel-open")
+      document.body.style.overflow = 'hidden'
+    }
+
+    function closeMenu() {
+      panel.classList.remove("active")
+      overlay.classList.remove("active")
+      document.body.classList.remove("menu-open")
+      document.body.classList.remove("panel-open")
+      document.body.style.overflow = ''
+      panel.style.transform = ""
+      if (overlay) overlay.style.opacity = ""
+    }
+
+    toggle.addEventListener("click", (e) => {
+      e.preventDefault()
+      panel.classList.contains("active")? closeMenu() : openMenu()
+    })
+
+    if (closeBtn) {
+      closeBtn.addEventListener("click", (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        closeMenu()
+      })
+    }
+
+    overlay.addEventListener("click", closeMenu)
+    panel.addEventListener("click", (e) => {
+      if (e.target.closest("a")) closeMenu()
+    })
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeMenu()
+    })
+
+    console.log("✅ mobile nav ready - playlists page")
+  }, 100)
+
+  // Stop checking after 5s
+  setTimeout(() => clearInterval(checkNav), 5000)
+})
+</script>
+
+
+</body>
+</html>

@@ -1,346 +1,512 @@
-console.log("STORE FILE RUNNING");
+// ===============================
+// 🟥 CLOUDFLARE D1 + R2 ONLY
+// ===============================
 
-// 🟥 GLOBAL STORE (DO NOT MOVE)
+// ===============================
+// 🟥 GLOBAL STORE
+// ===============================
 window.store = {
   beats: [],
+  filteredBeats: [],
   loaded: false
 }
 
 // ================================
-// 🟥 SUPABASE CONNECTION
+// 🔗 IMPORTS
 // ================================
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+import { initQuickMenu } from "./components/quick-menu.js"
+import { getBeats, getStatsOverview } from "./api.js"
+import { renderLatest } from "./sections/latest.js"
+import { renderFeatured } from "./sections/featured.js"
+import { renderWave } from "./sections/wave.js"
+import { renderTrending } from "./trending.js"
+import "./global-filter.js"
+import { initArsenalSearch } from "./components/arsenal-search.js"
 
-const db = createClient(
-  "https://puscryqnudgxjlzhrqrf.supabase.co",
-  "sb_publishable_Ji4XS2HywMG57NefOBEzYw_c4TPF-kf"
-)
-
+console.log("STORE FILE RUNNING")
+initQuickMenu()
 
 // ================================
-// 🟦 APP START
+// 🟦 APP START - FULL PAGE LOAD
 // ================================
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   console.log("🚀 app started")
 
-  initUI()
-  initMobileMenu()
-  initOrbit()
-  loadBeats()
+  const pageLoader = document.getElementById('pageLoader')
+  const appContent = document.getElementById('appContent')
+
+  try {
+    // 0. WAIT FOR AUTH TO LOAD
+    await waitForAuth();
+    console.log("✅ Auth ready:", window.Auth?.user?.email || 'guest');
+
+    // 1. Init UI stuff that doesn't need data
+    initUI()
+    initMobileMenu() // safe – will auto-retry if navbar isn't injected yet
+    initOrbit()
+    initArsenalSearch()
+
+    // 2. Load all data from D1/R2 - PARALLEL FETCH
+    const [beats, overview] = await Promise.all([
+      getBeats(),
+      getStatsOverview()
+    ]);
+
+    // 3. 🔥 MAP CLOUDFLARE FIELDS TO FRONTEND FIELDS
+    const normalizedBeats = (beats || []).map(beat => ({
+    ...beat,
+      audio: beat.mp3_url,
+      cover: beat.cover_url,
+      zip: beat.zip_url,
+      cover_url: beat.cover_url,
+      mp3_url: beat.mp3_url,
+      zip_url: beat.zip_url,
+      play_count: beat.play_count || 0
+    }))
+
+    window.allBeats = normalizedBeats
+    window.store.beats = normalizedBeats
+    window.store.filteredBeats = normalizedBeats
+    window.store.loaded = true
+    window.store.overview = overview
+
+    console.log("✅ beats loaded:", window.store.beats.length)
+    console.log("✅ live stats:", overview)
+    console.log("✅ Cloudflare D1+R2 active")
+    console.log("Sample audio URL:", normalizedBeats[0]?.audio)
+
+    // 4. Render ALL sections - page is still hidden
+    if(window.renderPlaylists){
+        window.renderPlaylists()
+    }
+
+    await Promise.all([
+      renderWave(),
+      renderLatest(),
+      renderFeatured(),
+      renderTrending()
+    ])
+
+    window.dispatchEvent(new Event("playlistsUpdated"))
+
+    // re-bind buy buttons after dynamic render
+    setupGlobalBuyButtons();
+
+    // 5. 🔥 ONLY NOW: Hide skeleton, reveal full page
+    await new Promise(resolve => setTimeout(resolve, 300))
+
+    pageLoader?.classList.add('hidden')
+    appContent?.classList.add('ready')
+
+    // 6. Remove loader from DOM after transition
+    setTimeout(() => pageLoader?.remove(), 500)
+
+    console.log('✅ Page fully loaded')
+
+  } catch (err) {
+    console.error("❌ APP FAILED:", err)
+    if (pageLoader) {
+      pageLoader.innerHTML = `
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;color:#ff6b6b;gap:20px;">
+          <h2>Failed to load Dope Tone</h2>
+          <p style="color:#999;font-size:14px;">${err.message}</p>
+          <button onclick="location.reload()" style="background:#00eaff;border:none;padding:12px 24px;border-radius:8px;color:#000;font-weight:600;cursor:pointer;">Retry</button>
+        </div>
+      `
+    }
+  }
 })
 
+// ================================
+// 🔐 WAIT FOR AUTH HELPER
+// ================================
+function waitForAuth() {
+  return new Promise((resolve) => {
+    // If Auth already loaded
+    if (window.Auth && window.Auth.user!== undefined) {
+      return resolve(window.Auth.user);
+    }
+
+    // Poll every 100ms until Auth is ready
+    const checkInterval = setInterval(() => {
+      if (window.Auth && window.Auth.user!== undefined) {
+        clearInterval(checkInterval);
+        resolve(window.Auth.user);
+      }
+    }, 100);
+
+    // Timeout after 3s - continue as guest
+    setTimeout(() => {
+      clearInterval(checkInterval);
+      resolve(null);
+    }, 3000);
+  });
+}
 
 // ================================
-// 🟩 UI CONTROLS (CREATE PANEL SAFE)
+// 🟩 UI CONTROLS
 // ================================
 function initUI() {
-
   const createBtn = document.getElementById("createBtn")
   const createPanel = document.getElementById("createPanel")
 
   if (createBtn && createPanel) {
-    createPanel.classList.remove("active")
-
     createBtn.addEventListener("click", () => {
       createPanel.classList.toggle("active")
     })
   }
-
-  // ✅ FORM SAFE
-  const form = document.getElementById("beatForm")
-
-  if (form) {
-    form.addEventListener("submit", (e) => {
-      e.preventDefault()
-      console.log("✅ form working")
-    })
-  }
 }
 
-
 // ================================
-// 💙 MOBILE MENU SYSTEM (SLIDE + OVERLAY)
+// 💙 MOBILE MENU – SCOFIELD FIXED
 // ================================
 function initMobileMenu() {
-
   const toggle = document.querySelector(".menu-toggle")
   const panel = document.querySelector(".mobile-panel")
   const overlay = document.querySelector(".overlay")
+  const closeBtn = document.getElementById("panelCloseBtn")
 
-  if (!toggle || !panel || !overlay) return
+  if (!toggle ||!panel ||!overlay) {
+    console.warn('[SCOFIELD] Menu elements not found yet')
+    return false
+  }
 
-  // 🔥 OPEN
-  toggle.addEventListener("click", () => {
+  if (panel.dataset.navReady === "true") {
+    console.log('[SCOFIELD] Menu already bound')
+    return true
+  }
+
+  panel.dataset.navReady = "true"
+
+  let startX = 0
+  let currentX = 0
+  let dragging = false
+
+  function openMenu() {
     panel.classList.add("active")
     overlay.classList.add("active")
-  })
+    document.body.classList.add("menu-open") // SCOFIELD: Hides player
+    document.body.classList.add("panel-open")
+    document.body.style.overflow = 'hidden'
+    console.log('[SCOFIELD] Menu opened')
+  }
 
-  // 🔥 CLOSE FUNCTION
   function closeMenu() {
     panel.classList.remove("active")
     overlay.classList.remove("active")
+    document.body.classList.remove("menu-open")
+    document.body.classList.remove("panel-open")
+    document.body.style.overflow = ''
+    panel.style.transition = "transform 0.32s ease"
+    panel.style.transform = ""
+    if (overlay) overlay.style.opacity = ""
+    console.log('[SCOFIELD] Menu closed')
   }
 
-  // click outside
+  // SCOFIELD: Hamburger toggle
+  toggle.addEventListener("click", (e) => {
+    e.preventDefault()
+    panel.classList.contains("active")? closeMenu() : openMenu()
+  })
+
+  // SCOFIELD: X button close
+  if (closeBtn) {
+    closeBtn.addEventListener("click", (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+      closeMenu()
+    })
+  }
+
+  // Backdrop close
   overlay.addEventListener("click", closeMenu)
 
-  // click link
-  panel.querySelectorAll("a").forEach(link => {
-    link.addEventListener("click", closeMenu)
+  // Close on link click
+  panel.addEventListener("click", (e) => {
+    if (e.target.closest("a")) closeMenu()
   })
+
+  // ESC to close
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeMenu()
+  })
+
+  // Swipe to close
+  panel.addEventListener("touchstart", (e) => {
+    dragging = true
+    startX = e.touches[0].clientX
+    panel.style.transition = "none"
+  }, {passive: true})
+
+  panel.addEventListener("touchmove", (e) => {
+    if (!dragging) return
+    currentX = e.touches[0].clientX
+    let diff = currentX - startX
+    if (diff > 0) {
+      panel.style.transform = `translateX(${diff}px)`
+      if (overlay) overlay.style.opacity = String(Math.max(0, 1 - diff / 300))
+    }
+  }, {passive: true})
+
+  panel.addEventListener("touchend", () => {
+    dragging = false
+    let moved = currentX - startX
+    panel.style.transition = "transform 0.32s ease"
+    if (moved > 80) {
+      closeMenu()
+    } else {
+      panel.style.transform = "translateX(0)"
+      if (overlay) overlay.style.opacity = "1"
+    }
+    startX = 0
+    currentX = 0
+  })
+
+  console.log("✅ mobile nav ready")
+  return true
 }
 
+// SCOFIELD: Also listen for navbar load event
+window.addEventListener('navbarLoaded', () => {
+  initMobileMenu()
+})
+
+
+
+// expose globally so app-loader.js can call it after injecting navbar.html
+window.initMobileMenu = initMobileMenu
+
+// auto-retry if navbar is injected late via fetch/innerHTML
+if (!initMobileMenu()) {
+  const navObs = new MutationObserver(() => {
+    if (initMobileMenu()) navObs.disconnect()
+  })
+  navObs.observe(document.body, { childList: true, subtree: true })
+  // stop trying after 5s
+  setTimeout(() => navObs.disconnect(), 5000)
+}
+
+// ================================
+// 🔁 ORBIT SYSTEM
+// ================================
+let orbitPaused = false
 
 function initOrbit() {
+  const buttons = document.querySelectorAll('.hero.cta-btn')
+  if (!buttons.length || orbitPaused) return
 
-  // 🔴 ONLY HERO BUTTONS (important)
-  const buttons = document.querySelectorAll('.hero .cta-btn');
-
-  // safety
-  if (!buttons.length) return;
-if (orbitPaused) return;
-
-  function orbitLoop() {
-
-    buttons.forEach((btn, index) => {
-
+  function loop() {
+    buttons.forEach((btn, i) => {
       setTimeout(() => {
-
-        // start animation
-        btn.classList.add('orbit');
-
-        setTimeout(() => {
-          btn.classList.remove('orbit');
-        }, 2000); // 👈 HOLD TIME (2s)
-
-      }, index * 2500); // 👈 NO OVERLAP (each waits its turn)
-
-    });
-
-    // 🔁 LOOP AGAIN CLEANLY
-    setTimeout(orbitLoop, buttons.length * 2500 + 1500);
+        btn.classList.add("orbit")
+        setTimeout(() => btn.classList.remove("orbit"), 2000)
+      }, i * 2500)
+    })
+    setTimeout(loop, buttons.length * 2500 + 1500)
   }
 
-  orbitLoop();
- // 🟥 IDLE DETECTION
-
-let idleTimer;
-
-function resetIdle() {
-  orbitPaused = true;
-
-  clearTimeout(idleTimer);
-
-  idleTimer = setTimeout(() => {
-    orbitPaused = false;
-    initOrbit(); // restart orbit
-  }, 4000); // after 4s idle
+  loop()
 }
-
-["click", "scroll", "touchstart"].forEach(event => {
-  document.addEventListener(event, resetIdle);
-});
-
- 
-}
-// 🟦 STOP ORBIT ON USER INTERACTION
-
-let orbitPaused = false;
 
 document.addEventListener("click", () => {
-  orbitPaused = true;
-});
+  orbitPaused = true
+})
 
+/* =========================================
+   🛒 MOBILE CART LINK
+========================================= */
+document.addEventListener("DOMContentLoaded", () => {
+  const mobileCartBtn = document.getElementById("mobileCartBtn");
+  if(!mobileCartBtn) return;
 
-// ================================
-// 🔵 LOAD BEATS FROM DATABASE
-// ================================
-async function loadBeats() {
-  const container = document.getElementById("beatsContainer")
-
-  if (!container) return
-
-  const { data, error } = await db
-    .from("beats")
-    .select("*")
-    .order("created_at", { ascending: false })
-
-  if (error) {
-    console.error("❌ Error loading beats:", error)
-    return
+  function updateMobileCart(){
+    const cart = JSON.parse(localStorage.getItem("dopetone_cart")) || [];
+    const countEl = mobileCartBtn.querySelector("[data-cart-count],.cart-count");
+    if (countEl) countEl.textContent = cart.length;
+    mobileCartBtn.setAttribute("data-count", cart.length);
   }
 
-  displayBeats(data)
+  updateMobileCart();
+
+  mobileCartBtn.addEventListener("click", () => {
+    window.location.href = "licence-page.html";
+  });
+
+  // keep count in sync
+  setInterval(updateMobileCart, 1000);
+});
+
+// ========================================
+// 🌍 GLOBAL BUY BUTTON SYSTEM
+// ========================================
+function setupGlobalBuyButtons(){
+  const buttons = document.querySelectorAll(".buy-btn");
+
+  buttons.forEach(btn => {
+    if(btn.dataset.ready) return;
+    btn.dataset.ready = "true";
+
+    btn.addEventListener("click", () => {
+      const beat = {
+        id: btn.dataset.id,
+        title: btn.dataset.title,
+        cover: btn.dataset.cover,
+        cover_url: btn.dataset.cover_url || btn.dataset.cover,
+        genre: btn.dataset.genre,
+        bpm: btn.dataset.bpm,
+        audio: btn.dataset.audio || btn.dataset.mp3_url,
+        mp3_url: btn.dataset.mp3_url || btn.dataset.audio
+      };
+
+      if(!beat.id) return;
+
+      let cart = JSON.parse(localStorage.getItem("dopetone_cart")) || [];
+      const exists = cart.find(item => item.id == beat.id);
+
+      if(!exists){
+        cart.push(beat);
+        localStorage.setItem("dopetone_cart", JSON.stringify(cart));
+      }
+
+      localStorage.setItem("dopetone_active_beat", JSON.stringify(beat));
+
+      if(typeof updateCartCount === "function"){
+        updateCartCount();
+      }
+
+      // 🔥 Sync cart to cloud if logged in
+      window.syncUserDataToCloud?.();
+
+      window.location.href = `licence-page.html?id=${beat.id}`;
+    });
+  });
 }
 
-
-// ================================
-// 🟣 DISPLAY BEATS (CARDS)
-// ================================
-
-
-
-
-const toggle = document.querySelector(".menu-toggle");
-const panel = document.querySelector(".mobile-panel");
-
-toggle.addEventListener("click", () => {
-  panel.classList.toggle("active");
-  document.body.classList.toggle("panel-open");
+document.addEventListener("DOMContentLoaded", () => {
+  setupGlobalBuyButtons();
 });
-document.addEventListener("click", (e) => {
-  if (
-    panel.classList.contains("active") &&
-    !panel.contains(e.target) &&
-    !toggle.contains(e.target)
-  ) {
-    panel.classList.remove("active");
-    document.body.classList.remove("panel-open");
+
+// ========================================
+// 📊 UPDATED: TRACK BEAT PLAYS TO D1 WITH USER ID
+// ========================================
+export async function trackBeatPlay(beatId) {
+  try {
+    const userId = window.Auth?.user?.id || 'anonymous';
+
+    await fetch('https://dope-tone-api.dopetone701.workers.dev/api/track-play', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        beat_id: beatId,
+        user_id: userId // Now D1 knows WHO played it
+      })
+    });
+
+    // Update local play_count so UI updates instantly
+    const beat = window.store.beats.find(b => b.id == beatId);
+    if (beat) beat.play_count = (beat.play_count || 0) + 1;
+
+    console.log(`[Dopetone] Tracked play: beat ${beatId} by ${userId}`);
+
+  } catch (err) {
+    console.error('Failed to track play:', err);
   }
-});
-/* 🟦🟦🟦 🔵 CLOSE ON LINK CLICK */
+}
 
-document.querySelectorAll(".mobile-panel a").forEach(link => {
-  link.addEventListener("click", () => {
-    panel.classList.remove("active");
-    document.body.classList.remove("panel-open");
-  });
-});
-/* 🟩🟩🟩 🟢 SWIPE TO CLOSE */
+// Make it global so other components can call it
+window.trackBeatPlay = trackBeatPlay;
+// ---- AUTH BRIDGE – nav + auth modal coordination ----
+const navPanel = document.querySelector('.mobile-panel');
+const navOverlay = document.getElementById('navOverlay');
 
-let startX = 0;
+function closeNav(){
+  navPanel?.classList.remove('active');
+  navOverlay?.classList.remove('active');
+  document.body.classList.remove('panel-open');
+}
 
-panel.addEventListener("touchstart", (e) => {
-  startX = e.touches[0].clientX;
-});
+function openAuthModal(mode = 'login'){
+  // kill nav first, otherwise its blur stays under the auth modal
+  closeNav();
+  
+  const modal = document.getElementById('authModal');
+  if(!modal) return false;
+  const isSignup = mode === 'signup';
+  
+  const uGroup = document.getElementById('usernameGroup');
+  const avatarWrap = document.getElementById('signupAvatarWrap');
+  const title = document.getElementById('authTitle');
+  const subtitle = document.getElementById('authSubtitle');
+  const submit = document.getElementById('authSubmit');
+  const switchText = document.getElementById('switchAuthText');
+  const switchBtn = document.getElementById('switchAuthBtn');
 
-panel.addEventListener("touchmove", (e) => {
-  let currentX = e.touches[0].clientX;
-  let diff = currentX - startX;
+  if(uGroup) uGroup.style.display = isSignup ? 'block' : 'none';
+  if(avatarWrap) avatarWrap.style.display = isSignup ? 'block' : 'none';
+  if(title) title.textContent = isSignup ? 'Create Account' : 'Welcome Back';
+  if(subtitle) subtitle.textContent = isSignup ? 'Join the arsenal' : 'Login to access your arsenal';
+  if(submit) submit.textContent = isSignup ? 'Create Account' : 'Continue';
+  if(switchText) switchText.textContent = isSignup ? 'Already have an account?' : "Don't have an account?";
+  if(switchBtn) switchBtn.textContent = isSignup ? 'Login' : 'Sign Up';
 
-  // swipe right → close
-  if (diff > 80) {
-    panel.classList.remove("active");
-    document.body.classList.remove("panel-open");
+  modal.classList.add('active');
+  modal.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+  setTimeout(()=>document.getElementById('authEmail')?.focus(), 50);
+  return true;
+}
+
+function closeAuthModal(){
+  const modal = document.getElementById('authModal');
+  if(modal){
+    modal.classList.remove('active');
+    modal.setAttribute('aria-hidden', 'true');
   }
-});
-let currentAudio = null
-let currentBtn = null
+  // only restore scroll if nav panel is also closed
+  if(!navPanel?.classList.contains('active')){
+    document.body.style.overflow = '';
+    document.body.classList.remove('panel-open');
+    navOverlay?.classList.remove('active');
+  }
+}
 
-document.addEventListener("click", (e) => {
-  const playBtn = e.target.closest(".play-btn")
-  const buyBtn = e.target.closest(".buy-btn")
-  const downloadBtn = e.target.closest(".download-btn")
-
-  // 🎧 PLAY
-  if (playBtn) {
-    e.stopPropagation()
-
-    const src = playBtn.getAttribute("data-src")
-    if (!src) return
-
-    // toggle same button
-    if (currentBtn === playBtn && currentAudio) {
-      if (!currentAudio.paused) {
-        currentAudio.pause()
-        playBtn.textContent = "▶"
-      } else {
-        currentAudio.play()
-        playBtn.textContent = "⏸"
-      }
-      return
+// clean up any leftover blur when auth modal closes – works with your existing auth.js too
+const authModalEl = document.getElementById('authModal');
+if(authModalEl){
+  new MutationObserver(() => {
+    if(!authModalEl.classList.contains('active')){
+      closeAuthModal();
     }
+  }).observe(authModalEl, { attributes: true, attributeFilter: ['class'] });
 
-    // stop previous
-    if (currentAudio) {
-      currentAudio.pause()
-      if (currentBtn) currentBtn.textContent = "▶"
-    }
+  document.getElementById('authCloseBtn')?.addEventListener('click', () => setTimeout(closeAuthModal, 30), true);
+  authModalEl.addEventListener('click', e => {
+    if(e.target === authModalEl) setTimeout(closeAuthModal, 30);
+  }, true);
+}
 
-    // play new
-    currentAudio = new Audio(src)
-    currentBtn = playBtn
+// navbar buttons -> auth
+document.addEventListener('click', e => {
+  const loginEl = e.target.closest('#loginBtn');
+  const signupEl = e.target.closest('#signupBtn');
+  const accountEl = e.target.closest('#accountBtn');
+  const mobileProfileEl = e.target.closest('#mobileProfileBtn');
 
-    currentAudio.play()
-    playBtn.textContent = "⏸"
-
-    currentAudio.onended = () => {
-      playBtn.textContent = "▶"
-      currentAudio = null
-      currentBtn = null
-    }
+  if (loginEl || mobileProfileEl) {
+    e.preventDefault(); e.stopPropagation();
+    if(window.Auth?.showLogin?.()) { closeNav(); return; }
+    openAuthModal('login');
+    return;
   }
-
-  // 💰 BUY
-  if (buyBtn) {
-    e.stopPropagation()
-    const id = buyBtn.dataset.id
-    window.location.href = `licence-page.html?id=${id}`
+  if (signupEl) {
+    e.preventDefault(); e.stopPropagation();
+    if(window.Auth?.showSignup?.()) return;
+    openAuthModal('signup');
+    return;
   }
-
-  // ⬇ DOWNLOAD
-  if (downloadBtn) {
-    e.stopPropagation()
-
-    let email = localStorage.getItem("user_email")
-
-    if (!email) {
-      email = prompt("Enter your email to download")
-      if (!email) return
-      localStorage.setItem("user_email", email)
-    }
-
-    const link = document.createElement("a")
-    link.href = downloadBtn.dataset.src
-    link.download = ""
-    link.click()
+  if (accountEl) {
+    e.preventDefault();
+    if(window.Auth?.openAccount?.()) return;
+    document.getElementById('accountPanel')?.classList.toggle('active');
   }
-})
-import { beats } from "./data.js";
-
-const featuredContainer = document.getElementById("featured");
-const popularContainer = document.getElementById("popular");
-const playlistContainer = document.getElementById("playlist");
-
-// FEATURED
-beats
-  .filter(b => b.featured)
-  .slice(0, 8)
-  .forEach(beat => {
-    featuredContainer.innerHTML += `
-      <div class="card-large" style="background-image:url('${beat.image}')"
-        onclick="openBeat('${beat.name}', ${beat.price})">
-        <div class="card-overlay">${beat.name}</div>
-      </div>
-    `;
-  });
-
-// POPULAR (sorted by plays)
-beats
-  .sort((a,b) => b.plays - a.plays)
-  .slice(0, 8)
-  .forEach(beat => {
-    popularContainer.innerHTML += `
-      <div class="card-large" style="background-image:url('${beat.image}')"
-        onclick="openBeat('${beat.name}', ${beat.price})">
-        <div class="card-overlay">${beat.name}</div>
-      </div>
-    `;
-  });
-
-// PLAYLIST (random 10)
-beats
-  .sort(() => 0.5 - Math.random())
-  .slice(0, 10)
-  .forEach(beat => {
-    playlistContainer.innerHTML += `
-      <div class="card-small" style="background-image:url('${beat.image}')"
-        onclick="openBeat('${beat.name}', ${beat.price})">
-      </div>
-    `;
-  });
-
-// OPEN LICENCE PAGE
-window.openBeat = (name, price) => {
-  window.location.href = `/licence-page.html?beat=${name}&price=${price}`;
-};
+}, true);

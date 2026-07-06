@@ -1,0 +1,703 @@
+/* ===============================
+🎵 PLAYLIST MODAL
+=============================== */
+
+
+#playlistModal{
+
+
+    position: fixed;
+    inset: 0;
+
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+
+    z-index: 999999;
+}
+
+
+
+
+/* ===============================
+🌑 BACKDROP
+=============================== */
+
+
+.playlist-modal-backdrop{
+
+
+    position: absolute;
+    inset: 0;
+
+
+    background:
+    rgba(0,0,0,.55);
+
+
+    backdrop-filter:
+    blur(14px);
+
+
+    -webkit-backdrop-filter:
+    blur(14px);
+
+
+    animation:
+    fadeIn .25s ease;
+}
+
+
+
+
+/* ===============================
+🔥 MODAL BOX
+=============================== */
+
+
+.playlist-modal-box{
+
+
+    position: relative;
+
+
+    width: 92%;
+    max-width: 420px;
+
+
+    padding:
+    28px 24px;
+
+
+    border-radius: 28px;
+
+
+    overflow: hidden;
+
+
+    background:
+    linear-gradient(
+        145deg,
+        rgba(15,18,30,.92),
+        rgba(7,10,20,.96)
+    );
+
+
+    border:
+    1px solid rgba(255,255,255,.08);
+
+
+    box-shadow:
+    0 0 40px rgba(255,60,60,.08),
+    0 0 90px rgba(255,120,0,.06),
+    inset 0 1px rgba(255,255,255,.08);
+
+
+    backdrop-filter:
+    blur(22px);
+
+
+    -webkit-backdrop-filter:
+    blur(22px);
+
+
+    animation:
+    modalPop .28s
+    cubic-bezier(.22,1,.36,1);
+
+
+    z-index: 2;
+}
+
+
+
+
+/* ===============================
+🔥 GLOW
+=============================== */
+
+
+.playlist-glow{
+
+
+    position: absolute;
+
+
+    width: 240px;
+    height: 240px;
+
+
+    top: -120px;
+    right: -80px;
+
+
+    border-radius: 50%;
+
+
+    background:
+    radial-gradient(
+        circle,
+        rgba(255,70,0,.22),
+        rgba(255,0,80,.08),
+        transparent 70%
+    );
+
+
+    filter:
+    blur(35px);
+
+
+    pointer-events: none;
+}
+
+
+
+
+/* ===============================
+🎵 TITLE
+=============================== */
+
+
+.playlist-modal-box h2{
+
+
+    margin: 0;
+
+
+    font-size: 28px;
+    font-weight: 700;
+
+
+    color: white;
+
+
+    font-family:
+    'Orbitron',
+    sans-serif;
+
+
+    letter-spacing: .5px;
+}
+
+
+
+
+/* subtitle */
+.playlist-modal-box p{
+
+
+    margin-top: 8px;
+    margin-bottom: 24px;
+
+
+    font-size: 13px;
+
+
+    color:
+    rgba(255,255,255,.62);
+}
+
+
+
+
+/* ===============================
+✍ INPUT
+=============================== */
+
+
+#playlistNameInput{
+
+
+    width: 100%;
+    height: 54px;
+
+
+    border: none;
+    outline: none;
+
+
+    border-radius: 18px;
+
+
+    padding:
+    0 18px;
+
+
+    font-size: 15px;
+    font-weight: 500;
+
+
+    color: white;
+
+
+    background:
+    rgba(255,255,255,.06);
+
+
+    border:
+    1px solid rgba(255,255,255,.08);
+
+
+    box-shadow:
+    inset 0 1px rgba(255,255,255,.04);
+
+
+    transition:
+    .25s ease;
+}
+
+
+
+
+/* focus */
+#playlistNameInput:focus{
+
+
+    border-color:
+    rgba(255,90,0,.4);
+
+
+    box-shadow:
+    0 0 18px rgba(255,90,0,.18);
+}
+
+
+
+
+/* placeholder */
+#playlistNameInput::placeholder{
+
+
+    color:
+    rgba(255,255,255,.35);
+}
+
+
+
+
+/* ===============================
+🔥 SUGGESTIONS
+=============================== */
+
+
+.playlist-suggestions{
+
+
+    display: flex;
+    flex-wrap: wrap;
+
+
+    gap: 10px;
+
+
+    margin-top: 18px;
+}
+
+
+
+
+/* buttons */
+.playlist-suggestions button{
+
+
+    border: none;
+
+
+    height: 34px;
+
+
+    padding:
+    0 14px;
+
+
+    border-radius: 999px;
+
+
+    cursor: pointer;
+
+
+    color: white;
+
+
+    font-size: 12px;
+    font-weight: 600;
+
+
+    background:
+    rgba(255,255,255,.06);
+
+
+    border:
+    1px solid rgba(255,255,255,.08);
+
+
+    transition:
+    .22s ease;
+}
+
+
+
+
+/* hover */
+.playlist-suggestions button:hover{
+
+
+    transform:
+    translateY(-2px);
+
+
+    background:
+    linear-gradient(
+        135deg,
+        rgba(255,80,0,.18),
+        rgba(255,0,80,.16)
+    );
+
+
+    border-color:
+    rgba(255,90,0,.3);
+}
+
+
+
+
+/* ===============================
+🚀 CREATE BTN
+=============================== */
+
+
+#createPlaylistBtn{
+
+
+    width: 100%;
+    height: 56px;
+
+
+    margin-top: 22px;
+
+
+    border: none;
+
+
+    border-radius: 18px;
+
+
+    cursor: pointer;
+
+
+    font-size: 15px;
+    font-weight: 700;
+
+
+    color: white;
+
+
+    background:
+    linear-gradient(
+        135deg,
+        #ff3c3c,
+        #ff7a00
+    );
+
+
+    box-shadow:
+    0 10px 30px rgba(255,80,0,.28),
+    0 0 24px rgba(255,60,60,.18);
+
+
+    transition:
+    .22s ease;
+}
+
+
+
+
+/* hover */
+#createPlaylistBtn:hover{
+
+
+    transform:
+    translateY(-2px);
+
+
+    box-shadow:
+    0 14px 40px rgba(255,80,0,.35),
+    0 0 28px rgba(255,60,60,.24);
+}
+
+
+
+
+/* click */
+#createPlaylistBtn:active{
+
+
+    transform:
+    scale(.97);
+}
+
+
+
+
+/* ===============================
+❌ ERROR
+=============================== */
+
+
+.playlist-error{
+
+
+    margin-top: 14px;
+
+
+    min-height: 18px;
+
+
+    text-align: center;
+
+
+    font-size: 13px;
+    font-weight: 600;
+
+
+    color: #ff4d6d;
+
+
+    opacity: 0;
+
+
+    transform:
+    translateY(6px);
+
+
+    transition:
+    .22s ease;
+}
+
+
+
+
+.playlist-error.show{
+
+
+    opacity: 1;
+
+
+    transform:
+    translateY(0);
+}
+
+
+
+
+/* success */
+.playlist-error.success{
+
+
+    color: #00ffc8;
+}
+
+
+
+
+/* ===============================
+🔥 SHAKE
+=============================== */
+
+
+.playlist-modal-box.shake{
+
+
+    animation:
+    modalShake .42s ease;
+}
+
+
+
+
+/* ===============================
+❌ CLOSE
+=============================== */
+
+
+#playlistModal.closing
+.playlist-modal-box{
+
+
+    animation:
+    modalClose .25s ease forwards;
+}
+
+
+
+
+#playlistModal.closing
+.playlist-modal-backdrop{
+
+
+    animation:
+    fadeOut .25s ease forwards;
+}
+
+
+
+
+/* ===============================
+✨ ANIMATIONS
+=============================== */
+
+
+@keyframes modalPop{
+
+
+    from{
+        opacity:0;
+
+
+        transform:
+        translateY(40px)
+        scale(.92);
+    }
+
+
+    to{
+        opacity:1;
+
+
+        transform:
+        translateY(0)
+        scale(1);
+    }
+}
+
+
+
+
+@keyframes modalClose{
+
+
+    from{
+        opacity:1;
+
+
+        transform:
+        translateY(0)
+        scale(1);
+    }
+
+
+    to{
+        opacity:0;
+
+
+        transform:
+        translateY(25px)
+        scale(.94);
+    }
+}
+
+
+
+
+@keyframes fadeIn{
+
+
+    from{
+        opacity:0;
+    }
+
+
+    to{
+        opacity:1;
+    }
+}
+
+
+
+
+@keyframes fadeOut{
+
+
+    from{
+        opacity:1;
+    }
+
+
+    to{
+        opacity:0;
+    }
+}
+
+
+
+
+@keyframes modalShake{
+
+
+    0%{
+        transform:translateX(0);
+    }
+
+
+    20%{
+        transform:translateX(-8px);
+    }
+
+
+    40%{
+        transform:translateX(8px);
+    }
+
+
+    60%{
+        transform:translateX(-6px);
+    }
+
+
+    80%{
+        transform:translateX(6px);
+    }
+
+
+    100%{
+        transform:translateX(0);
+    }
+}
+
+
+
+
+/* ===============================
+📱 MOBILE
+=============================== */
+
+
+@media(max-width:768px){
+
+
+    .playlist-modal-box{
+
+
+        padding:
+        24px 18px;
+
+
+        border-radius: 24px;
+    }
+
+
+    .playlist-modal-box h2{
+
+
+        font-size: 24px;
+    }
+
+
+    #createPlaylistBtn{
+
+
+        height: 52px;
+    }
+}

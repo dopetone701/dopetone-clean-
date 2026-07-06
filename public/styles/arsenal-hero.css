@@ -1,0 +1,169 @@
+/* ===============================
+   HERO BASE
+=============================== */
+
+.arsenal-hero {
+  margin-top: 70px;
+  position: relative;
+}
+
+/* center system */
+.arsenal-hero-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* 🔥 TRUE CENTER */
+  text-align: center;
+}
+
+/* ===============================
+   TITLE
+=============================== */
+
+.arsenal-title {
+  font-size: 34px;
+  font-weight: 700;
+  color: #ffffff;
+
+  letter-spacing: 0.5px;
+  line-height: 1.2;
+
+  /* 🔥 premium glow */
+  text-shadow:
+    0 0 10px rgba(0,255,200,0.25),
+    0 0 40px rgba(0,255,200,0.15);
+}
+
+/* ===============================
+   SUBTEXT
+=============================== */
+
+.arsenal-sub {
+  margin-top: 12px;
+
+  font-size: 14px;
+  color: rgba(255,255,255,0.7);
+
+  max-width: 520px;
+  line-height: 1.6;
+
+  opacity: 0.9;
+}
+
+/* ===============================
+   SUBTLE LIGHT AURA (🔥 KEY)
+=============================== */
+
+.arsenal-hero::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+
+  width: 500px;
+  height: 200px;
+
+  transform: translate(-50%, -50%);
+
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0,255,200,0.12),
+    transparent 70%
+  );
+
+  filter: blur(40px);
+  z-index: -1;
+}
+
+/* ===============================
+   MOBILE
+=============================== */
+
+@media (max-width: 768px) {
+
+  .arsenal-hero {
+    margin-top: 50px;
+  }
+
+  .arsenal-title {
+    font-size: 22px;
+  }
+
+  .arsenal-sub {
+    font-size: 13px;
+    max-width: 280px;
+  }
+
+  .arsenal-hero::after {
+    width: 280px;
+    height: 140px;
+  }
+
+}
+
+@media (max-width: 768px) {
+
+  .arsenal-hero-inner {
+    padding-top: 20px; /* 👈 pushes content down ONLY */
+  }
+
+}
+/* ===============================
+   🔥 BEATS PAGE HERO OFFSET
+================================ */
+
+body:has(.view-toggle) .arsenal-hero{
+
+    padding-top: 95px;
+}
+/* ===============================
+   🔥 BEATS USE PLAYLIST HERO
+================================ */
+
+@media (min-width: 769px){
+
+    .playlist-hero{
+
+        margin-top: 0 !important;
+
+        padding-top: 85px !important;
+
+        padding-bottom: 55px !important;
+    }
+
+    /* ===============================
+       🌊 PERFECT CENTER
+    ================================ */
+
+    .playlist-hero::before{
+
+        top: 50% !important;
+        left: 50% !important;
+
+        transform:
+        translate(-50%, -50%) !important;
+
+        background-position:
+        center center !important;
+    }
+
+    /* ===============================
+       🔥 HERO CONTENT
+    ================================ */
+
+    .playlist-hero .arsenal-hero-inner{
+
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        justify-content:center;
+
+        text-align:center;
+    }
+
+}
+.playlist-hero::before{
+
+    transform:
+    translate(-50%, -42%) !important;
+
+}
