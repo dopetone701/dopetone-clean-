@@ -3,15 +3,10 @@ const API_URL = 'https://dope-tone-api.dopetone701.workers.dev';
 const R2_PUBLIC = 'https://pub-60c4e7268904a31a890e52771845a014.r2.dev';
 
 // ===== EXISTING: GET BEATS =====
-// ===== EXISTING: GET BEATS - WITH TIMEOUT =====
 export async function getBeats() {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 4000);
-  
   try {
-    const res = await fetch(`${API_URL}/beats`, { signal: controller.signal });
-    clearTimeout(timeoutId);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const res = await fetch(`${API_URL}/beats`);
+    if (!res.ok) throw new Error('Failed to fetch beats');
    
     const beats = await res.json();
    
@@ -38,12 +33,10 @@ export async function getBeats() {
       created_at: b.created_at
     }));
   } catch (err) {
-    clearTimeout(timeoutId);
     console.error('getBeats error:', err);
-    return []; // Return empty array so page renders
+    return [];
   }
 }
-
 
 // ===== EXISTING: UPLOAD BEAT =====
 export async function uploadBeat({ title, genre, bpm, price, audioFile, coverFile, projectFile }) {
@@ -68,23 +61,17 @@ export async function uploadBeat({ title, genre, bpm, price, audioFile, coverFil
 
 // ===== CONTROL CENTER ENDPOINTS =====
 
-// Get overview stats for top 4 cards - WITH TIMEOUT
+// Get overview stats for top 4 cards
 export async function getStatsOverview() {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 4000);
-
   try {
-    const res = await fetch(`${API_URL}/api/stats/overview`, { signal: controller.signal });
-    clearTimeout(timeoutId);
+    const res = await fetch(`${API_URL}/api/stats/overview`);
     if (!res.ok) throw new Error('Failed to fetch overview');
     return await res.json();
   } catch (err) {
-    clearTimeout(timeoutId);
     console.error('getStatsOverview error:', err);
     return { totalStreams: 0, activeListeners: 0, revenueToday: 0, newFollowers: 0, totalEmails: 0 };
   }
 }
-
 
 // Get sparkline data for 4 mini graphs
 export async function getStatsSparks() {
