@@ -1183,3 +1183,321 @@ body.logged-in #authGuest {
 .toggle-password:hover {
   color: #8b5cf6;
 }
+/* CROP MODAL - ELITE - REPLACE YOURS */
+#cropModal {
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 8, 16, 0.95);
+    backdrop-filter: blur(32px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999999; /* Higher than auth modal */
+    padding: 20px;
+    box-sizing: border-box;
+    pointer-events: auto; /* Block clicks to background */
+}
+
+#cropModal.active {
+    display: flex;
+}
+
+.crop-box {
+    width: 100%;
+    max-width: 480px;
+    max-height: 92vh;
+    overflow: auto;
+    background: linear-gradient(180deg, #0f1424 0%, #0a0e1a 100%);
+    border-radius: 28px;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    box-sizing: border-box;
+    border: 1px solid rgba(0, 240, 255, 0.08);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    pointer-events: auto; /* Make sure box captures clicks */
+}
+.password-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.password-wrapper input {
+  width: 100%;
+  padding-right: 45px; /* Make space for your eye */
+}
+
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  padding: 4px 8px;
+  font-size: 16px;
+  z-index: 10;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+.toggle-password:hover {
+  color: #00f0ff;
+}
+
+/* NUKE ONLY BROWSER GREY EYE */
+#authPassword::-ms-reveal,
+#authPassword::-ms-clear {
+  display: none;
+}
+
+#authPassword::-webkit-credentials-auto-fill-button,
+#authPassword::-webkit-contacts-auto-fill-button {
+  display: none !important;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+#authPassword::-webkit-textfield-decoration-container {
+  display: none !important;
+}
+/* =========================================
+   OTP MODAL - ELITE CODE PANEL
+========================================= */
+
+.otp-box {
+  max-width: 440px;
+  text-align: center;
+  padding: 40px 32px 32px;
+}
+
+.otp-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
+  background: linear-gradient(135deg, #00f0ff, #ff4d6d);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  color: #000;
+  animation: otpPulse 2s ease-in-out infinite;
+}
+
+@keyframes otpPulse {
+  0%, 100% { 
+    box-shadow: 0 0 0 0 rgba(0, 240, 255, 0.4);
+  }
+  50% { 
+    box-shadow: 0 0 0 12px rgba(0, 240, 255, 0);
+  }
+}
+
+#otpEmail {
+  color: #00f0ff;
+  font-weight: 600;
+}
+
+.otp-inputs {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin: 32px 0 24px;
+}
+
+.otp-digit {
+  width: 52px;
+  height: 64px;
+  border: 2px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  color: white;
+  font-size: 28px;
+  font-weight: 700;
+  text-align: center;
+  outline: none;
+  transition: all 0.25s ease;
+  font-family: 'Orbitron', monospace;
+}
+
+.otp-digit:focus {
+  border-color: #00f0ff;
+  background: rgba(0, 240, 255, 0.06);
+  box-shadow: 0 0 0 4px rgba(0, 240, 255, 0.1);
+  transform: scale(1.05);
+}
+
+.otp-digit.filled {
+  border-color: rgba(0, 240, 255, 0.4);
+  background: rgba(0, 240, 255, 0.08);
+}
+
+.otp-digit.error {
+  border-color: #ff2d55;
+  animation: otpShake 0.4s ease;
+}
+
+@keyframes otpShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  75% { transform: translateX(8px); }
+}
+
+.otp-timer {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 13px;
+  margin-bottom: 20px;
+}
+
+.otp-timer strong {
+  color: #00f0ff;
+  font-weight: 600;
+}
+
+.otp-resend {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 16px;
+}
+
+#otpResendBtn {
+  background: none;
+  border: none;
+  color: #00f0ff;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 0;
+  transition: 0.2s ease;
+}
+
+#otpResendBtn:hover:not(:disabled) {
+  color: #00d4e6;
+  text-decoration: underline;
+}
+
+#otpResendBtn:disabled {
+  color: rgba(255, 255, 255, 0.3);
+  cursor: not-allowed;
+}
+
+/* =========================================
+   LOGOUT CONFIRM MODAL - ELITE
+========================================= */
+
+.confirm-box {
+  max-width: 400px;
+  text-align: center;
+  padding: 40px 32px 32px;
+}
+
+.confirm-icon {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+}
+
+.confirm-icon.danger {
+  background: linear-gradient(135deg, #ff2d55, #ff6b6b);
+  color: #fff;
+  animation: dangerPulse 2s ease-in-out infinite;
+}
+
+@keyframes dangerPulse {
+  0%, 100% { 
+    box-shadow: 0 0 rgba(255, 45, 85, 0.4);
+  }
+  50% { 
+    box-shadow: 0 0 0 16px rgba(255, 45, 85, 0);
+  }
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.confirm-btn {
+  flex: 1;
+  padding: 14px 24px;
+  border-radius: 12px;
+  border: none;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: 'Orbitron', monospace;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.confirm-btn.cancel {
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.confirm-btn.cancel:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.confirm-btn.danger {
+  background: linear-gradient(135deg, #ff2d55, #ff4757);
+  color: #fff;
+  box-shadow: 0 8px 24px rgba(255, 45, 85, 0.4);
+}
+
+.confirm-btn.danger:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(255, 45, 85, 0.6);
+}
+
+.confirm-btn:active {
+  transform: translateY(0);
+}
+
+/* MOBILE RESPONSIVE */
+@media (max-width: 480px) {
+  .otp-digit {
+    width: 44px;
+    height: 56px;
+    font-size: 24px;
+  }
+  
+  .otp-inputs {
+    gap: 8px;
+  }
+  
+  .otp-box,
+  .confirm-box {
+    padding: 32px 24px 24px;
+  }
+  
+  .confirm-icon,
+  .otp-icon {
+    width: 60px;
+    height: 60px;
+    font-size: 26px;
+  }
+  
+  .confirm-actions {
+    flex-direction: column;
+  }
+}

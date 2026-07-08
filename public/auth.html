@@ -1,5 +1,5 @@
 <!-- pages/auth.html -->
-<div id="authSystemRoot" data-version="2.2">
+<div id="authSystemRoot" data-version="3.0">
 
   <!-- AUTH MODAL -->
   <div id="authModal" class="auth-modal" role="dialog" aria-labelledby="authTitle" aria-hidden="true">
@@ -12,7 +12,7 @@
         <p class="auth-subtitle" id="authSubtitle">Login to access your arsenal</p>
       </div>
       <form id="authForm" class="auth-form" autocomplete="on">
-        
+       
         <!-- EMAIL FIELD -->
         <div class="auth-input-group">
           <label for="authEmail">Email</label>
@@ -60,6 +60,104 @@
       <div class="auth-switch">
         <span id="switchAuthText">Don't have an account?</span>
         <button type="button" id="switchAuthBtn">Sign Up</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- OTP MODAL - ELITE -->
+  <div id="otpModal" class="auth-modal" role="dialog" aria-labelledby="otpTitle" aria-hidden="true">
+    <div class="auth-box otp-box">
+      <button class="auth-close" id="otpCloseBtn" aria-label="Close OTP modal">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      
+      <div class="auth-header">
+        <div class="otp-icon">
+          <i class="fa-solid fa-envelope-circle-check"></i>
+        </div>
+        <h2 id="otpTitle">Check Your Email</h2>
+        <p class="auth-subtitle" id="otpSubtitle">We sent a 6-digit code to<br><span id="otpEmail">you@gmail.com</span></p>
+      </div>
+
+      <div class="otp-inputs" id="otpInputs">
+        <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]">
+        <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]">
+        <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]">
+        <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]">
+        <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]">
+        <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]">
+      </div>
+
+      <div class="otp-timer" id="otpTimer">
+        <span>Code expires in <strong id="otpCountdown">5:00</strong></span>
+      </div>
+
+      <button type="button" id="otpVerifyBtn" class="auth-submit-btn" disabled>Verify Code</button>
+      
+      <div class="otp-resend">
+        <span>Didn't receive it?</span>
+        <button type="button" id="otpResendBtn" disabled>Resend code</button>
+      </div>
+
+      <div class="auth-error" id="otpError" style="display:none;"></div>
+    </div>
+  </div>
+   <!-- RESET PASSWORD MODAL - ELITE -->
+  <div id="resetPasswordModal" class="auth-modal" role="dialog" aria-labelledby="resetTitle" aria-hidden="true">
+    <div class="auth-box">
+      <button class="auth-close" id="resetCloseBtn" aria-label="Close reset modal">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      
+      <div class="auth-header">
+        <div class="otp-icon">
+          <i class="fa-solid fa-key"></i>
+        </div>
+        <h2 id="resetTitle">Create New Password</h2>
+        <p class="auth-subtitle">Enter a new password for<br><span id="resetEmail">you@gmail.com</span></p>
+      </div>
+
+      <form id="resetPasswordForm" class="auth-form">
+        <div class="auth-input-group">
+          <label for="newPassword">New Password</label>
+          <div class="password-wrapper">
+            <input type="password" id="newPassword" placeholder="••••••••" required minlength="6" autocomplete="new-password">
+            <button type="button" id="toggleNewPassword" class="toggle-password">
+              <i class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="auth-input-group">
+          <label for="confirmNewPassword">Confirm Password</label>
+          <div class="password-wrapper">
+            <input type="password" id="confirmNewPassword" placeholder="••••••••" required minlength="6" autocomplete="new-password">
+            <button type="button" id="toggleConfirmPassword" class="toggle-password">
+              <i class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" id="resetSubmitBtn" class="auth-submit-btn">Reset Password</button>
+        <div class="auth-error" id="resetError" style="display:none;"></div>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- LOGOUT CONFIRM MODAL - ELITE -->
+  <div id="logoutModal" class="auth-modal" role="dialog" aria-labelledby="logoutTitle" aria-hidden="true">
+    <div class="auth-box confirm-box">
+      <div class="confirm-icon danger">
+        <i class="fa-solid fa-right-from-bracket"></i>
+      </div>
+      
+      <h2 id="logoutTitle">Logout?</h2>
+      <p class="auth-subtitle">Vault's locked. Your collection's safe.<br>Come back and cook.</p>
+
+      <div class="confirm-actions">
+        <button type="button" id="logoutCancelBtn" class="confirm-btn cancel">Cancel</button>
+        <button type="button" id="logoutConfirmBtn" class="confirm-btn danger">Logout</button>
       </div>
     </div>
   </div>

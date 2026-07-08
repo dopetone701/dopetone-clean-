@@ -2,7 +2,7 @@
 async function hashPassword(password) {
   const encoder = new TextEncoder();
   const salt = crypto.getRandomValues(new Uint8Array(16));
-  
+ 
   const keyMaterial = await crypto.subtle.importKey(
     'raw',
     encoder.encode(password),
@@ -10,27 +10,25 @@ async function hashPassword(password) {
     false,
     ['deriveBits']
   );
-  
+ 
   const key = await crypto.subtle.deriveBits(
     {
       name: 'PBKDF2',
       salt: salt,
-      iterations: 100000, 
+      iterations: 100000,
       hash: 'SHA-256'
     },
     keyMaterial,
     256
   );
-  
+ 
   const hashArray = Array.from(new Uint8Array(key));
   const saltArray = Array.from(salt);
   const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
   const saltHex = saltArray.map(b => b.toString(16).padStart(2, '0')).join('');
-  
+ 
   return `${saltHex}:${hashHex}`;
 }
-
-
 
 async function verifyPassword(password, storedHash) {
   const [saltHex, hashHex] = storedHash.split(':');
@@ -48,14 +46,11 @@ async function verifyPassword(password, storedHash) {
   return computedHash === hashHex;
 }
 
-
-// ===== USERNAME VALIDATION - LETTERS ONLY =====
 // ===== USERNAME VALIDATION - LETTERS + ONE SPACE =====
 function validateUsername(username) {
   if (!username || username.length < 2) return 'Username must be at least 2 characters';
   if (username.length > 30) return 'Username too long. Max 30 characters';
  
-  // Allow letters + single space between words. No leading/trailing/double spaces
   if (!/^[A-Za-z]+(?: [A-Za-z]+)?$/.test(username)) {
     return 'Username can only contain letters and one space between names';
   }
@@ -63,10 +58,6 @@ function validateUsername(username) {
   return null;
 }
 
-
-
-
-// ===== PASSWORD VALIDATION - PRO RULES =====
 // ===== PASSWORD VALIDATION - PRO RULES 6+ CHARS =====
 function validatePassword(pw) {
   const errors = [];
@@ -87,9 +78,6 @@ function validatePassword(pw) {
   return errors;
 }
 
-
-
-
 function hasSequential(str) {
   const lower = str.toLowerCase();
   for (let i = 0; i < lower.length - 2; i++) {
@@ -101,19 +89,16 @@ function hasSequential(str) {
   return false;
 }
 
-
 // ===== EMAIL SECURITY - GMAIL ONLY =====
 async function validateEmailStrict(email, env) {
   if (!email ||!email.includes('@')) {
     return { valid: false, error: 'Invalid email format' };
   }
 
-
   const emailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
   if (!emailRegex.test(email.toLowerCase())) {
     return { valid: false, error: 'Only Gmail addresses allowed' };
   }
-
 
   const domain = email.split('@')[1].toLowerCase();
  
@@ -125,10 +110,8 @@ async function validateEmailStrict(email, env) {
     return { valid: false, error: 'Email domain blocked' };
   }
 
-
   return { valid: true };
 }
-
 
 // ===== CHECK IF PASSWORD EXISTS IN DB =====
 async function isPasswordUnique(password, env, excludeUserId = null) {
@@ -149,7 +132,6 @@ async function isPasswordUnique(password, env, excludeUserId = null) {
   return true;
 }
 
-
 async function sendEmail(env, to, subject, html, type = 'noreply') {
   const fromAddresses = {
     noreply: 'Dope Tone <noreply@dopetonevault.com>',
@@ -158,7 +140,6 @@ async function sendEmail(env, to, subject, html, type = 'noreply') {
     verify: 'Dope Tone Security <verify@dopetonevault.com>',
     recovery: 'Dope Tone Recovery <recovery@dopetonevault.com>'
   };
-
 
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
@@ -176,11 +157,9 @@ async function sendEmail(env, to, subject, html, type = 'noreply') {
   return res.ok;
 }
 
-
 function generateCode() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
-
 
 export default {
   async fetch(request, env) {
@@ -193,7 +172,6 @@ export default {
       'http://localhost:5500'
     ];
 
-
     const corsHeaders = {
       'Access-Control-Allow-Origin': allowedOrigins.includes(origin)? origin : 'https://dopetonevault.com',
       'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
@@ -201,21 +179,18 @@ export default {
       'Access-Control-Max-Age': '86400',
     };
 
-
     if (request.method === 'OPTIONS') {
       return new Response(null, { headers: corsHeaders });
     }
 
-
     const url = new URL(request.url);
-
 
     // ===== ROOT HEALTHCHECK =====
     if (url.pathname === '/') {
       return Response.json({
         status: 'Dope Tone API Online',
-        version: '4.2 - No Mercy',
-        features: ['Gmail-Only', 'No Duplicate Passwords', 'Username Letters-Only', 'Email-Locked Accounts', 'PBKDF2 200k'],
+        version: '4.3 - Strict Reset',
+        features: ['Gmail-Only', 'No Duplicate Passwords', 'Username Letters-Only', 'Email-Locked Accounts', 'PBKDF2 200k', 'Strict Reset Flow'],
         endpoints: [
           '/api/beats',
           '/api/auth/send-signup-code',
@@ -224,6 +199,7 @@ export default {
           '/api/auth/verify-login-otp',
           '/api/auth/update-avatar',
           '/api/auth/forgot-password',
+          '/api/auth/verify-reset-otp',
           '/api/auth/reset-password',
           '/api/auth/admin-verify',
           '/api/auth/change-password',
@@ -233,181 +209,195 @@ export default {
           '/api/stats/sparks',
           '/api/stats/play',
           '/api/stats/like',
-          '/api/stats/download'
+          '/api/stats/download',
+          '/api/setup'
         ]
       }, { headers: corsHeaders });
     }
 
-
-    // ===== SIGNUP STEP 1 - SEND VERIFICATION CODE =====
-   // ===== SEND SIGNUP CODE =====
-if (url.pathname === '/api/auth/send-signup-code' && request.method === 'POST') {
-  try {
-    const { email, username, password, confirmPassword } = await request.json();
-    const normalizedEmail = email.toLowerCase().trim();
-    
-    if (!normalizedEmail || !normalizedEmail.includes('@')) {
-      return Response.json({ error: 'Invalid email' }, { status: 400, headers: corsHeaders });
-    }
-    
-    if (!username || !/^[A-Za-z]+(?: [A-Za-z]+)?$/.test(username)) {
-      return Response.json({ error: 'Username: letters only, one space allowed' }, { status: 400, headers: corsHeaders });
-    }
-    
-    if (!password || password.length < 6) {
-      return Response.json({ error: 'Password must be at least 6 characters' }, { status: 400, headers: corsHeaders });
-    }
-    
-    if (password !== confirmPassword) {
-      return Response.json({ error: 'Passwords do not match' }, { status: 400, headers: corsHeaders });
-    }
-    
-    const pwErrors = validatePassword(password);
-    if (pwErrors.length > 0) {
-      return Response.json({ error: pwErrors[0] }, { status: 400, headers: corsHeaders });
-    }
-    
-    const existing = await env.DB.prepare(
-      "SELECT email, username FROM users_auth WHERE email = ? OR username = ? COLLATE NOCASE"
-    ).bind(normalizedEmail, username).first();
-    
-    if (existing) {
-      if (existing.email === normalizedEmail) {
-        return Response.json({ 
-          error: 'it seems you already have an account login instead',
-          email: normalizedEmail 
-        }, { status: 409, headers: corsHeaders });
+    // ===== SETUP - RUN ONCE =====
+    if (url.pathname === '/api/setup' && request.method === 'GET') {
+      try {
+        await env.DB.prepare(`
+          CREATE TABLE IF NOT EXISTS verification_codes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            email TEXT NOT NULL,
+            code TEXT NOT NULL,
+            type TEXT NOT NULL,
+            expires_at TEXT NOT NULL,
+            used INTEGER DEFAULT 0,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+          )
+        `).run();
+        
+        await env.DB.prepare(`ALTER TABLE users_auth ADD COLUMN reset_code TEXT`).run().catch(()=>{});
+        await env.DB.prepare(`ALTER TABLE users_auth ADD COLUMN reset_expires INTEGER`).run().catch(()=>{});
+        await env.DB.prepare(`ALTER TABLE users_auth ADD COLUMN reset_verified INTEGER DEFAULT 0`).run().catch(()=>{});
+        
+        return Response.json({ success: true, message: 'Tables ready' }, { headers: corsHeaders });
+      } catch (e) {
+        return Response.json({ error: e.message }, { status: 500, headers: corsHeaders });
       }
-      return Response.json({ error: 'Username already taken' }, { status: 409, headers: corsHeaders });
     }
-    
-    const unique = await isPasswordUnique(password, env);
-    if (!unique) {
-      return Response.json({ error: 'Password already in use. Choose a unique password.' }, { status: 400, headers: corsHeaders });
-    }
-    
-    // In /api/auth/send-signup-code
-const code = Math.floor(100000 + Math.random() * 900000).toString();
-const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
 
-await env.DB.prepare(
-  `INSERT OR REPLACE INTO verification_codes (email, code, type, expires_at) 
-   VALUES (?, ?, 'signup', ?)`
-).bind(normalizedEmail, code, expiresAt).run();
-
-    const emailRes = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${env.RESEND_API_KEY}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        from: 'Dope Tone Vault <noreply@dopetonevault.com>',
-        to: normalizedEmail,
-        subject: 'Your Dope Tone Vault verification code',
-        html: `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h1 style="color: #9333ea;">Dope Tone Vault</h1>
-            <h2>Your verification code:</h2>
-            <h1 style="font-size: 32px; letter-spacing: 5px; color: #9333ea;">${code}</h1>
-            <p>This code expires in 10 minutes.</p>
-          </div>`
-      })
-    });
-    
-    if (!emailRes.ok) {
-      const err = await emailRes.text();
-      console.error('RESEND ERROR:', err);
-      return Response.json({ error: 'Failed to send email' }, { status: 500, headers: corsHeaders });
-    }
-    
-    return Response.json({ success: true }, { headers: corsHeaders });
-    
-  } catch (err) {
-    console.error('SEND CODE CRASH:', err.message, err.stack);
-    return Response.json({ error: 'Server error: ' + err.message }, { status: 500, headers: corsHeaders });
-  }
-}
-
-// ===== VERIFY SIGNUP CODE =====
-// ===== VERIFY SIGNUP CODE - DEBUG VERSION =====
-// ===== VERIFY SIGNUP CODE - FINAL FIX =====
-if (url.pathname === '/api/auth/verify-signup' && request.method === 'POST') {
-  try {
-    const body = await request.json();
-    
-    // Destructure with defaults - NO MORE undefined
-    const {
-      email = '',
-      code = '',
-      username = '',
-      password = '',
-      avatar = null
-    } = body;
-   
-    const normalizedEmail = String(email).toLowerCase().trim();
-    const userCode = String(code).trim();
-    const finalUsername = String(username).trim();
-    const finalPassword = String(password);
-    const finalAvatar = String(avatar || 'images/default-user.png');
-
-    // Check required fields
-    if (!normalizedEmail || !userCode || !finalUsername || !finalPassword) {
-      return Response.json({ 
-        error: 'Missing required fields',
-        debug: {
-          email: !!normalizedEmail,
-          code: !!userCode,
-          username: !!finalUsername,
-          password: !!finalPassword
+    // ===== SEND SIGNUP CODE =====
+    if (url.pathname === '/api/auth/send-signup-code' && request.method === 'POST') {
+      try {
+        const { email, username, password, confirmPassword } = await request.json();
+        const normalizedEmail = email.toLowerCase().trim();
+       
+        if (!normalizedEmail ||!normalizedEmail.includes('@')) {
+          return Response.json({ error: 'Invalid email' }, { status: 400, headers: corsHeaders });
         }
-      }, { status: 400, headers: corsHeaders });
+       
+        if (!username ||!/^[A-Za-z]+(?: [A-Za-z]+)?$/.test(username)) {
+          return Response.json({ error: 'Username: letters only, one space allowed' }, { status: 400, headers: corsHeaders });
+        }
+       
+        if (!password || password.length < 6) {
+          return Response.json({ error: 'Password must be at least 6 characters' }, { status: 400, headers: corsHeaders });
+        }
+       
+        if (password!== confirmPassword) {
+          return Response.json({ error: 'Passwords do not match' }, { status: 400, headers: corsHeaders });
+        }
+       
+        const pwErrors = validatePassword(password);
+        if (pwErrors.length > 0) {
+          return Response.json({ error: pwErrors[0] }, { status: 400, headers: corsHeaders });
+        }
+       
+        const existing = await env.DB.prepare(
+          "SELECT email, username FROM users_auth WHERE email =? OR username =? COLLATE NOCASE"
+        ).bind(normalizedEmail, username).first();
+       
+        if (existing) {
+          if (existing.email === normalizedEmail) {
+            return Response.json({
+              error: 'it seems you already have an account login instead',
+              email: normalizedEmail
+            }, { status: 409, headers: corsHeaders });
+          }
+          return Response.json({ error: 'Username already taken' }, { status: 409, headers: corsHeaders });
+        }
+       
+        const unique = await isPasswordUnique(password, env);
+        if (!unique) {
+          return Response.json({ error: 'Password already in use. Choose a unique password.' }, { status: 400, headers: corsHeaders });
+        }
+       
+        const code = Math.floor(100000 + Math.random() * 900000).toString();
+        const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+
+        await env.DB.prepare(
+          `INSERT OR REPLACE INTO verification_codes (email, code, type, expires_at)
+           VALUES (?,?, 'signup',?)`
+        ).bind(normalizedEmail, code, expiresAt).run();
+
+        const emailRes = await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${env.RESEND_API_KEY}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            from: 'Dope Tone Vault <noreply@dopetonevault.com>',
+            to: normalizedEmail,
+            subject: 'Your Dope Tone Vault verification code',
+            html: `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h1 style="color: #9333ea;">Dope Tone Vault</h1>
+                <h2>Your verification code:</h2>
+                <h1 style="font-size: 32px; letter-spacing: 5px; color: #9333ea;">${code}</h1>
+                <p>This code expires in 10 minutes.</p>
+              </div>`
+          })
+        });
+       
+        if (!emailRes.ok) {
+          const err = await emailRes.text();
+          console.error('RESEND ERROR:', err);
+          return Response.json({ error: 'Failed to send email' }, { status: 500, headers: corsHeaders });
+        }
+       
+        return Response.json({ success: true }, { headers: corsHeaders });
+       
+      } catch (err) {
+        console.error('SEND CODE CRASH:', err.message, err.stack);
+        return Response.json({ error: 'Server error: ' + err.message }, { status: 500, headers: corsHeaders });
+      }
     }
-   
-    const stored = await env.DB.prepare(
-      `SELECT * FROM verification_codes 
-       WHERE email = ? AND type = 'signup' 
-       ORDER BY expires_at DESC 
-       LIMIT 1`
-    ).bind(normalizedEmail).first();
 
-    if (!stored || String(stored.code).trim() !== userCode) {
-      return Response.json({ error: 'Invalid code' }, { status: 400, headers: corsHeaders });
+    // ===== VERIFY SIGNUP CODE =====
+    if (url.pathname === '/api/auth/verify-signup' && request.method === 'POST') {
+      try {
+        const body = await request.json();
+       
+        const {
+          email = '',
+          code = '',
+          username = '',
+          password = '',
+          avatar = null
+        } = body;
+       
+        const normalizedEmail = String(email).toLowerCase().trim();
+        const userCode = String(code).trim();
+        const finalUsername = String(username).trim();
+        const finalPassword = String(password);
+        const finalAvatar = String(avatar || 'images/default-user.png');
+
+        if (!normalizedEmail ||!userCode ||!finalUsername ||!finalPassword) {
+          return Response.json({
+            error: 'Missing required fields',
+            debug: {
+              email:!!normalizedEmail,
+              code:!!userCode,
+              username:!!finalUsername,
+              password:!!finalPassword
+            }
+          }, { status: 400, headers: corsHeaders });
+        }
+       
+        const stored = await env.DB.prepare(
+          `SELECT * FROM verification_codes
+           WHERE email =? AND type = 'signup'
+           ORDER BY expires_at DESC
+           LIMIT 1`
+        ).bind(normalizedEmail).first();
+
+        if (!stored || String(stored.code).trim()!== userCode) {
+          return Response.json({ error: 'Invalid code' }, { status: 400, headers: corsHeaders });
+        }
+       
+        if (new Date(stored.expires_at).getTime() < Date.now()) {
+          return Response.json({ error: 'Code expired' }, { status: 400, headers: corsHeaders });
+        }
+       
+        const id = crypto.randomUUID();
+        const password_hash = await hashPassword(finalPassword);
+       
+        await env.DB.prepare(
+          "INSERT INTO users_auth (id, email, username, password_hash, avatar, email_verified) VALUES (?,?,?,?,?, 1)"
+        ).bind(id, normalizedEmail, finalUsername, password_hash, finalAvatar).run();
+
+        await env.DB.prepare(
+          "INSERT INTO user_data (user_id, avatar) VALUES (?,?)"
+        ).bind(id, finalAvatar).run();
+       
+        await env.DB.prepare(
+          "DELETE FROM verification_codes WHERE email =? AND type = 'signup'"
+        ).bind(normalizedEmail).run();
+       
+        const user = { id, email: normalizedEmail, username: finalUsername, avatar: finalAvatar };
+        return Response.json({ success: true, user }, { headers: corsHeaders });
+       
+      } catch (err) {
+        console.error('VERIFY SIGNUP ERROR:', err);
+        return Response.json({
+          error: 'Server error: ' + err.message
+        }, { status: 500, headers: corsHeaders });
+      }
     }
-   
-    if (new Date(stored.expires_at).getTime() < Date.now()) {
-      return Response.json({ error: 'Code expired' }, { status: 400, headers: corsHeaders });
-    }
-   
-    const id = crypto.randomUUID();
-    const password_hash = await hashPassword(finalPassword);
-   
-    // NOW ALL VALUES ARE STRINGS - NO undefined POSSIBLE
-    await env.DB.prepare(
-      "INSERT INTO users_auth (id, email, username, password_hash, avatar, email_verified) VALUES (?,?,?,?,?, 1)"
-    ).bind(id, normalizedEmail, finalUsername, password_hash, finalAvatar).run();
-
-    await env.DB.prepare(
-      "INSERT INTO user_data (user_id, avatar) VALUES (?,?)"
-    ).bind(id, finalAvatar).run();
-   
-    await env.DB.prepare(
-      "DELETE FROM verification_codes WHERE email = ? AND type = 'signup'"
-    ).bind(normalizedEmail).run();
-   
-    const user = { id, email: normalizedEmail, username: finalUsername, avatar: finalAvatar };
-    return Response.json({ success: true, user }, { headers: corsHeaders });
-   
-  } catch (err) {
-    console.error('VERIFY SIGNUP ERROR:', err);
-    return Response.json({
-      error: 'Server error: ' + err.message
-    }, { status: 500, headers: corsHeaders });
-  }
-}
-
-
-
-
 
     // ===== LOGIN STEP 1 - CHECK PASSWORD =====
     if (url.pathname === '/api/auth/login' && request.method === 'POST') {
@@ -423,7 +413,6 @@ if (url.pathname === '/api/auth/verify-signup' && request.method === 'POST') {
           return Response.json({ error: 'Invalid credentials' }, { status: 401, headers: corsHeaders });
         }
 
-
         if (user.locked_until && new Date(user.locked_until).getTime() > Date.now()) {
           const lockTimeMs = new Date(user.locked_until).getTime();
           const nowMs = Date.now();
@@ -432,7 +421,6 @@ if (url.pathname === '/api/auth/verify-signup' && request.method === 'POST') {
             error: 'Account locked. Try again in ' + minsLeft + ' minutes.'
           }, { status: 423, headers: corsHeaders });
         }
-
 
         if (user.email_verified === 0) {
           return Response.json({ error: 'Email not verified' }, { status: 403, headers: corsHeaders });
@@ -478,7 +466,6 @@ if (url.pathname === '/api/auth/verify-signup' && request.method === 'POST') {
       }
     }
 
-
     // ===== LOGIN STEP 2 - VERIFY OTP =====
     if (url.pathname === '/api/auth/verify-login-otp' && request.method === 'POST') {
       try {
@@ -489,11 +476,9 @@ if (url.pathname === '/api/auth/verify-signup' && request.method === 'POST') {
           "SELECT * FROM verification_codes WHERE email =? AND type = 'login_otp' AND used = 0"
         ).bind(normalizedEmail).first();
 
-
         if (!codeRow || codeRow.code!== code) {
           return Response.json({ error: 'Invalid code' }, { status: 400, headers: corsHeaders });
         }
-
 
         if (new Date(codeRow.expires_at) < new Date()) {
           return Response.json({ error: 'Code expired' }, { status: 400, headers: corsHeaders });
@@ -516,7 +501,6 @@ if (url.pathname === '/api/auth/verify-signup' && request.method === 'POST') {
         return Response.json({ error: e.message }, { status: 500, headers: corsHeaders });
       }
     }
-
 
     // ===== UPDATE AVATAR =====
     if (url.pathname === '/api/auth/update-avatar' && request.method === 'POST') {
@@ -544,15 +528,17 @@ if (url.pathname === '/api/auth/verify-signup' && request.method === 'POST') {
       }
     }
 
-
-    // ===== FORGOT PASSWORD - SEND RESET CODE =====
+    // ===== FORGOT PASSWORD - SEND RESET CODE - STRICT =====
     if (url.pathname === '/api/auth/forgot-password' && request.method === 'POST') {
       try {
         const { email } = await request.json();
         const normalizedEmail = email.toLowerCase().trim();
-        const user = await env.DB.prepare("SELECT id FROM users_auth WHERE email =?").bind(normalizedEmail).first();
-       
-        if (user) {
+        
+        const user = await env.DB.prepare(
+          "SELECT id, email_verified FROM users_auth WHERE email =?"
+        ).bind(normalizedEmail).first();
+        
+        if (user && user.email_verified === 1) {
           const code = generateCode();
           const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
          
@@ -567,6 +553,7 @@ if (url.pathname === '/api/auth/verify-signup' && request.method === 'POST') {
               <p>Your reset code is:</p>
               <h1 style="font-size: 36px; letter-spacing: 8px; color: #8b5cf6; background: #111; padding: 20px; text-align: center; border-radius: 8px;">${code}</h1>
               <p style="color: #888;">This code expires in 15 minutes.</p>
+              <p style="color: #f00;">If you didn't request this, ignore this email.</p>
             </div>
           `, 'recovery');
         }
@@ -577,42 +564,87 @@ if (url.pathname === '/api/auth/verify-signup' && request.method === 'POST') {
       }
     }
 
-
-    // ===== RESET PASSWORD - VERIFY CODE + SET NEW PASSWORD =====
-    if (url.pathname === '/api/auth/reset-password' && request.method === 'POST') {
+    // ===== VERIFY RESET OTP - STRICT =====
+    if (url.pathname === '/api/auth/verify-reset-otp' && request.method === 'POST') {
       try {
-        const { email, code, newPassword } = await request.json();
+        const { email, code } = await request.json();
         const normalizedEmail = email.toLowerCase().trim();
-       
-        const pwErrors = validatePassword(newPassword);
-        if (pwErrors.length > 0) {
-          return Response.json({ error: pwErrors[0] }, { status: 400, headers: corsHeaders });
+        
+        const user = await env.DB.prepare(
+          "SELECT id FROM users_auth WHERE email =? AND email_verified = 1"
+        ).bind(normalizedEmail).first();
+        
+        if (!user) {
+          return Response.json({ error: 'Invalid request' }, { status: 400, headers: corsHeaders });
         }
-       
-        const codeRow = await env.DB.prepare(
-          "SELECT * FROM verification_codes WHERE email =? AND code =? AND type = 'reset_password' AND used = 0"
-        ).bind(normalizedEmail, code).first();
-       
-        if (!codeRow || new Date(codeRow.expires_at) < new Date()) {
-          return Response.json({ error: 'Invalid or expired code' }, { status: 400, headers: corsHeaders });
+        
+        const stored = await env.DB.prepare(
+          `SELECT * FROM verification_codes 
+           WHERE email =? AND type = 'reset_password' AND used = 0
+           ORDER BY expires_at DESC LIMIT 1`
+        ).bind(normalizedEmail).first();
+        
+        if (!stored || String(stored.code).trim()!== String(code).trim()) {
+          return Response.json({ error: 'Invalid code' }, { status: 400, headers: corsHeaders });
         }
-       
-        const user = await env.DB.prepare("SELECT id FROM users_auth WHERE email =?").bind(normalizedEmail).first();
-        const unique = await isPasswordUnique(newPassword, env, user.id);
-        if (!unique) {
-          return Response.json({ error: 'Password already in use. Choose a unique password.' }, { status: 400, headers: corsHeaders });
+        
+        if (new Date(stored.expires_at).getTime() < Date.now()) {
+          return Response.json({ error: 'Code expired' }, { status: 400, headers: corsHeaders });
         }
-       
-        const password_hash = await hashPassword(newPassword);
-        await env.DB.prepare("UPDATE users_auth SET password_hash =? WHERE email =?").bind(password_hash, normalizedEmail).run();
-        await env.DB.prepare("UPDATE verification_codes SET used = 1 WHERE id =?").bind(codeRow.id).run();
-       
+        
+        await env.DB.prepare(
+          "UPDATE users_auth SET reset_verified = 1 WHERE email =?"
+        ).bind(normalizedEmail).run();
+        
+        await env.DB.prepare(
+          "UPDATE verification_codes SET used = 1 WHERE id =?"
+        ).bind(stored.id).run();
+        
         return Response.json({ success: true }, { headers: corsHeaders });
+        
       } catch (e) {
         return Response.json({ error: e.message }, { status: 500, headers: corsHeaders });
       }
     }
 
+    // ===== RESET PASSWORD - VERIFY CODE + SET NEW PASSWORD - STRICT =====
+    if (url.pathname === '/api/auth/reset-password' && request.method === 'POST') {
+      try {
+        const { email, password } = await request.json();
+        const normalizedEmail = email.toLowerCase().trim();
+       
+        const pwErrors = validatePassword(password);
+        if (pwErrors.length > 0) {
+          return Response.json({ error: pwErrors[0] }, { status: 400, headers: corsHeaders });
+        }
+       
+        const user = await env.DB.prepare(
+          "SELECT id FROM users_auth WHERE email =? AND reset_verified = 1 AND email_verified = 1"
+        ).bind(normalizedEmail).first();
+        
+        if (!user) {
+          return Response.json({ error: 'Invalid request - verify code first' }, { status: 400, headers: corsHeaders });
+        }
+       
+        const unique = await isPasswordUnique(password, env, user.id);
+        if (!unique) {
+          return Response.json({ error: 'Password already in use. Choose a unique password.' }, { status: 400, headers: corsHeaders });
+        }
+       
+        const password_hash = await hashPassword(password);
+        await env.DB.prepare(
+          "UPDATE users_auth SET password_hash =?, reset_verified = 0 WHERE email =?"
+        ).bind(password_hash, normalizedEmail).run();
+        
+        const updatedUser = await env.DB.prepare(
+          "SELECT id, email, username, avatar FROM users_auth WHERE email =?"
+        ).bind(normalizedEmail).first();
+       
+        return Response.json({ success: true, user: updatedUser }, { headers: corsHeaders });
+      } catch (e) {
+        return Response.json({ error: e.message }, { status: 500, headers: corsHeaders });
+      }
+    }
 
     // ===== ADMIN VERIFY - SEND OTP TO YOUR EMAIL =====
     if (url.pathname === '/api/auth/admin-verify' && request.method === 'POST') {
@@ -645,7 +677,6 @@ if (url.pathname === '/api/auth/verify-signup' && request.method === 'POST') {
         return Response.json({ error: e.message }, { status: 500, headers: corsHeaders });
       }
     }
-
 
     // ===== CHANGE PASSWORD =====
     if (url.pathname === '/api/auth/change-password' && request.method === 'POST') {
@@ -688,7 +719,6 @@ if (url.pathname === '/api/auth/verify-signup' && request.method === 'POST') {
       }
     }
 
-
     // ===== USER DATA SYNC ROUTES =====
     if (url.pathname === '/api/user/sync' && request.method === 'POST') {
       try {
@@ -722,7 +752,6 @@ if (url.pathname === '/api/auth/verify-signup' && request.method === 'POST') {
       }
     }
 
-
     const userDataMatch = url.pathname.match(/^\/api\/user\/([^\/]+)\/data$/);
     if (userDataMatch) {
       try {
@@ -747,10 +776,9 @@ if (url.pathname === '/api/auth/verify-signup' && request.method === 'POST') {
           settings: JSON.parse(data.settings || '{}')
         }, { headers: corsHeaders });
       } catch (e) {
-        return Response.json({ error: e.message }, { status: 500, headers: corsHeaders });
+               return Response.json({ error: e.message }, { status: 500, headers: corsHeaders });
       }
     }
-
 
     // ===== R2 UPLOAD ROUTE =====
     if (url.pathname === '/api/upload' && request.method === 'POST') {
@@ -775,7 +803,6 @@ if (url.pathname === '/api/auth/verify-signup' && request.method === 'POST') {
       }
     }
 
-
     // ===== BEATS ROUTES =====
     if (url.pathname === '/api/beats' || url.pathname === '/beats') {
       try {
@@ -787,7 +814,6 @@ if (url.pathname === '/api/auth/verify-signup' && request.method === 'POST') {
         return Response.json({ error: e.message }, { status: 500, headers: corsHeaders });
       }
     }
-
 
     const beatMatch = url.pathname.match(/^\/api\/beats\/(\d+)$/);
     if (beatMatch) {
@@ -802,8 +828,7 @@ if (url.pathname === '/api/auth/verify-signup' && request.method === 'POST') {
       }
     }
 
-
-       // ===== STATS ROUTES =====
+    // ===== STATS ROUTES =====
     if (url.pathname === '/api/stats/overview') {
       try {
         const { results } = await env.DB.prepare(
@@ -828,11 +853,9 @@ if (url.pathname === '/api/auth/verify-signup' && request.method === 'POST') {
       }
     }
 
-
     if (url.pathname === '/api/stats/sparks') {
       return Response.json({ streams: [], listeners: [], revenue: [], followers: [] }, { headers: corsHeaders });
     }
-
 
     // ===== STATS TRACKING ROUTES =====
     if (url.pathname === '/api/stats/play' && request.method === 'POST') {
@@ -847,7 +870,6 @@ if (url.pathname === '/api/auth/verify-signup' && request.method === 'POST') {
       }
     }
 
-
     if (url.pathname === '/api/stats/like' && request.method === 'POST') {
       try {
         const { beat_id, liked } = await request.json();
@@ -861,7 +883,6 @@ if (url.pathname === '/api/auth/verify-signup' && request.method === 'POST') {
       }
     }
 
-
     if (url.pathname === '/api/stats/download' && request.method === 'POST') {
       try {
         const { beat_id } = await request.json();
@@ -874,9 +895,6 @@ if (url.pathname === '/api/auth/verify-signup' && request.method === 'POST') {
       }
     }
 
-
     return new Response('Not Found', { status: 404, headers: corsHeaders });
   }
 }
-
-
