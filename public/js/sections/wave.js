@@ -123,7 +123,9 @@ export function renderWave(limit = null) {
       wave.on('seeking', (progress) => {
         const currentBeat = window.__CURRENT_BEAT__;
         const currentList = window.__CURRENT_LIST__;
-        const duration = window.globalPlayer?.getDuration() || wave.getDuration();
+        // AFTER - safe version
+const duration = window.globalPlayer?.getDuration?.() || 0;
+
         
         if (currentBeat?.id === beat.id && currentList === 'wave' && duration) {
           const seekTime = progress * duration; // 🔥 CONVERT 0-1 TO SECONDS

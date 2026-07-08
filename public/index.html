@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dope Tone</title>
 
+    <!-- FOUC FIX - MUST BE FIRST -->
+    <style>
+        html { visibility: hidden; opacity: 0; }
+        html.loaded { visibility: visible; opacity: 1; transition: opacity 0.15s ease; }
+    </style>
+
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
 
     <!-- ================= STYLES ================= -->
@@ -41,6 +47,9 @@
 
     <!-- ================= NAVBAR ================= -->
     <div id="navbarMount"></div>
+
+    <!-- ================= AUTH MOUNT - ADD THIS ================= -->
+    <div id="authMount"></div>
 
     <!-- ================= HERO ================= -->
     <section class="hero">
@@ -210,7 +219,6 @@
                         <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
                     </svg>
                 </button>
-
             </div>
            
             <div class="gp-progress-wrap">
@@ -231,7 +239,7 @@
         </div>
     </div>
 
-    <!-- ================= FULLSCREEN MOBILE PLAYER - SVG ONLY ================= -->
+    <!-- ================= FULLSCREEN MOBILE PLAYER ================= -->
     <div id="mobilePlayer" class="mobile-player">
         <div class="mp-header">
             <span id="mpClose">
@@ -251,11 +259,10 @@
             </button>
            
             <button id="mpPlay" class="player-btn play-btn" title="Play" aria-label="Play/Pause">
-    <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
-        <path id="mpPlayPath" d="M8 5v14l11-7z"/>
-    </svg>
-</button>
-
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+                    <path id="mpPlayPath" d="M8 5v14l11-7z"/>
+                </svg>
+            </button>
            
             <button id="mpNext" class="player-btn">
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
@@ -275,33 +282,26 @@
             <button id="mpLike" class="love-track-btn">
                 <span class="love-heart">♡</span>
             </button>
-           
             <button id="mpShuffle" class="player-btn" title="Shuffle">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M10.59 9.17L5.41 4L4 5.41l5.17 5.17l1.42-1.41zM14.5 4l2.04 2.04L4 18.59L5.41 20L17.96 7.46L20 9.5V4h-5.5zm.33 9.41l-1.41 1.41l3.13 3.13L14.5 20H20v-5.5l-2.04 2.04l-3.13-3.13z"/>
+                    <path d="M10.59 9.17L5.41 4L4 5.41l5.17 5.17l1.42-1.41zM14.5 4l2.04 2.04L4 18.59L5.41 20L17.96 7.46L20 9.5V4h-5.5zm.33 9.41l-1.41 1.41l3.13 3.13L14.5 20H20v-5.5l-2.04 2.04l-3.13z"/>
                 </svg>
             </button>
-           
             <button id="mpRepeat" class="player-btn" title="Repeat">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/>
                 </svg>
             </button>
-           
             <button id="mpDownload">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
                 </svg>
             </button>
-           
             <button id="mpBuy" class="player-btn" title="Buy Track">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
-    </svg>
-</button>
-
-
-
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
+                </svg>
+            </button>
             <button id="mpMore">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
@@ -312,16 +312,44 @@
 
     <div id="footerMount"></div>
 
-    <!-- ================= AUTH MOUNT ================= -->
-    <div id="authMount"></div>
-
     <!-- ================= LIBS ================= -->
     <script src="https://unpkg.com/wavesurfer.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.js"></script>
    
+    <!-- ================= NAVBAR LOADER - MUST BE FIRST ================= -->
+    <script>
+    fetch("navbar.html")
+    .then(res => res.text())
+    .then(html => {
+        document.getElementById("navbarMount").innerHTML = html
+        // CRITICAL: Fire event after navbar is in DOM
+        setTimeout(() => {
+            window.dispatchEvent(new Event('navbarLoaded'))
+        }, 50)
+    })
+    </script>
+
+    <!-- ================= AUTH LOADER - MUST BE SECOND ================= -->
+    <script>
+    fetch("auth.html")
+    .then(res => res.text())
+    .then(html => {
+        document.getElementById("authMount").innerHTML = html
+        const script = document.createElement("script")
+        script.src = "js/auth.js"
+        script.onload = () => {
+            // auth.js should listen for 'navbarLoaded' event
+            if(window.initAuth){
+                window.initAuth()
+            }
+        }
+        document.body.appendChild(script)
+    })
+    </script>
+
     <!-- ================= APP BOOT - CONTROLS LOAD ORDER ================= -->
     <script type="module" src="js/app-loader.js"></script>
-
+    
     <!-- ================= PLAYER & CORE ================= -->
     <script src="js/global-player.js"></script>
     <script src="js/mini-eq.js"></script>
@@ -331,10 +359,10 @@
     <script src="js/home/home.js"></script>
     <script src="js/footer-loader.js"></script>
     <script src="js/notice-board.js"></script>
-
+    
     <!-- ================= APP CORE ================= -->
     <script type="module" src="js/app.js"></script>
-
+    
     <!-- ================= PLAYLIST SYSTEM ================= -->
     <div id="playlistModalMount"></div>
     <script type="module" src="js/playlists/playlist-storage.js"></script>
@@ -370,7 +398,7 @@
         // Player play/pause toggle - single path swap for both players
         const PLAY_ICON = "M8 5v14l11-7z";
         const PAUSE_ICON = "M6 19h4V5H6v14zm8-14v14h4V5h-4z";
-        
+       
         const gpPlayPath = document.getElementById('gpPlayPath');
         const mpPlayPath = document.getElementById('mpPlayPath');
 
@@ -381,10 +409,6 @@
             document.getElementById('gpPlay')?.setAttribute('title', isPlaying ? 'Pause' : 'Play');
             document.getElementById('mpPlay')?.setAttribute('title', isPlaying ? 'Pause' : 'Play');
         }
-
-        // Hook this to your actual audio element
-        // Example: audio.addEventListener('play', () => syncPlayIcon(true));
-        //          audio.addEventListener('pause', () => syncPlayIcon(false));
     </script>
    
     <!-- ================= DOWNLOAD EMAIL GATE ================= -->
@@ -430,44 +454,53 @@
         </div>
     </div>
 
+    <!-- ================= MOBILE MENU ================= -->
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const checkNav = setInterval(() => {
+        const toggle = document.querySelector(".menu-toggle")
+        const panel = document.querySelector(".mobile-panel")
+        const overlay = document.querySelector(".overlay")
+        const closeBtn = document.getElementById("panelCloseBtn")
+
+        if (!toggle ||!panel ||!overlay) return
+        clearInterval(checkNav)
+        if (panel.dataset.navReady === "true") return
+        panel.dataset.navReady = "true"
+
+        function openMenu() {
+          panel.classList.add("active")
+          overlay.classList.add("active")
+          document.body.classList.add("menu-open")
+          document.body.style.overflow = 'hidden'
+        }
+
+        function closeMenu() {
+          panel.classList.remove("active")
+          overlay.classList.remove("active")
+          document.body.classList.remove("menu-open")
+          document.body.style.overflow = ''
+        }
+
+        toggle.addEventListener("click", (e) => {
+          e.preventDefault()
+          panel.classList.contains("active")? closeMenu() : openMenu()
+        })
+
+        if (closeBtn) closeBtn.addEventListener("click", closeMenu)
+        overlay.addEventListener("click", closeMenu)
+        console.log("✅ mobile nav ready")
+      }, 100)
+      setTimeout(() => clearInterval(checkNav), 5000)
+    })
+    </script>
+
+    <!-- FOUC FIX -->
+    <script>
+      window.addEventListener('load', () => {
+        document.documentElement.classList.add('loaded');
+      });
+    </script>
+
 </body>
-
-    <!-- ================= FULL PAGE SKELETON ================= -->
-    <div id="pageLoader" class="page-loader">
-        <div class="loader-header">
-            <div class="skeleton skeleton-logo"></div>
-            <div class="skeleton skeleton-nav"></div>
-        </div>
-       
-        <div class="loader-hero">
-            <div class="skeleton skeleton-title"></div>
-            <div class="skeleton skeleton-subtitle"></div>
-            <div class="skeleton skeleton-btn"></div>
-        </div>
-
-        <div class="loader-section">
-            <div class="skeleton skeleton-section-title"></div>
-            <div class="skeleton-row">
-                <div class="skeleton skeleton-card"></div>
-                <div class="skeleton skeleton-card"></div>
-                <div class="skeleton skeleton-card"></div>
-                <div class="skeleton skeleton-card"></div>
-            </div>
-        </div>
-
-        <div class="loader-section">
-            <div class="skeleton skeleton-section-title"></div>
-            <div class="skeleton-row">
-                <div class="skeleton skeleton-card"></div>
-                <div class="skeleton skeleton-card"></div>
-                <div class="skeleton skeleton-card"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ================= NAVBAR ================= -->
-    <div id="appContent" style="opacity: 0; visibility: hidden;">
-        <div id="navbarMount"></div>
-    </div>
-
 </html>

@@ -30,7 +30,7 @@
   height: 280px;
 
   background:
-  url("/images/beats-wav-bg.png")
+  url("/public/images/beats-wav-bg.png")
   center/contain no-repeat;
 
   opacity: 0.1;

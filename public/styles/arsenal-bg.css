@@ -28,7 +28,7 @@
   width: 100%;
   height: 280px;
 
-  background: url("/images/beats-wav-bg.png") center/contain no-repeat;
+  background: url("/public/images/beats-wav-bg.png") center/contain no-repeat;
 
   opacity: 0.1;
   filter: blur(1px);

@@ -36,13 +36,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   const appContent = document.getElementById('appContent')
 
   try {
-    // 0. WAIT FOR AUTH TO LOAD
-    await waitForAuth();
-    console.log("✅ Auth ready:", window.Auth?.user?.email || 'guest');
-
     // 1. Init UI stuff that doesn't need data
     initUI()
-    initMobileMenu() // safe – will auto-retry if navbar isn't injected yet
+    initMobileMenu()
     initOrbit()
     initArsenalSearch()
 
@@ -54,7 +50,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // 3. 🔥 MAP CLOUDFLARE FIELDS TO FRONTEND FIELDS
     const normalizedBeats = (beats || []).map(beat => ({
-    ...beat,
+     ...beat,
       audio: beat.mp3_url,
       cover: beat.cover_url,
       zip: beat.zip_url,
@@ -118,32 +114,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 })
 
 // ================================
-// 🔐 WAIT FOR AUTH HELPER
-// ================================
-function waitForAuth() {
-  return new Promise((resolve) => {
-    // If Auth already loaded
-    if (window.Auth && window.Auth.user!== undefined) {
-      return resolve(window.Auth.user);
-    }
-
-    // Poll every 100ms until Auth is ready
-    const checkInterval = setInterval(() => {
-      if (window.Auth && window.Auth.user!== undefined) {
-        clearInterval(checkInterval);
-        resolve(window.Auth.user);
-      }
-    }, 100);
-
-    // Timeout after 3s - continue as guest
-    setTimeout(() => {
-      clearInterval(checkInterval);
-      resolve(null);
-    }, 3000);
-  });
-}
-
-// ================================
 // 🟩 UI CONTROLS
 // ================================
 function initUI() {
@@ -185,7 +155,7 @@ function initMobileMenu() {
   function openMenu() {
     panel.classList.add("active")
     overlay.classList.add("active")
-    document.body.classList.add("menu-open") // SCOFIELD: Hides player
+    document.body.classList.add("menu-open")
     document.body.classList.add("panel-open")
     document.body.style.overflow = 'hidden'
     console.log('[SCOFIELD] Menu opened')
@@ -203,13 +173,11 @@ function initMobileMenu() {
     console.log('[SCOFIELD] Menu closed')
   }
 
-  // SCOFIELD: Hamburger toggle
   toggle.addEventListener("click", (e) => {
     e.preventDefault()
     panel.classList.contains("active")? closeMenu() : openMenu()
   })
 
-  // SCOFIELD: X button close
   if (closeBtn) {
     closeBtn.addEventListener("click", (e) => {
       e.preventDefault()
@@ -218,20 +186,16 @@ function initMobileMenu() {
     })
   }
 
-  // Backdrop close
   overlay.addEventListener("click", closeMenu)
 
-  // Close on link click
   panel.addEventListener("click", (e) => {
     if (e.target.closest("a")) closeMenu()
   })
 
-  // ESC to close
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") closeMenu()
   })
 
-  // Swipe to close
   panel.addEventListener("touchstart", (e) => {
     dragging = true
     startX = e.touches[0].clientX
@@ -266,23 +230,17 @@ function initMobileMenu() {
   return true
 }
 
-// SCOFIELD: Also listen for navbar load event
 window.addEventListener('navbarLoaded', () => {
   initMobileMenu()
 })
 
-
-
-// expose globally so app-loader.js can call it after injecting navbar.html
 window.initMobileMenu = initMobileMenu
 
-// auto-retry if navbar is injected late via fetch/innerHTML
 if (!initMobileMenu()) {
   const navObs = new MutationObserver(() => {
     if (initMobileMenu()) navObs.disconnect()
   })
   navObs.observe(document.body, { childList: true, subtree: true })
-  // stop trying after 5s
   setTimeout(() => navObs.disconnect(), 5000)
 }
 
@@ -332,7 +290,6 @@ document.addEventListener("DOMContentLoaded", () => {
     window.location.href = "licence-page.html";
   });
 
-  // keep count in sync
   setInterval(updateMobileCart, 1000);
 });
 
@@ -374,9 +331,7 @@ function setupGlobalBuyButtons(){
         updateCartCount();
       }
 
-      // 🔥 Sync cart to cloud if logged in
       window.syncUserDataToCloud?.();
-
       window.location.href = `licence-page.html?id=${beat.id}`;
     });
   });
@@ -391,18 +346,17 @@ document.addEventListener("DOMContentLoaded", () => {
 // ========================================
 export async function trackBeatPlay(beatId) {
   try {
-    const userId = window.Auth?.user?.id || 'anonymous';
+    const userId = 'anonymous'; // Auth removed - will handle in auth.js
 
     await fetch('https://dope-tone-api.dopetone701.workers.dev/api/track-play', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         beat_id: beatId,
-        user_id: userId // Now D1 knows WHO played it
+        user_id: userId
       })
     });
 
-    // Update local play_count so UI updates instantly
     const beat = window.store.beats.find(b => b.id == beatId);
     if (beat) beat.play_count = (beat.play_count || 0) + 1;
 
@@ -413,100 +367,4 @@ export async function trackBeatPlay(beatId) {
   }
 }
 
-// Make it global so other components can call it
 window.trackBeatPlay = trackBeatPlay;
-// ---- AUTH BRIDGE – nav + auth modal coordination ----
-const navPanel = document.querySelector('.mobile-panel');
-const navOverlay = document.getElementById('navOverlay');
-
-function closeNav(){
-  navPanel?.classList.remove('active');
-  navOverlay?.classList.remove('active');
-  document.body.classList.remove('panel-open');
-}
-
-function openAuthModal(mode = 'login'){
-  // kill nav first, otherwise its blur stays under the auth modal
-  closeNav();
-  
-  const modal = document.getElementById('authModal');
-  if(!modal) return false;
-  const isSignup = mode === 'signup';
-  
-  const uGroup = document.getElementById('usernameGroup');
-  const avatarWrap = document.getElementById('signupAvatarWrap');
-  const title = document.getElementById('authTitle');
-  const subtitle = document.getElementById('authSubtitle');
-  const submit = document.getElementById('authSubmit');
-  const switchText = document.getElementById('switchAuthText');
-  const switchBtn = document.getElementById('switchAuthBtn');
-
-  if(uGroup) uGroup.style.display = isSignup ? 'block' : 'none';
-  if(avatarWrap) avatarWrap.style.display = isSignup ? 'block' : 'none';
-  if(title) title.textContent = isSignup ? 'Create Account' : 'Welcome Back';
-  if(subtitle) subtitle.textContent = isSignup ? 'Join the arsenal' : 'Login to access your arsenal';
-  if(submit) submit.textContent = isSignup ? 'Create Account' : 'Continue';
-  if(switchText) switchText.textContent = isSignup ? 'Already have an account?' : "Don't have an account?";
-  if(switchBtn) switchBtn.textContent = isSignup ? 'Login' : 'Sign Up';
-
-  modal.classList.add('active');
-  modal.setAttribute('aria-hidden', 'false');
-  document.body.style.overflow = 'hidden';
-  setTimeout(()=>document.getElementById('authEmail')?.focus(), 50);
-  return true;
-}
-
-function closeAuthModal(){
-  const modal = document.getElementById('authModal');
-  if(modal){
-    modal.classList.remove('active');
-    modal.setAttribute('aria-hidden', 'true');
-  }
-  // only restore scroll if nav panel is also closed
-  if(!navPanel?.classList.contains('active')){
-    document.body.style.overflow = '';
-    document.body.classList.remove('panel-open');
-    navOverlay?.classList.remove('active');
-  }
-}
-
-// clean up any leftover blur when auth modal closes – works with your existing auth.js too
-const authModalEl = document.getElementById('authModal');
-if(authModalEl){
-  new MutationObserver(() => {
-    if(!authModalEl.classList.contains('active')){
-      closeAuthModal();
-    }
-  }).observe(authModalEl, { attributes: true, attributeFilter: ['class'] });
-
-  document.getElementById('authCloseBtn')?.addEventListener('click', () => setTimeout(closeAuthModal, 30), true);
-  authModalEl.addEventListener('click', e => {
-    if(e.target === authModalEl) setTimeout(closeAuthModal, 30);
-  }, true);
-}
-
-// navbar buttons -> auth
-document.addEventListener('click', e => {
-  const loginEl = e.target.closest('#loginBtn');
-  const signupEl = e.target.closest('#signupBtn');
-  const accountEl = e.target.closest('#accountBtn');
-  const mobileProfileEl = e.target.closest('#mobileProfileBtn');
-
-  if (loginEl || mobileProfileEl) {
-    e.preventDefault(); e.stopPropagation();
-    if(window.Auth?.showLogin?.()) { closeNav(); return; }
-    openAuthModal('login');
-    return;
-  }
-  if (signupEl) {
-    e.preventDefault(); e.stopPropagation();
-    if(window.Auth?.showSignup?.()) return;
-    openAuthModal('signup');
-    return;
-  }
-  if (accountEl) {
-    e.preventDefault();
-    if(window.Auth?.openAccount?.()) return;
-    document.getElementById('accountPanel')?.classList.toggle('active');
-  }
-}, true);

@@ -1,18 +1,20 @@
 // ========================================
-// 🔥 AUTH MANAGER v3.0 - CLOUDFLARE D1 ONLY
+// 🔥 AUTH MANAGER v3.2 - ZERO RACE CONDITIONS
 // ========================================
 
 const ADMIN_EMAIL = 'dopetone701@gmail.com';
 const API_URL = 'https://api.dopetonevault.com';
+const DEFAULT_AVATAR = 'images/default-user.png';
 
 class AuthManager {
   constructor() {
     this.user = null;
     this.isSignup = false;
     this.cropper = null;
-    this.avatarData = "images/default-user.png";
+    this.avatarData = DEFAULT_AVATAR;
     this.els = {};
     this._globalListenersAdded = false;
+    this._navbarReady = false;
 
     const justLoggedOut = sessionStorage.getItem('just_logged_out');
     if (justLoggedOut) {
@@ -20,9 +22,51 @@ class AuthManager {
       this.clearAllUserData();
     }
 
+    this.init();
+  }
+
+  // 🔥 MAIN INIT - waits for navbar before binding anything
+  async init() {
+    await this.waitForNavbar();
+    this._navbarReady = true;
+    
     this.cacheElements();
     this.bindGlobalEvents();
     this.initSession();
+    
+    console.log("✅ AuthManager ready - navbar loaded");
+  }
+
+  // 🔥 WAIT FOR NAVBAR HELPER
+  waitForNavbar() {
+    return new Promise((resolve) => {
+      // Check if critical navbar elements exist
+      const hasAccountBtn =!!document.getElementById('accountBtn');
+      const hasLoginBtn =!!document.getElementById('loginBtn');
+      const hasUserAvatar =!!document.getElementById('userAvatar');
+      
+      if (hasAccountBtn || hasLoginBtn || hasUserAvatar) {
+        return resolve();
+      }
+
+      // Watch for navbar injection
+      const observer = new MutationObserver(() => {
+        if (document.getElementById('accountBtn') || 
+            document.getElementById('loginBtn') || 
+            document.getElementById('userAvatar')) {
+          observer.disconnect();
+          resolve();
+        }
+      });
+      
+      observer.observe(document.body, { childList: true, subtree: true });
+
+      // Timeout after 3s - continue anyway
+      setTimeout(() => {
+        observer.disconnect();
+        resolve();
+      }, 3000);
+    });
   }
 
   // 🔥 USER-SPECIFIC STORAGE
@@ -46,7 +90,7 @@ class AuthManager {
 
   async saveUserDataToCloud() {
     if (!this.user) return;
-   
+    
     const userId = this.user.id;
     const data = {
       user_id: userId,
@@ -73,49 +117,44 @@ class AuthManager {
   }
 
   async loadUserDataFromCloud() {
-  if (!this.user) return;
- 
-  const userId = this.user.id;
-  console.log('🔄 Loading from D1 for:', userId);
+    if (!this.user) return;
+    
+    const userId = this.user.id;
+    console.log('🔄 Loading from D1 for:', userId);
 
-  try {
-    const res = await fetch(`${API_URL}/api/user/${userId}/data`);
-    const cloudData = await res.json();
-   
-    console.log('📦 D1 Response:', cloudData);
+    try {
+      const res = await fetch(`${API_URL}/api/user/${userId}/data`);
+      const cloudData = await res.json();
+      
+      console.log('📦 D1 Response:', cloudData);
 
-    if (cloudData) {
-      // Load cart/likes/playlists
-      this.setUserStorage('dopetone_cart', JSON.stringify(cloudData.cart || []));
-      this.setUserStorage('dopetone_playlists', JSON.stringify(cloudData.playlists || []));
-      this.setUserStorage('dopetone_liked_beats', JSON.stringify(cloudData.likes || []));
-      this.setUserStorage('dopetone_licences', JSON.stringify(cloudData.licences || {}));
+      if (cloudData) {
+        this.setUserStorage('dopetone_cart', JSON.stringify(cloudData.cart || []));
+        this.setUserStorage('dopetone_playlists', JSON.stringify(cloudData.playlists || []));
+        this.setUserStorage('dopetone_liked_beats', JSON.stringify(cloudData.likes || []));
+        this.setUserStorage('dopetone_licences', JSON.stringify(cloudData.licences || {}));
 
-      // LOAD AVATAR FROM D1 - This is the key
-      if (cloudData.avatar) {
-        console.log('✅ Loading avatar from D1:', cloudData.avatar);
-        this.user.avatar = cloudData.avatar;
-        this.avatarData = cloudData.avatar;
-        localStorage.setItem('dopetone_user', JSON.stringify(this.user));
-        
-        // Update all avatar elements
-        document.querySelectorAll('[data-user-avatar], #userAvatar, #panelAvatar, .header-avatar')
-          .forEach(img => { if (img) img.src = cloudData.avatar; });
+        if (cloudData.avatar) {
+          console.log('✅ Loading avatar from D1:', cloudData.avatar);
+          this.user.avatar = cloudData.avatar;
+          this.avatarData = cloudData.avatar;
+          localStorage.setItem('dopetone_user', JSON.stringify(this.user));
+          
+          document.querySelectorAll('[data-user-avatar], #userAvatar, #panelAvatar,.header-avatar')
+           .forEach(img => { if (img) img.src = cloudData.avatar; });
+        }
       }
+    } catch (e) {
+      console.error('❌ Cloud load failed:', e);
+      this.migrateToUserStorage();
     }
-  } catch (e) {
-    console.error('❌ Cloud load failed:', e);
-    this.migrateToUserStorage();
   }
-}
-
 
   migrateToUserStorage() {
     if (!this.user) return;
     const userId = this.user.id;
-
     const keys = ['dopetone_cart', 'dopetone_playlists', 'dopetone_liked_beats', 'dopetone_licences'];
-   
+    
     keys.forEach(key => {
       const old = localStorage.getItem(key);
       if (old &&!localStorage.getItem(`${key}_${userId}`)) {
@@ -144,157 +183,122 @@ class AuthManager {
       'authModal', 'authForm', 'authTitle', 'authSubtitle', 'authUsername',
       'authEmail', 'authPassword', 'authSubmit', 'authError', 'authCloseBtn',
       'switchAuthBtn', 'switchAuthText', 'signupAvatarWrap', 'avatarInput',
-      'avatarPreview', 'accountPanel', 'accountBtn', 'panelName', 'panelEmail',
-      'panelAvatar', 'userAvatar', 'logoutAction', 'authToastText', 'authToast',
+      'avatarPreview', 'accountPanel', 'panelName', 'panelEmail',
+      'panelAvatar', 'logoutAction', 'authToastText', 'authToast',
       'cropModal', 'cropImage', 'saveCrop', 'cancelCrop', 'changeAvatarInput',
       'usernameGroup', 'forgotPasswordBtn', 'authBox', 'controlCenterBtn'
     ];
 
     ids.forEach(id => this.els[id] = document.getElementById(id));
-
-    this.els.loginTriggers = document.querySelectorAll('[data-auth="login"]');
-    this.els.signupTriggers = document.querySelectorAll('[data-auth="signup"]');
-    this.els.userAreas = document.querySelectorAll('[data-auth="user-area"]');
-    this.els.guestAreas = document.querySelectorAll('[data-auth="guest-area"]');
   }
 
   bindGlobalEvents() {
-    this.els.loginTriggers.forEach(btn => {
-      btn.onclick = null;
-      btn.onclick = () => this.openModal(false);
-    });
+    if (this._globalListenersAdded) return;
+    this._globalListenersAdded = true;
+    
 
-    this.els.signupTriggers.forEach(btn => {
-      btn.onclick = null;
-      btn.onclick = () => this.openModal(true);
-    });
+    // 🔥 SINGLE GLOBAL CLICK HANDLER - catches everything
+    document.addEventListener('click', (e) => {
+      const loginEl = e.target.closest('#loginBtn, #mobileLoginBtn');
+      const signupEl = e.target.closest('#signupBtn, #mobileSignupBtn');
+      const accountEl = e.target.closest('#accountBtn, #userAvatar,.avatar-btn');
 
-    if (this.els.authCloseBtn) this.els.authCloseBtn.onclick = () => this.closeModal();
-    if (this.els.authModal) this.els.authModal.onclick = (e) => { if (e.target === this.els.authModal) this.closeModal(); };
-    if (this.els.switchAuthBtn) this.els.switchAuthBtn.onclick = () => this.toggleMode();
-    if (this.els.authForm) this.els.authForm.onsubmit = (e) => { e.preventDefault(); this.handleSubmit(); };
-    if (this.els.avatarInput) this.els.avatarInput.onchange = (e) => this.handleAvatar(e);
-    if (this.els.changeAvatarInput) this.els.changeAvatarInput.onchange = (e) => this.handleAvatar(e);
-    if (this.els.saveCrop) this.els.saveCrop.onclick = () => this.saveCrop();
-    if (this.els.cancelCrop) this.els.cancelCrop.onclick = () => this.closeCropper();
-    if (this.els.accountPanel) this.els.accountPanel.onclick = (e) => { if (e.target === this.els.accountPanel) this.closeAccountPanel(); };
-    if (this.els.logoutAction) this.els.logoutAction.onclick = () => this.logout();
-    if (this.els.forgotPasswordBtn) this.els.forgotPasswordBtn.onclick = () => this.handleForgotPassword();
+      if (loginEl) {
+        e.preventDefault();
+        e.stopPropagation();
+        this.closeMobileNav();
+        this.openModal(false);
+        return;
+      }
 
-    if (this.els.controlCenterBtn) {
-      this.els.controlCenterBtn.onclick = () => {
-        window.location.href = '/control-center.html';
-        this.closeAccountPanel();
-      };
-    }
+      if (signupEl) {
+        e.preventDefault();
+        e.stopPropagation();
+        this.closeMobileNav();
+        this.openModal(true);
+        return;
+      }
 
-    if (!this._globalListenersAdded) {
-      document.addEventListener('click', (e) => {
-        const accountBtn = e.target.closest('#accountBtn');
-        if (accountBtn) {
-          e.preventDefault();
-          e.stopPropagation();
+      if (accountEl) {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('🔍 AVATAR CLICKED - USER:', this.user?.email);
+        
+        if (this.user) {
           this.toggleAccountPanel();
+        } else {
+          this.openModal(false);
         }
-      });
+        return;
+      }
 
-      document.addEventListener('click', (e) => {
-        const cartBtn = e.target.closest('[data-cart="open"]');
-        if (cartBtn) {
-          e.preventDefault();
-          e.stopPropagation();
-          this.handleCartClick();
+      // CLOSE PANEL WHEN CLICKING OUTSIDE
+      const panel = document.getElementById('accountPanel');
+      if (panel?.classList.contains('active')) {
+        if (!panel.contains(e.target)) {
+          panel.classList.remove('active');
         }
-      });
+      }
+    }, true);
 
-      document.addEventListener('click', (e) => {
-        const playlistsBtn = e.target.closest('[data-action="playlists"]');
-        if (playlistsBtn) {
-          e.preventDefault();
-          e.stopPropagation();
-          window.location.href = 'playlists.html';
-          this.closeAccountPanel();
-        }
-      });
+    // STATIC MODAL ELEMENTS
+    this.els.authCloseBtn?.addEventListener('click', () => this.closeModal());
+    this.els.authModal?.addEventListener('click', (e) => {
+      if (e.target === this.els.authModal) this.closeModal();
+    });
 
-      document.addEventListener('click', (e) => {
-        const likedBtn = e.target.closest('[data-action="liked"]');
-        if (likedBtn) {
-          e.preventDefault();
-          e.stopPropagation();
-          this.handleLikedClick(likedBtn);
-        }
-      });
+    this.els.authForm?.addEventListener('submit', (e) => this.handleSubmit(e));
+    this.els.switchAuthBtn?.addEventListener('click', () => this.toggleMode());
+    this.els.forgotPasswordBtn?.addEventListener('click', () => this.handleForgotPassword());
+    this.els.logoutAction?.addEventListener('click', () => this.logout());
 
-      document.addEventListener('click', (e) => {
-        if (this.els.accountPanel?.classList.contains('active') &&
-           !e.target.closest('#accountPanel') &&
-           !e.target.closest('#accountBtn')) {
-          this.closeAccountPanel();
-        }
-      });
+    this.els.avatarInput?.addEventListener('change', (e) => {
+      if (e.target.files[0]) this.openCropper(e.target.files[0]);
+    });
+    
+    this.els.changeAvatarInput?.addEventListener('change', (e) => {
+      if (e.target.files[0]) this.openCropper(e.target.files[0]);
+    });
 
-      document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'visible') this.syncUI();
-      });
-     
-      window.addEventListener('pageshow', () => this.syncUI());
-     
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-          this.closeModal();
-          this.closeAccountPanel();
-          this.closeCropper();
-        }
-      });
-      // Mobile panel profile click = open login if guest
-const mobileProfileBtn = document.getElementById('mobileProfileBtn');
-if (mobileProfileBtn) {
-  mobileProfileBtn.onclick = () => {
-    if (!this.user) {
-      this.openModal(false); // Open login
-      document.getElementById('navPanel')?.classList.remove('active'); // Close mobile menu
-    } else {
-      this.toggleAccountPanel(); // Open account panel if logged in
-    }
-  };
-}
+    this.els.cancelCrop?.addEventListener('click', () => this.closeCropper());
+    this.els.saveCrop?.addEventListener('click', () => this.saveCrop());
 
+    // ESC key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        this.closeModal();
+        this.closeAccountPanel();
+      }
+    });
 
-      window.addEventListener('cartUpdated', () => this.updateCartCount());
-     
-      window.addEventListener('storage', (e) => {
-        if (e.key?.includes('dopetone_cart')) this.updateCartCount();
-      });
-
-      this._globalListenersAdded = true;
-    }
+    // ACCOUNT PANEL ACTIONS
+    document.addEventListener('click', e => {
+      if (e.target.closest('#controlCenterBtn')) {
+        window.location.href = 'control-center.html';
+        return;
+      }
+      if (e.target.closest('[data-action="playlists"]')) {
+        window.location.href = 'playlists.html';
+        return;
+      }
+      if (e.target.closest('[data-action="liked"]')) {
+        window.location.href = 'playlists.html?tab=liked_playlist';
+        return;
+      }
+      if (e.target.closest('[data-action="downloads"]')) {
+        window.location.href = 'playlists.html?tab=downloads_playlist';
+        return;
+      }
+      if (e.target.closest('#logoutAction')) {
+        this.logout();
+        return;
+      }
+    });
   }
 
-  handleCartClick() {
-    const cart = JSON.parse(this.getUserStorage('dopetone_cart'));
-    if (cart.length === 0) {
-      window.location.href = "licence-page.html";
-      return;
-    }
-    const firstBeat = cart[0];
-    window.location.href = `licence-page.html?id=${firstBeat.id}`;
-  }
-
-  handleLikedClick(btn) {
-    const playlists = JSON.parse(this.getUserStorage('dopetone_playlists'));
-    const likedPlaylist = playlists.find(p => p.isLiked || p.type === 'liked');
-   
-    if (!likedPlaylist ||!likedPlaylist.beats || likedPlaylist.beats.length === 0) {
-      btn.classList.add('shake');
-      setTimeout(() => btn.classList.remove('shake'), 500);
-      this.showToast('No liked tracks yet');
-      this.closeAccountPanel();
-      return;
-    }
-
-    window.location.href = 'playlists.html?tab=liked';
-    this.closeAccountPanel();
+  closeMobileNav() {
+    document.getElementById('mobileNav')?.classList.remove('active');
+    document.getElementById('accountPanel')?.classList.remove('active');
   }
 
   openModal(signup = false) {
@@ -316,130 +320,181 @@ if (mobileProfileBtn) {
     this.clearError();
   }
 
-  updateModalUI() {
-    if (!this.els.authTitle) return;
-    this.els.authTitle.textContent = this.isSignup? 'Create Account' : 'Welcome Back';
-    this.els.authSubtitle.textContent = this.isSignup? 'Join the arsenal today' : 'Login to access your arsenal';
-    this.els.authPassword.autocomplete = this.isSignup? 'new-password' : 'current-password';
-    this.els.usernameGroup.style.display = this.isSignup? 'block' : 'none';
-    this.els.signupAvatarWrap.style.display = this.isSignup? 'flex' : 'none';
-    this.els.switchAuthText.textContent = this.isSignup? 'Already have an account?' : "Don't have an account?";
-    this.els.switchAuthBtn.textContent = this.isSignup? 'Login' : 'Sign Up';
-    this.els.authBox?.setAttribute('data-mode', this.isSignup? 'signup' : 'login');
+ updateModalUI() {
+  if (!this.els.authModal ||!this.els.authTitle) return;
+  
+  this.els.authTitle.textContent = this.isSignup? 'Create Account' : 'Welcome Back';
+  this.els.authSubtitle.textContent = this.isSignup? 'Join the arsenal today' : 'Login to access your arsenal';
+  // Show current avatar in signup preview
+  if (this.isSignup && this.els.avatarPreview) {
+    this.els.avatarPreview.src = this.avatarData || DEFAULT_AVATAR;
   }
 
-  async handleSubmit() {
-    const username = this.els.authUsername.value.trim();
-    const email = this.els.authEmail.value.trim();
-    const password = this.els.authPassword.value.trim();
+  
+  // 🔥 FIX: EMAIL FIELD - always show for both login + signup
+  if (this.els.authEmail) {
+    const emailGroup = this.els.authEmail.closest('.form-group');
+    if (emailGroup) emailGroup.style.display = 'block';
+    this.els.authEmail.required = true;
+  }
+  
+  if (this.els.authPassword) {
+    this.els.authPassword.autocomplete = this.isSignup? 'new-password' : 'current-password';
+  }
+  
+  // USERNAME - only on signup
+  if (this.els.usernameGroup) {
+    this.els.usernameGroup.style.display = this.isSignup? 'block' : 'none';
+    if (this.els.authUsername) this.els.authUsername.required = this.isSignup;
+  }
+  
+  // AVATAR - only on signup
+  if (this.els.signupAvatarWrap) {
+    this.els.signupAvatarWrap.style.display = this.isSignup? 'flex' : 'none';
+  }
+  
+  if (this.els.switchAuthText) {
+    this.els.switchAuthText.textContent = this.isSignup? 'Already have an account?' : "Don't have an account?";
+  }
+  if (this.els.switchAuthBtn) {
+    this.els.switchAuthBtn.textContent = this.isSignup? 'Login' : 'Sign Up';
+  }
+  this.els.authBox?.setAttribute('data-mode', this.isSignup? 'signup' : 'login');
+}
 
-    if (!email ||!password) return this.showError('Fill all required fields');
-    if (this.isSignup &&!username) return this.showError('Enter username');
-    if (password.length < 6) return this.showError('Password must be 6+ characters');
 
+ async handleSubmit(e) {
+  e.preventDefault();
+  const username = this.els.authUsername?.value.trim() || '';
+  const email = this.els.authEmail?.value.trim() || '';
+  const password = this.els.authPassword?.value.trim() || '';
+
+  // LIVE FRONTEND CHECKS - before API call
+  if (!email.toLowerCase().endsWith('@gmail.com')) {
+    return this.showError('Only Gmail addresses allowed');
+  }
+  if (this.isSignup &&!/^[A-Za-z]{2,20}$/.test(username)) {
+    return this.showError('Username: letters only, 2-20 characters');
+  }
+
+  if (this.els.authSubmit) {
     this.els.authSubmit.disabled = true;
     this.els.authSubmit.textContent = 'Please wait...';
+  }
 
-    try {
-      if (this.user) {
-        await this.saveUserDataToCloud();
-      }
-
-      const endpoint = this.isSignup? '/api/auth/signup' : '/api/auth/login';
-      const res = await fetch(`${API_URL}${endpoint}`, {
+  try {
+    if (this.isSignup) {
+      const res = await fetch(`${API_URL}/api/auth/send-signup-code`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email,
-          password,
-          username: username || email.split('@')[0],
-          avatar: this.avatarData
-        })
+        body: JSON.stringify({ email, password, confirmPassword: password, username })
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Auth failed');
+      if (!res.ok) throw new Error(data.error);
 
-      this.user = data.user;
-      console.log('👤 User from auth:', this.user);
+      const code = prompt('Check your Gmail. Enter the 6-digit code:');
+if (!code) throw new Error('Code required');
+
+const res2 = await fetch(`${API_URL}/api/auth/verify-signup`, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ 
+    email, 
+    code, 
+    username,  // ADD THIS LINE
+    password,  // ADD THIS LINE
+    avatar: this.avatarData 
+  })
+});
+
+const data2 = await res2.json();
+if (!res2.ok) throw new Error(data2.error);
+
+      this.user = data2.user;
       localStorage.setItem('dopetone_user', JSON.stringify(this.user));
       localStorage.setItem('dopetone_user_id', this.user.id);
-
-      console.log('⏳ Loading D1 data...');
-      await this.loadUserDataFromCloud();
-      console.log('✅ D1 loaded, user now:', this.user);
-     
       this.syncUI();
-      console.log('🎨 UI synced, avatar should be:', this.user.avatar);
-     
       this.showToast(`Welcome ${this.user.username}`);
       this.closeModal();
 
-    } catch (err) {
-      console.log('API failed, using local:', err);
+    } else {
+      const res = await fetch(`${API_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
 
-      const userData = {
-        id: 'local_' + Date.now(),
-        email: email,
-        username: username || email.split('@')[0],
-        avatar: this.avatarData,
-        created_at: new Date().toISOString()
-      };
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
 
-      this.user = userData;
-      localStorage.setItem('dopetone_user', JSON.stringify(userData));
-      localStorage.setItem('dopetone_user_id', userData.id);
+      if (data.requiresOTP) {
+        const code = prompt('Check your Gmail. Enter the 6-digit login code:');
+        if (!code) throw new Error('Code required');
 
-      this.migrateToUserStorage();
+        const res2 = await fetch(`${API_URL}/api/auth/verify-login-otp`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, code })
+        });
 
-      this.showToast(`Welcome ${userData.username} (offline)`);
-      this.closeModal();
+        const data2 = await res2.json();
+        if (!res2.ok) throw new Error(data2.error);
+        this.user = data2.user;
+      } else {
+        this.user = data.user;
+      }
+
+      localStorage.setItem('dopetone_user', JSON.stringify(this.user));
+      localStorage.setItem('dopetone_user_id', this.user.id);
       this.syncUI();
+      this.showToast(`Welcome ${this.user.username}`);
+      this.closeModal();
+    }
 
-    } finally {
+  } catch (err) {
+    // THIS IS THE KEY PART - SHOWS BACKEND ERRORS ON SITE
+    if (err.message.includes('it seems you already have an account')) {
+      this.showError('it seems you already have an account login instead');
+      this.isSignup = false;
+      this.updateModalUI();
+    } else {
+      this.showError(err.message);
+    }
+  } finally {
+    if (this.els.authSubmit) {
       this.els.authSubmit.disabled = false;
       this.els.authSubmit.textContent = 'Continue';
     }
   }
-
-  async handleForgotPassword() {
-  const email = this.els.authEmail.value.trim();
-  
-  if (!email) {
-    this.showError('Enter your email first');
-    this.els.authEmail.focus();
-    return;
-  }
-  
-  if (!this.isValidEmail(email)) {
-    this.showError('Enter a valid email');
-    return;
-  }
-  
-  this.showToast('Password reset link sent to ' + email);
-  
-  // TODO LATER: Send actual email with verification code
-  // For now just show toast. When ready, we'll add email service.
 }
 
+  async handleForgotPassword() {
+    const email = this.els.authEmail?.value.trim();
+    
+    if (!email) {
+      this.showError('Enter your email first');
+      this.els.authEmail?.focus();
+      return;
+    }
+    
+    if (!this.isValidEmail(email)) {
+      this.showError('Enter a valid email');
+      return;
+    }
+    
+    this.showToast('Password reset link sent to ' + email);
+  }
 
   isValidEmail(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   }
 
-  handleAvatar(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    if (!file.type.startsWith('image/')) {
-      this.showToast('Please select an image');
-      return;
-    }
-    this.openCropper(file);
-  }
-
   openCropper(file) {
     const reader = new FileReader();
     reader.onload = () => {
+      if (!this.els.cropImage) return;
+      
       this.els.cropImage.src = reader.result;
       this.showModal(this.els.cropModal);
 
@@ -467,49 +522,65 @@ if (mobileProfileBtn) {
     };
     reader.readAsDataURL(file);
   }
+  
 
-  async saveCrop() {
+ async saveCrop() {
   if (!this.cropper) return;
- 
+  
   const canvas = this.cropper.getCroppedCanvas({ width: 500, height: 500 });
- 
+  
   canvas.toBlob(async (blob) => {
+    // Show loading
+    this.showToast('Uploading photo...');
+    
     const fd = new FormData();
     fd.append('file', blob, 'avatar.png');
     fd.append('folder', 'avatars');
 
     try {
-      // Upload to R2
-      const res = await fetch(`${API_URL}/api/upload`, { method: 'POST', body: fd });
+      const res = await fetch(`${API_URL}/api/upload`, { 
+        method: 'POST', 
+        body: fd 
+      });
       const data = await res.json();
-      if (data.success) this.avatarData = data.url;
+      
+      if (data.success && data.url) {
+        this.avatarData = data.url; // R2 URL
+        console.log('✅ Avatar uploaded to R2:', data.url);
+      } else {
+        throw new Error('Upload failed');
+      }
     } catch (err) {
       // Fallback to base64 if R2 fails
       this.avatarData = canvas.toDataURL('image/png');
+      console.log('⚠️ Using base64 fallback');
     }
 
-    // Update UI immediately
+    // Update ALL avatar previews instantly
     document.querySelectorAll('[data-user-avatar], #userAvatar, #panelAvatar, #avatarPreview')
-      .forEach(img => { if (img) img.src = this.avatarData; });
+     .forEach(img => { 
+       if (img) img.src = this.avatarData; 
+     });
 
-    // Save to user profile + D1
+    // If user is already logged in, update DB immediately
     if (this.user) {
       this.user.avatar = this.avatarData;
       localStorage.setItem('dopetone_user', JSON.stringify(this.user));
      
-      // 1. Update users_auth table
       await fetch(`${API_URL}/api/auth/update-avatar`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: this.user.email, avatar: this.avatarData })
       }).catch(() => {});
-      
-      // 2. Update user_data table for cross-device sync
+     
       await this.saveUserDataToCloud();
+      this.showToast('Photo updated');
+    } else {
+      // During signup - just store it for later
+      this.showToast('Photo ready');
     }
 
     this.closeCropper();
-    this.showToast('Avatar saved to cloud');
   }, 'image/png', 0.9);
 }
 
@@ -523,15 +594,34 @@ if (mobileProfileBtn) {
   }
 
   toggleAccountPanel() {
-    this.els.accountPanel?.classList.toggle('active');
-    this.els.accountPanel?.setAttribute('aria-hidden',
-      this.els.accountPanel.classList.contains('active')? 'false' : 'true'
-    );
+    const panel = document.getElementById('accountPanel');
+    if (!panel) {
+      console.error('❌ accountPanel NOT FOUND IN DOM');
+      return;
+    }
+    
+    panel.classList.toggle('active');
+    panel.setAttribute('aria-hidden', panel.classList.contains('active')? 'false' : 'true');
+
+    if (panel.classList.contains('active') && this.user) {
+      const avatar = this.user.avatar || DEFAULT_AVATAR;
+      const name = this.user.username || this.user.email.split('@')[0];
+      
+      const panelAvatar = document.getElementById('panelAvatar');
+      const panelName = document.getElementById('panelName');
+      const panelEmail = document.getElementById('panelEmail');
+      
+      if (panelAvatar) panelAvatar.src = avatar;
+      if (panelName) panelName.textContent = name;
+      if (panelEmail) panelEmail.textContent = this.user.email;
+    }
   }
 
   closeAccountPanel() {
-    this.els.accountPanel?.classList.remove('active');
-    this.els.accountPanel?.setAttribute('aria-hidden', 'true');
+    const panel = document.getElementById('accountPanel');
+    if (!panel) return;
+    panel.classList.remove('active');
+    panel.setAttribute('aria-hidden', 'true');
   }
 
   async logout() {
@@ -543,14 +633,13 @@ if (mobileProfileBtn) {
     localStorage.removeItem('dopetone_user_id');
 
     this.user = null;
-    this.avatarData = "images/default-user.png";
+    this.avatarData = DEFAULT_AVATAR;
 
     this.closeAccountPanel();
     this.syncUI();
     this.showToast('Logged out');
 
     window.dispatchEvent(new CustomEvent('auth:logout'));
-
     sessionStorage.setItem('just_logged_out', '1');
 
     setTimeout(() => {
@@ -567,121 +656,60 @@ if (mobileProfileBtn) {
   }
 
   syncUI() {
-  const savedUser = localStorage.getItem('dopetone_user');
-  this.user = savedUser? JSON.parse(savedUser) : null;
-  const isLoggedIn =!!this.user;
-  const isAdmin = this.user?.email === 'dopetone701@gmail.com';
+    const savedUser = localStorage.getItem('dopetone_user');
+    this.user = savedUser? JSON.parse(savedUser) : null;
+    const isLoggedIn =!!this.user;
+    const isAdmin = this.user?.email === ADMIN_EMAIL;
 
-  const DEFAULT_AVATAR = "images/default-user.png";
+    const controlCenterBtn = document.getElementById('controlCenterBtn');
+    const mobileProfileName = document.getElementById('mobileProfileName');
+    const mobileProfileSub = document.getElementById('mobileProfileSub');
+    const mobileProfileAvatar = document.getElementById('mobileProfileAvatar');
+    const authGuest = document.getElementById('authGuest');
+    const authUser = document.getElementById('authUser');
+    const userAvatar = document.getElementById('userAvatar');
+    const panelName = document.getElementById('panelName');
+    const panelEmail = document.getElementById('panelEmail');
+    const panelAvatar = document.getElementById('panelAvatar');
 
-  // ===== YOUR EXISTING HEADER ELEMENTS =====
-  const authGuest = document.getElementById('authGuest');
-  const authUser = document.getElementById('authUser');
-  const controlCenterBtn = document.getElementById('controlCenterBtn');
-  
-  // Mobile panel elements
-  const mobileProfileName = document.getElementById('mobileProfileName');
-  const mobileProfileSub = document.getElementById('mobileProfileSub');
-  const mobileProfileAvatar = document.getElementById('mobileProfileAvatar');
+    if (isLoggedIn) {
+      document.body.classList.add('logged-in');
+      if (isAdmin) document.body.classList.add('is-admin');
+      
+      const avatar = this.user.avatar || DEFAULT_AVATAR;
+      const name = this.user.username || this.user.email.split('@')[0];
 
-  if (isLoggedIn) {
-    const avatar = this.user.avatar || DEFAULT_AVATAR;
-    const name = this.user.username || this.user.email.split('@')[0];
+      if (authGuest) authGuest.style.display = 'none';
+      if (authUser) authUser.style.display = 'flex';
 
-    // 1. SWAP GUEST → USER
-    if (authGuest) authGuest.style.display = 'none';
-    if (authUser) authUser.style.display = 'flex';
+      const avatars = [userAvatar, panelAvatar, mobileProfileAvatar].filter(Boolean);
 
-    // 2. ADMIN ONLY: Control Center in account panel
-    if (controlCenterBtn) {
-      controlCenterBtn.style.display = isAdmin? 'flex' : 'none';
+      avatars.forEach(img => {
+        img.src = avatar;
+        img.onerror = () => img.src = DEFAULT_AVATAR;
+      });
+
+      if (panelName) panelName.textContent = name;
+      if (panelEmail) panelEmail.textContent = this.user.email;
+      if (mobileProfileName) mobileProfileName.textContent = name;
+      if (mobileProfileSub) mobileProfileSub.textContent = this.user.email;
+
+      if (controlCenterBtn) {
+        controlCenterBtn.style.display = isAdmin? 'flex' : 'none';
+      }
+
+    } else {
+      document.body.classList.remove('logged-in', 'is-admin');
+      
+      if (authGuest) authGuest.style.display = 'flex';
+      if (authUser) authUser.style.display = 'none';
+      
+      if (mobileProfileName) mobileProfileName.textContent = 'Guest';
+      if (mobileProfileSub) mobileProfileSub.textContent = 'Tap to sign in';
+      if (mobileProfileAvatar) mobileProfileAvatar.src = DEFAULT_AVATAR;
+      if (controlCenterBtn) controlCenterBtn.style.display = 'none';
     }
 
-    // 3. UPDATE ALL AVATARS
-    const avatars = [
-      this.els.userAvatar,
-      this.els.panelAvatar,
-      document.getElementById('userAvatar'),
-      document.getElementById('panelAvatar'),
-      mobileProfileAvatar
-    ].filter(Boolean);
-
-    avatars.forEach(img => {
-      img.src = avatar;
-      img.onerror = () => img.src = DEFAULT_AVATAR;
-    });
-
-    // 4. UPDATE PANEL + MOBILE MENU
-    if (this.els.panelName) this.els.panelName.textContent = name;
-    if (this.els.panelEmail) this.els.panelEmail.textContent = this.user.email;
-    if (mobileProfileName) mobileProfileName.textContent = name;
-    if (mobileProfileSub) mobileProfileSub.textContent = this.user.email;
-
-    document.body.classList.add('logged-in');
-    if (isAdmin) document.body.classList.add('is-admin');
-
-  } else {
-    // LOGGED OUT - Show login/signup, hide user stuff
-    if (authGuest) authGuest.style.display = 'flex';
-    if (authUser) authUser.style.display = 'none';
-    if (controlCenterBtn) controlCenterBtn.style.display = 'none';
-
-    // Reset mobile panel to guest
-    if (mobileProfileName) mobileProfileName.textContent = 'Guest';
-    if (mobileProfileSub) mobileProfileSub.textContent = 'Tap to sign in';
-    if (mobileProfileAvatar) mobileProfileAvatar.src = DEFAULT_AVATAR;
-
-    // Reset all avatars
-    document.querySelectorAll('#userAvatar, #panelAvatar, #mobileProfileAvatar').forEach(img => {
-      img.src = DEFAULT_AVATAR;
-    });
-
-    document.body.classList.remove('logged-in', 'is-admin');
-  }
-
-  this.updateCartCount();
-  this.fixCameraPosition();
-}
-
-  fixCameraPosition() {
-    const style = document.createElement('style');
-    style.textContent = `
-     .panel-avatar-wrap,.avatar-upload-box {
-        position: relative;
-        display: inline-block;
-      }
-     .panel-edit-avatar,.avatar-edit-btn {
-        position: absolute!important;
-        bottom: -2px!important;
-        right: -2px!important;
-        width: 28px!important;
-        height: 28px!important;
-        background: #0f0!important;
-        border: 2px solid #000!important;
-        border-radius: 50%!important;
-        display: flex!important;
-        align-items: center!important;
-        justify-content: center!important;
-        cursor: pointer!important;
-        transition: transform 0.2s!important;
-        z-index: 10!important;
-      }
-     .panel-edit-avatar:hover,.avatar-edit-btn:hover {
-        transform: scale(1.1)!important;
-      }
-     .panel-edit-avatar i,.avatar-edit-btn i {
-        color: #000!important;
-        font-size: 12px!important;
-      }
-      #panelAvatar, #userAvatar {
-        display: block;
-        border-radius: 50%;
-      }
-    `;
-    if (!document.getElementById('avatar-fix-style')) {
-      style.id = 'avatar-fix-style';
-      document.head.appendChild(style);
-    }
     this.updateCartCount();
   }
 
@@ -727,6 +755,42 @@ if (mobileProfileBtn) {
   }
 }
 
+document.getElementById('avatarInput').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  // 1. Check file type
+  const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif', 'image/svg+xml'];
+  if (!allowedTypes.includes(file.type)) {
+    alert('Only PNG, JPG, WEBP, GIF, SVG allowed');
+    e.target.value = ''; // clear input
+    return;
+  }
+
+  // 2. Check file size - 5MB limit
+  if (file.size > 5 * 1024 * 1024) {
+    alert('File too big. Max 5MB');
+    e.target.value = '';
+    return;
+  }
+
+  // 3. Convert to base64 to send to worker
+  const base64 = await toBase64(file);
+  window.selectedAvatar = base64; // save it for signup request
+  
+  // Optional: show preview
+  document.getElementById('avatarPreview').src = base64;
+});
+
+function toBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
+}
+
 // BOOT
 window.Auth = new AuthManager();
 
@@ -742,3 +806,6 @@ window.refreshCartUI = () => {
   window.Auth?.updateCartCount();
   window.dispatchEvent(new Event('cartUpdated'));
 };
+
+// 🔥 Expose for app.js to get real userId
+window.getCurrentUserId = () => window.Auth?.user?.id || 'anonymous';
