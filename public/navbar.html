@@ -37,24 +37,28 @@
   <div class="overlay" id="navOverlay"></div>
 
   <div class="mobile-panel" id="navPanel">
-    <button type="button" class="panel-close" id="panelCloseBtn" aria-label="Close">✕</button>
-    <img src="images/logo.png" class="panel-logo" alt="Dope Tone">
-    <nav class="panel-links">
-      <a href="index.html#beats">Beats</a>
-      <a href="index.html#samples">Samples</a>
-      <a href="index.html#packs">Packs</a>
-      <a href="index.html#tools">Free Tools</a>
-      <a href="beats.html">All Beats</a>
-    </nav>
-    <div class="panel-profile">
-      <button type="button" id="mobileProfileBtn">
-        <img id="mobileProfileAvatar" src="images/default-user.png" alt=""
-          onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Guest&background=0a0a14&color=00eaff&bold=true'">
-        <div class="panel-profile-text">
-          <strong id="mobileProfileName">Guest</strong>
-          <span id="mobileProfileSub">Tap to sign in</span>
-        </div>
-      </button>
-    </div>
+  <button type="button" class="panel-close" id="panelCloseBtn">✕</button>
+  <img src="images/logo.png" class="panel-logo" alt="Dope Tone">
+  <nav class="panel-links">
+    <a href="index.html#beats">Beats</a>
+    <a href="index.html#samples">Samples</a>
+    <a href="index.html#packs">Packs</a>
+    <a href="index.html#tools">Free Tools</a>
+    <a href="beats.html">All Beats</a>
+  
+  
+  <!-- MOVED HERE - right under links -->
+  <div class="panel-profile">
+    <button type="button" id="mobileProfileBtn">
+      <img id="mobileProfileAvatar" src="images/default-user.png" alt=""
+        onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Guest&background=0a0a14&color=00eaff&bold=true'">
+      <div class="panel-profile-text">
+        <strong id="mobileProfileName">Guest</strong>
+        <span id="mobileProfileSub">Tap to sign in</span>
+      </div>
+    </button>
   </div>
+  </nav>
+</div>
+
 </header>

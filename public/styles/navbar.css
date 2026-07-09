@@ -571,3 +571,12 @@ body.panel-open{ overflow:hidden; }
     transition: all 0.2s ease !important;
   }
 }
+/* Desktop avatar NEVER shows on mobile */
+@media (max-width: 768px) {
+  #accountBtn,
+  .avatar-btn {
+    display: none !important;
+  }
+  
+  
+}

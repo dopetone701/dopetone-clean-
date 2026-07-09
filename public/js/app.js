@@ -135,6 +135,7 @@ function initMobileMenu() {
   const panel = document.querySelector(".mobile-panel")
   const overlay = document.querySelector(".overlay")
   const closeBtn = document.getElementById("panelCloseBtn")
+  const mobileProfileBtn = document.getElementById("mobileProfileBtn")
 
   if (!toggle ||!panel ||!overlay) {
     console.warn('[SCOFIELD] Menu elements not found yet')
@@ -196,6 +197,30 @@ function initMobileMenu() {
     if (e.key === "Escape") closeMenu()
   })
 
+  // MOBILE PROFILE - USES AuthManager.toggleAccountPanel()
+  if (mobileProfileBtn) {
+    mobileProfileBtn.addEventListener("click", (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+      
+      const isLoggedIn =!!window.Auth?.user &&!!localStorage.getItem('dopetone_user')
+      
+      closeMenu()
+      
+      setTimeout(() => {
+        if (isLoggedIn) {
+          // SIGNED IN → Open auth panel dropdown
+          console.log('[SCOFIELD] Opening account panel')
+          window.Auth?.toggleAccountPanel()
+        } else {
+          // GUEST → Open signup modal
+          console.log('[SCOFIELD] Opening signup')
+          window.Auth?.openModal(true)
+        }
+      }, 350)
+    })
+  }
+
   panel.addEventListener("touchstart", (e) => {
     dragging = true
     startX = e.touches[0].clientX
@@ -230,9 +255,11 @@ function initMobileMenu() {
   return true
 }
 
+
 window.addEventListener('navbarLoaded', () => {
   initMobileMenu()
 })
+
 
 window.initMobileMenu = initMobileMenu
 
