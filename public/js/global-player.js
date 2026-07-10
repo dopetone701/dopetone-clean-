@@ -1,6 +1,43 @@
 // ===============================
 // 🌍 GLOBAL PLAYER - DOPE TONE PRO
 // ===============================
+// ===============================
+// 🎯 STATS MANAGER - DOPETONE
+// ===============================
+
+// FIXED: Point to your stats worker, not the old API
+const STATS_API = 'https://dopetone-stats.dopetone701.workers.dev';
+
+// ===== UNIFIED EVENT LOGGER - REAL TIMESTAMPS =====
+function logBeatEvent(beatId, eventType) {
+  if (!beatId) return;
+  
+  fetch(`${STATS_API}/api/stats/event`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      beatId: parseInt(beatId),
+      eventType: eventType // 'play', 'like', 'download', 'cart'
+    })
+  }).catch(err => console.warn('[Stats] Event log failed:', err));
+}
+
+// Legacy wrappers
+function logPlay(beatId) {
+  logBeatEvent(beatId, 'play');
+}
+
+function logLike(beatId, liked) {
+  if (liked) logBeatEvent(beatId, 'like');
+}
+
+function logDownload(beatId) {
+  logBeatEvent(beatId, 'download');
+}
+
+function logCart(beatId, added) {
+  if (added) logBeatEvent(beatId, 'cart');
+}
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -36,6 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentListId = null
   let currentTrackKey = null
   let currentWave = null
+  let playedBeats = new Set(); // Track plays per session
 
   let isShuffled = localStorage.getItem('dt_shuffle') === 'true'
   let repeatMode = parseInt(localStorage.getItem('dt_repeat') || '0') // 0=off, 1=all, 2=one
@@ -45,59 +83,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // ===============================
   const PLAY_ICON = "M8 5v14l11-7z";
   const PAUSE_ICON = "M6 19h4V5H6v14zm8-14v14h4V5h-4z";
-
-  // ===============================
-  // 🔥 D1 TRACKING HELPERS
-  // ===============================
-  const API_URL = 'https://api.dopetonevault.com/api/beats'
-  async function trackBeatPlay(beatId) {
-    try {
-      await fetch(`${API_URL}/api/stats/play`, {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({
-          beat_id: beatId,
-          user_id: window.Auth?.user?.id || 'anonymous',
-          timestamp: Date.now()
-        })
-      });
-    } catch (err) {
-      console.error('trackBeatPlay error:', err);
-    }
-  }
-
-  async function trackBeatLike(beatId, isLiked) {
-    try {
-      await fetch(`${API_URL}/api/stats/like`, {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({
-          beat_id: beatId,
-          liked: isLiked,
-          user_id: window.Auth?.user?.id || 'anonymous',
-          timestamp: Date.now()
-        })
-      });
-    } catch (err) {
-      console.error('trackBeatLike error:', err);
-    }
-  }
-
-  async function trackBeatDownload(beatId) {
-    try {
-      await fetch(`${API_URL}/api/stats/download`, {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({
-          beat_id: beatId,
-          user_id: window.Auth?.user?.id || 'anonymous',
-          timestamp: Date.now()
-        })
-      });
-    } catch (err) {
-      console.error('trackBeatDownload error:', err);
-    }
-  }
 
   // ===============================
   // 🎯 UI ELEMENTS
@@ -114,6 +99,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const cover = document.getElementById("gpCover")
   const current = document.getElementById("gpCurrent")
   const duration = document.getElementById("gpDuration")
+  const addBtn = document.getElementById("gpAdd")
+  const mpAdd = document.getElementById("mpAdd")
 
   // Mobile player
   const mpPlay = document.getElementById("mpPlay")
@@ -149,10 +136,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const coverImg = document.getElementById('mpCover');
     const titleEl = document.getElementById('mpTitle');
     const artistEl = document.getElementById('mpArtist');
-    
+   
     if (!player ||!song) return;
-    
-    // Update background aura
+   
     const coverUrl = song.cover_url || song.cover || song.artwork || song.image || song.img;
     if (coverUrl) {
       player.style.backgroundImage = `url('${coverUrl}')`;
@@ -162,8 +148,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       if (cover) cover.src = coverUrl;
     }
-    
-    // Update text
+   
     if (titleEl) titleEl.textContent = song.title || 'Unknown';
     if (title) title.textContent = song.title || 'Unknown';
     if (artistEl) artistEl.textContent = song.artist || song.producer || 'Dope Tone';
@@ -252,25 +237,20 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ===============================
-  // 🎯 LOAD TRACK
+  // 🎯 LOAD TRACK - FIXED PLAYBACK
   // ===============================
   function loadTrack(index, silent = false) {
     const beat = playlist[index]
     if (!beat?.mp3_url) return
 
     const wasPlaying =!audio.paused
+    const isNewTrack = audio.src!== beat.mp3_url
 
-    if (audio.src!== beat.mp3_url) {
+    if (isNewTrack) {
       audio.pause()
       audio.src = beat.mp3_url
+      audio.dataset.beatId = beat.id // CRITICAL: Set ID for logging
       audio.load()
-
-      if (wasPlaying &&!silent) {
-        audio.addEventListener('canplaythrough', function onCanPlay() {
-          audio.removeEventListener('canplaythrough', onCanPlay)
-          audio.play().catch(()=>{})
-        }, { once: true })
-      }
     }
 
     currentIndex = index
@@ -278,7 +258,6 @@ document.addEventListener("DOMContentLoaded", () => {
     window.__CURRENT_LIST__ = currentListId
     window.__CURRENT_BEAT__ = beat
 
-    // Update mobile aura + all info
     updateMobilePlayerAura(beat)
 
     const isLiked = beat.liked || false
@@ -286,7 +265,7 @@ document.addEventListener("DOMContentLoaded", () => {
       btn.classList.toggle('active', isLiked)
     })
 
-    if (audio.src === beat.mp3_url) {
+    if (!isNewTrack) {
       audio.currentTime = 0
     }
 
@@ -296,7 +275,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!silent) {
       requestIdleCallback(() => {
         document.dispatchEvent(new CustomEvent("trackChange", { detail: beat }))
-        trackBeatPlay(beat.id)
         localStorage.setItem('dt_cc_current', JSON.stringify({
           id: beat.id,
           title: beat.title,
@@ -315,10 +293,15 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       })
     }
+
+    // AUTO PLAY if we were playing or this is a new track selection
+    if (wasPlaying || isNewTrack) {
+      audio.play().catch(err => console.warn('[Player] Autoplay blocked:', err))
+    }
   }
 
   // ===============================
-  // ▶ PLAY TRACK
+  // ▶ PLAY TRACK - FIXED
   // ===============================
   function playTrack(index = 0, list = [], listId = "default") {
     window.refreshMobileHeart?.()
@@ -341,7 +324,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const isSameTrack = currentTrackKey === newTrackKey
 
     document.querySelectorAll(".playlist-track-play.active,.playlist-play-btn.active,.grid-play.active")
-  .forEach(btn => btn.classList.remove("active"))
+.forEach(btn => btn.classList.remove("active"))
 
     if (isSameTrack) {
       if (audio.paused) audio.play().catch(()=>{})
@@ -361,24 +344,31 @@ document.addEventListener("DOMContentLoaded", () => {
         window.filterBeatsToSight([beat])
       }
 
+      // FORCE PLAY
       audio.play().catch(e => {
+        console.warn('[Player] Play failed:', e)
         setTimeout(() => audio.play().catch(()=>{}), 100)
       })
     })
   }
 
   // ===============================
-  // ▶ PLAY/PAUSE BUTTONS
+  // ▶ PLAY/PAUSE BUTTONS - FIXED
   // ===============================
   const togglePlay = (e) => {
     e?.preventDefault()
     e?.stopPropagation()
+    
     if (!audio.src && playlist.length) {
       playTrack(0, playlist, currentListId)
       return
     }
-    if (audio.paused) audio.play()
-    else audio.pause()
+    
+    if (audio.paused) {
+      audio.play().catch(err => console.warn('[Player] Play failed:', err))
+    } else {
+      audio.pause()
+    }
   }
 
   playBtn.addEventListener('click', togglePlay)
@@ -470,7 +460,7 @@ document.addEventListener("DOMContentLoaded", () => {
   mpPrev && mpPrev.addEventListener('click', handlePrev)
 
   // ===============================
-  // ❤️ LIKE BUTTON
+  // ❤️ LIKE BUTTON - LOGS TO D1
   // ===============================
   const handleLike = async (e) => {
     e?.preventDefault()
@@ -486,7 +476,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     beat.liked = isLiked
 
-    trackBeatLike(beat.id, isLiked);
+    logLike(beat.id, isLiked); // LOG TO D1
     window.dispatchEvent(new CustomEvent('cc_like_change', {
       detail: { beat_id: beat.id, liked: isLiked }
     }));
@@ -496,7 +486,7 @@ document.addEventListener("DOMContentLoaded", () => {
   mpHeart?.addEventListener('click', handleLike)
 
   // ===============================
-  // ⬇️ DOWNLOAD BUTTON
+  // ⬇️ DOWNLOAD BUTTON - LOGS TO D1
   // ===============================
   const handleDownload = async (e) => {
     e?.preventDefault()
@@ -504,7 +494,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const beat = playlist[currentIndex]
     if (!beat) return
 
-    trackBeatDownload(beat.id);
+    logDownload(beat.id); // LOG TO D1
     window.dispatchEvent(new CustomEvent('cc_download', { detail: { beat_id: beat.id } }));
 
     const a = document.createElement('a')
@@ -515,6 +505,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
   downloadBtn?.addEventListener('click', handleDownload)
   mpDownload?.addEventListener('click', handleDownload)
+  
+  // ===============================
+  // 🛒 ADD TO CART BUTTON - LOGS TO D1
+  // ===============================
+  const handleAddToCart = async (e) => {
+    e?.preventDefault()
+    e?.stopPropagation()
+    const beat = playlist[currentIndex]
+    if (!beat) return
+
+    const btn = e.currentTarget
+    const isAdded =!btn.classList.contains('active')
+    btn.classList.toggle('active')
+    mpAdd?.classList.toggle('active', isAdded)
+    addBtn?.classList.toggle('active', isAdded)
+
+    logCart(beat.id, isAdded); // LOG TO D1
+   
+    window.dispatchEvent(new CustomEvent('cc_cart_change', {
+      detail: { beat_id: beat.id, added: isAdded }
+    }));
+  }
+
+  addBtn?.addEventListener('click', handleAddToCart)
+  mpAdd?.addEventListener('click', handleAddToCart)
 
   // ===============================
   // 🔀🔁 BINDINGS
@@ -537,6 +552,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   audio.addEventListener("play", () => {
     updatePlayIcons(true)
+
+    // LOG PLAY EVENT - ONLY ONCE PER TRACK PER SESSION
+    const beatId = audio.dataset.beatId;
+    if (beatId &&!playedBeats.has(beatId)) {
+      logPlay(beatId); // LOG TO D1 WITH REAL TIMESTAMP
+      playedBeats.add(beatId);
+    }
 
     localStorage.setItem('dt_cc_playing', 'true');
     window.dispatchEvent(new CustomEvent('cc_player_state', { detail: { playing: true } }));
@@ -720,7 +742,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  console.log('[Dopetone] Global Player loaded. Single-path icons active.');
+  console.log('[Dopetone] Global Player loaded. D1 event logging active.');
 })
 
 // ===============================
@@ -733,7 +755,6 @@ function initMobilePlayer() {
 
   if (!globalPlayer ||!mobilePlayer) return
 
-  // TAP MINI PLAYER TO OPEN FULLSCREEN
   globalPlayer.addEventListener('click', (e) => {
     if (e.target.closest('.gp-controls button')) return
     if (e.target.closest('#gpAdd')) return
@@ -742,18 +763,15 @@ function initMobilePlayer() {
     openMobilePlayer()
   })
 
-  // CLOSE FULLSCREEN
   mpClose?.addEventListener('click', closeMobilePlayer)
 
-  // Swipe down to close - FIXED
   let startY = 0
   let isDragging = false
   let startTime = 0
 
   mobilePlayer.addEventListener('touchstart', (e) => {
-    // Only allow swipe from top area
     if (e.target.closest('#mpControls') || e.target.closest('#mpProgress')) return
-    
+   
     startY = e.touches[0].clientY
     startTime = Date.now()
     isDragging = true
@@ -762,11 +780,11 @@ function initMobilePlayer() {
 
   mobilePlayer.addEventListener('touchmove', (e) => {
     if (!isDragging) return
-    
+   
     const currentY = e.touches[0].clientY
     const diff = currentY - startY
 
-    if (diff > 0) { // Only allow swipe down
+    if (diff > 0) {
       e.preventDefault()
       const opacity = Math.max(0.3, 1 - (diff / 400))
       mobilePlayer.style.transform = `translateY(${diff}px)`
@@ -777,18 +795,16 @@ function initMobilePlayer() {
   mobilePlayer.addEventListener('touchend', (e) => {
     if (!isDragging) return
     isDragging = false
-    
+   
     const currentY = e.changedTouches[0].clientY
     const diff = currentY - startY
     const velocity = diff / (Date.now() - startTime)
 
     mobilePlayer.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease'
 
-    // Close if swiped >120px or fast flick
     if (diff > 120 || velocity > 0.5) {
       closeMobilePlayer()
     } else {
-      // Snap back
       mobilePlayer.style.transform = 'translateY(0)'
       mobilePlayer.style.opacity = '1'
     }
@@ -802,8 +818,7 @@ function openMobilePlayer() {
   syncPlayerData()
   mobilePlayer.classList.add('active')
   document.body.style.overflow = 'hidden'
-  
-  // Reset transform in case it was left mid-swipe
+ 
   mobilePlayer.style.transform = 'translateY(0)'
   mobilePlayer.style.opacity = '1'
   mobilePlayer.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease'
@@ -817,8 +832,7 @@ function closeMobilePlayer() {
   mobilePlayer.style.transform = 'translateY(100%)'
   mobilePlayer.style.opacity = '0'
   document.body.style.overflow = ''
-  
-  // Reset after animation
+ 
   setTimeout(() => {
     mobilePlayer.style.transform = ''
     mobilePlayer.style.opacity = ''
@@ -835,7 +849,6 @@ function syncPlayerData() {
   const mpTitle = document.getElementById('mpTitle')
   if (gpTitle && mpTitle) mpTitle.textContent = gpTitle.textContent
 
-  // Sync play state via single path
   const audio = window.__DOPE_TONE_AUDIO__
   if (audio) {
     const isPlaying =!audio.paused

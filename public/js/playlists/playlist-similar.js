@@ -1,21 +1,19 @@
-// js/playlists/playlist-similar.js
-// ========================================
-// 🔥 SIMILAR TRACKS + RECENTLY VIEWED - CLOUDFLARE
-// ========================================
+// playlist-similar.js - FULL FIXED - SIMILAR + RECENT BOTH WORK + D1
+const API_URL = 'https://api.dopetonevault.com';
+const STATS_API = 'https://dopetone-stats.dopetone701.workers.dev';
 
-const API_URL = 'https://api.dopetonevault.com/api/beats'
+function getD1UserKey() {
+  if (!localStorage.getItem('dopetone_device_id')) {
+    localStorage.setItem('dopetone_device_id', Math.random().toString(36).slice(2) + Date.now());
+  }
+  return window.Auth?.user?.id || localStorage.getItem('dopetone_user_id') || `anon_${localStorage.getItem('dopetone_device_id')}`;
+}
 
-// ===============================
-// 🕐 RECENT TRACKER - LOCAL TO THIS FILE
-// ===============================
 function addToRecentlyViewed(beat) {
     if (!beat) return
-   
     const id = beat.id || beat.beat_id || beat._id || beat.uuid
     if (!id) return
-   
     let recent = JSON.parse(localStorage.getItem("dopetone_recent")) || []
-   
     const beatData = {
         id: id,
         title: beat.title || beat.name || "Untitled",
@@ -30,116 +28,133 @@ function addToRecentlyViewed(beat) {
         key: beat.key || "",
         zip_url: beat.zip_url || ""
     }
-   
     recent = recent.filter(item => item.id != beatData.id)
     recent.unshift(beatData)
     recent = recent.slice(0, 8)
-   
     localStorage.setItem("dopetone_recent", JSON.stringify(recent))
-    renderRecentTracks() // Re-render recent section immediately
+    renderRecentTracks()
 }
 
 export async function renderRecentTracks() {
-    const container = document.getElementById("recentTrack")
-    if(!container) return
-   
+    const ids = ["recentTrack", "rpTrackMount", "recentPlayedMount", "recentPlayedWrap"];
+    const containers = ids.map(id => document.getElementById(id)).filter(Boolean);
+    if(!containers.length) return
+    
     let recent = JSON.parse(localStorage.getItem("dopetone_recent")) || []
-   
-    if(!recent.length){
-        container.innerHTML = `<div class="empty-playlist">Play some beats to see them here</div>`
-        return
-    }
-   
-    container.innerHTML = ""
-   
-    recent.forEach((beat, index) => {
-        const card = document.createElement("div")
-        card.className = "recent-card"
-        card.dataset.index = index
-       
-        card.innerHTML = `
-            <div style="position: relative;">
-              <img src="${beat.cover}">
-              <button class="play-overlay featured-play">
-                <span class="play-icon">▶</span>
-              </button>
-            </div>
-            <div class="featured-content">
-              <div class="featured-title">${beat.title}</div>
-              <div class="featured-meta">${beat.genre} • ${beat.bpm} BPM</div>
-              <div class="featured-price">
-                <span class="old">$49</span>
-                <span class="new">$19</span>
-              </div>
-              <button class="featured-buy">View Beat</button>
-            </div>
-        `
-       
-        // PLAY
-        card.querySelector(".featured-play").onclick = (e) => {
-            e.stopPropagation()
-            addToRecentlyViewed(beat) // Move to front
-           
-            const audio = window.__PLAYER__
-            const isSameTrack = window.__CURRENT_LIST__ === "playlist-recent" &&
-                               window.__CURRENT_INDEX__ === index
-           
-            if (isSameTrack && audio) {
-                if (audio.paused) audio.play()
-                else audio.pause()
-            } else {
-                window.globalPlayer?.play(index, recent, "playlist-recent")
+    
+    containers.forEach(container => {
+        if(!recent.length){
+            // If it's the wrapper, look inside for mount
+            if (container.id === "recentPlayedWrap") {
+                const inner = document.getElementById("rpTrackMount");
+                if (inner) inner.innerHTML = `<div class="empty-playlist">Play some beats to see them here</div>`
+                return;
             }
+            container.innerHTML = `<div class="empty-playlist">Play some beats to see them here</div>`
+            return
         }
-       
-        // 🔥 VIEW BEAT = ADD/REMOVE CART (LIKE WAVE BUY BTN)
-        const viewBtn = card.querySelector(".featured-buy")
-        updateCartButtonState(viewBtn, beat)
-       
-        viewBtn.onclick = (e) => {
-            e.stopPropagation()
-            handleCartToggle(viewBtn, beat)
+        
+        // If container is the wrap, use inner mount
+        let target = container;
+        if (container.id === "recentPlayedWrap") {
+            target = document.getElementById("rpTrackMount");
+            if (!target) return;
         }
-       
-        container.appendChild(card)
+        
+        target.innerHTML = ""
+        recent.forEach((beat, index) => {
+            const card = document.createElement("div")
+            card.className = "recent-card"
+            card.dataset.index = index
+            card.innerHTML = `
+                <div style="position: relative;">
+                  <img src="${beat.cover}">
+                  <button class="play-overlay featured-play">
+                    <span class="play-icon">▶</span>
+                  </button>
+                </div>
+                <div class="featured-content">
+                  <div class="featured-title">${beat.title}</div>
+                  <div class="featured-meta">${beat.genre} • ${beat.bpm} BPM</div>
+                  <div class="featured-price">
+                    <span class="old">$49</span>
+                    <span class="new">$19</span>
+                  </div>
+                  <button class="featured-buy">Add To Cart</button>
+                </div>
+            `
+            card.querySelector(".featured-play").onclick = (e) => {
+                e.stopPropagation()
+                addToRecentlyViewed(beat)
+                const audio = window.__PLAYER__
+                const isSameTrack = window.__CURRENT_LIST__ === "playlist-recent" && window.__CURRENT_INDEX__ === index
+                if (isSameTrack && audio) {
+                    if (audio.paused) audio.play()
+                    else audio.pause()
+                } else {
+                    window.globalPlayer?.play(index, recent, "playlist-recent")
+                }
+            }
+            const viewBtn = card.querySelector(".featured-buy")
+            updateCartButtonState(viewBtn, beat)
+            viewBtn.onclick = (e) => {
+                e.stopPropagation()
+                handleCartToggle(viewBtn, beat)
+            }
+            target.appendChild(card)
+        })
     })
 }
 
-// ===============================
-// 🔥 SIMILAR TRACKS RENDER - CLOUDFLARE D1
-// ===============================
-export async function renderPlaylistSimilarTracks() {
+export async function renderPlaylistSimilarTracks(currentBeatId = null) {
     const container = document.getElementById("similarTrack")
     if(!container) return
 
     try{
-        // 🔥 FETCH FROM YOUR CLOUDFLARE API INSTEAD OF SUPABASE
-        const res = await fetch(`${API_URL}/beats`);
-        if (!res.ok) throw new Error('Failed to fetch beats');
+        let beats = []
+        try {
+            const res = await fetch(`${API_URL}/api/beats`);
+            if (res.ok) {
+                beats = await res.json();
+            } else {
+                throw new Error('api beats failed');
+            }
+        } catch(err) {
+            const res2 = await fetch(`${STATS_API}/api/stats/top`);
+            if (res2.ok) {
+                beats = await res2.json();
+            }
+        }
 
-        let beats = await res.json()
         if(!beats?.length){
-            container.innerHTML = `<div class="empty-playlist">No tracks found</div>`
+            const playlists = JSON.parse(localStorage.getItem("playlists") || "[]");
+            beats = playlists.flatMap(p => p.beats || []).slice(0,10);
+        }
+
+        if(!beats?.length){
+            container.innerHTML = `<div class="empty-playlist">No tracks found - add some beats first</div>`
             return
         }
 
-        // Normalize fields for frontend
         beats = beats.map(b => ({
             ...b,
-            audio: b.mp3_url,
-            cover: b.cover_url,
-            mp3_url: b.mp3_url,
-            cover_url: b.cover_url
+            audio: b.mp3_url || b.audio,
+            cover: b.cover_url || b.cover,
+            mp3_url: b.mp3_url || b.audio,
+            cover_url: b.cover_url || b.cover
         }));
 
+        if (currentBeatId) {
+            beats = beats.filter(b => String(b.id) !== String(currentBeatId));
+        }
+
         container.innerHTML = ""
-        beats = beats.sort(() => Math.random() - 0.5).slice(0, 10) // Random 10
+        beats = beats.sort(() => Math.random() - 0.5).slice(0, 10)
 
         beats.forEach((beat, index) => {
             const card = document.createElement("div")
             card.className = "featured-card"
             card.dataset.index = index
-
             card.innerHTML = `
                 <div style="position: relative;">
                   <img src="${beat.cover_url || beat.cover || "images/studio.jpg"}">
@@ -156,19 +171,14 @@ export async function renderPlaylistSimilarTracks() {
                     <span class="old">$49</span>
                     <span class="new">$19</span>
                   </div>
-                  <button class="featured-buy">View Beat</button>
+                  <button class="featured-buy">Add To Cart</button>
                 </div>
             `
-
-            // PLAY BUTTON - SAVE TO RECENT
             card.querySelector(".featured-play").onclick = (e) => {
                 e.stopPropagation()
-                addToRecentlyViewed(beat) // <- SAVE TO RECENT HERE
-               
+                addToRecentlyViewed(beat)
                 const audio = window.__PLAYER__
-                const isSameTrack = window.__CURRENT_LIST__ === "playlist-similar" &&
-                                   window.__CURRENT_INDEX__ === index
-               
+                const isSameTrack = window.__CURRENT_LIST__ === "playlist-similar" && window.__CURRENT_INDEX__ === index
                 if (isSameTrack && audio) {
                     if (audio.paused) audio.play()
                     else audio.pause()
@@ -176,39 +186,33 @@ export async function renderPlaylistSimilarTracks() {
                     window.globalPlayer?.play(index, beats, "playlist-similar")
                 }
             }
-
-            // 🔥 VIEW BEAT = ADD/REMOVE CART (LIKE WAVE BUY BTN)
             const viewBtn = card.querySelector(".featured-buy")
             updateCartButtonState(viewBtn, beat)
-           
             viewBtn.onclick = (e) => {
                 e.stopPropagation()
                 handleCartToggle(viewBtn, beat)
             }
-
             container.appendChild(card)
         })
 
         enableCinematic(container)
         initSimilarDragScroll()
         syncPlayButtons()
-        renderRecentTracks() // <- RENDER RECENT AFTER SIMILAR LOADS
+        // Don't call renderRecentTracks here to avoid loop, call separately
        
-        console.log("✅ Similar tracks loaded from Cloudflare")
+        console.log("✅ Similar tracks loaded")
 
     }catch(err){
         console.log("Similar tracks error:", err)
-        container.innerHTML = `<div class="empty-playlist">Failed to load tracks</div>`
+        container.innerHTML = `<div class="empty-playlist">Failed to load tracks - check API</div>`
     }
 }
 
-// ===============================
-// 🛒 CART TOGGLE - WAVE BUY BUTTON LOGIC
-// ===============================
+export const renderSimilarTracks = renderPlaylistSimilarTracks;
+
 function updateCartButtonState(btn, beat) {
     let cart = JSON.parse(localStorage.getItem("dopetone_cart")) || []
     const exists = cart.find(item => item.id == beat.id)
-   
     if(exists){
         btn.textContent = "Remove"
         btn.classList.add("added")
@@ -221,21 +225,19 @@ function updateCartButtonState(btn, beat) {
 function handleCartToggle(btn, beat) {
     let cart = JSON.parse(localStorage.getItem("dopetone_cart")) || []
     const exists = cart.find(item => item.id == beat.id)
+    const userKey = getD1UserKey();
 
-    // ====================================
-    // ❌ REMOVE
-    // ====================================
     if(exists){
         cart = cart.filter(item => item.id != beat.id)
         localStorage.setItem("dopetone_cart", JSON.stringify(cart))
-       
         btn.textContent = "Add To Cart"
         btn.classList.remove("added")
-       
+        fetch(`${STATS_API}/api/stats/untrack`, {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({beat_id: parseInt(beat.id), event_type: 'cart', user_id: userKey})
+        }).catch(()=>{});
     } else {
-        // ====================================
-        // 🛒 ADD
-        // ====================================
         const newBeat = {
             id: beat.id || beat.beat_id || beat._id,
             title: beat.title || beat.name,
@@ -250,46 +252,28 @@ function handleCartToggle(btn, beat) {
             type: beat.type,
             key: beat.key
         }
-
         cart.push(newBeat)
         localStorage.setItem("dopetone_cart", JSON.stringify(cart))
-       
         btn.textContent = "Added ✓"
         btn.classList.add("added")
-
-        // ====================================
-        // 🔥 ONLY SWITCH IF NO ACTIVE TRACK
-        // ====================================
+        fetch(`${STATS_API}/api/stats/event`, {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({beatId: parseInt(beat.id), eventType: 'cart', user_id: userKey})
+        }).catch(()=>{});
         const hasActiveTrack = window.currentBeat || window.activeCartBeat
-
-        // 🔥 FIRST TRACK EVER
         if(!hasActiveTrack && typeof window.switchActiveBeat === "function"){
             window.switchActiveBeat(newBeat)
-        }
-        // 🔥 OTHERWISE: only render row, keep current active beat
-        else{
+        } else{
             window.renderCartBeatRow?.()
         }
     }
-
-    // ====================================
-    // 🔄 REFRESH UI
-    // ====================================
-    if(typeof window.renderCartBeatRow === "function"){
-        window.renderCartBeatRow()
-    }
-    if(typeof window.updateCartCount === "function"){
-        window.updateCartCount()
-    }
-    if(typeof window.checkEmptyState === "function"){
-        window.checkEmptyState()
-    }
-   
-    // Dispatch cart updated event
+    if(typeof window.renderCartBeatRow === "function") window.renderCartBeatRow()
+    if(typeof window.updateCartCount === "function") window.updateCartCount()
+    if(typeof window.checkEmptyState === "function") window.checkEmptyState()
     document.dispatchEvent(new CustomEvent("cartUpdated"))
 }
 
-// 🔥 GLOBAL PLAY BUTTON SYNC
 function syncPlayButtons() {
     document.removeEventListener("playerPlay", updatePlayIcons)
     document.removeEventListener("playerPause", updatePauseIcons)
@@ -297,33 +281,29 @@ function syncPlayButtons() {
     document.addEventListener("playerPause", updatePauseIcons)
     updateIconsFromGlobalState()
 }
-
 function updatePlayIcons(e) {
     const { index, listId } = e.detail
-    document.querySelectorAll("#similarTrack .play-icon, #recentTrack .play-icon").forEach(icon => {
-        icon.textContent = "▶"
-    })
+    document.querySelectorAll("#similarTrack .play-icon, #recentTrack .play-icon, #rpTrackMount .play-icon").forEach(icon => { icon.textContent = "▶" })
     if (listId === "playlist-similar") {
         const card = document.querySelector(`#similarTrack .featured-card[data-index="${index}"]`)
         if (card) card.querySelector(".play-icon").textContent = "⏸"
     }
     if (listId === "playlist-recent") {
-        const card = document.querySelector(`#recentTrack .recent-card[data-index="${index}"]`)
+        const sel = `#recentTrack .recent-card[data-index="${index}"], #rpTrackMount .recent-card[data-index="${index}"]`
+        const card = document.querySelector(sel)
         if (card) card.querySelector(".play-icon").textContent = "⏸"
     }
 }
-
 function updatePauseIcons() {
     if (window.__CURRENT_LIST__ === "playlist-similar") {
         const card = document.querySelector(`#similarTrack .featured-card[data-index="${window.__CURRENT_INDEX__}"]`)
         if (card) card.querySelector(".play-icon").textContent = "▶"
     }
     if (window.__CURRENT_LIST__ === "playlist-recent") {
-        const card = document.querySelector(`#recentTrack .recent-card[data-index="${window.__CURRENT_INDEX__}"]`)
+        const card = document.querySelector(`#recentTrack .recent-card[data-index="${window.__CURRENT_INDEX__}"], #rpTrackMount .recent-card[data-index="${window.__CURRENT_INDEX__}"]`)
         if (card) card.querySelector(".play-icon").textContent = "▶"
     }
 }
-
 function updateIconsFromGlobalState() {
     if (!window.__PLAYER__?.paused) {
         if (window.__CURRENT_LIST__ === "playlist-similar") {
@@ -331,13 +311,11 @@ function updateIconsFromGlobalState() {
             if (card) card.querySelector(".play-icon").textContent = "⏸"
         }
         if (window.__CURRENT_LIST__ === "playlist-recent") {
-            const card = document.querySelector(`#recentTrack .recent-card[data-index="${window.__CURRENT_INDEX__}"]`)
+            const card = document.querySelector(`#recentTrack .recent-card[data-index="${window.__CURRENT_INDEX__}"], #rpTrackMount .recent-card[data-index="${window.__CURRENT_INDEX__}"]`)
             if (card) card.querySelector(".play-icon").textContent = "⏸"
         }
     }
 }
-
-// HOVER LIGHT EFFECT
 function enableCinematic(container) {
   const cards = container.querySelectorAll(".featured-card")
   cards.forEach(card => {
@@ -354,8 +332,6 @@ function enableCinematic(container) {
     })
   })
 }
-
-// DRAG SCROLL
 function initSimilarDragScroll(){
     const slider = document.getElementById("similarTrack")
     if(!slider) return

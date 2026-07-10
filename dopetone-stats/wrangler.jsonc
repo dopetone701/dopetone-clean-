@@ -1,0 +1,13 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "dopetone-stats",
+  "main": "src/index.js",
+  "compatibility_date": "2026-07-09",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "dopetone-stats-db",
+      "database_id": "6ca7cc2f-6227-4fc3-bf37-f1a6e4855c80"
+    }
+  ]
+}

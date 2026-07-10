@@ -90,27 +90,25 @@
     </div>
 
     <!-- TRADE GRAPHS + TOP SONGS + PLAYER -->
-    <!-- TRADE GRAPHS + TOP SONGS + PLAYER -->
-<div class="grid-3">
-  <div class="section">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-      <h2><i class="fa-solid fa-chart-line"></i> <span id="graphTitle">Track Performance</span></h2>
-      <div style="display:flex;gap:8px;align-items:center;">
-        <div style="font-size:11px;color:#666;" id="graphBeatName">All Tracks</div>
-        <!-- SCOFIELD TOGGLE: Hour/Day/Week like FL Snap -->
-        <div class="time-toggle">
-          <button class="toggle-btn" data-range="hour">Hr</button>
-          <button class="toggle-btn active" data-range="day">Day</button>
-          <button class="toggle-btn" data-range="week">Week</button>
+    <div class="grid-3">
+      <div class="section">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <h2><i class="fa-solid fa-chart-line"></i> <span id="graphTitle">Track Performance</span></h2>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <div style="font-size:11px;color:#666;" id="graphBeatName">All Tracks</div>
+            <div class="time-toggle">
+              <button class="toggle-btn" data-range="hour">Hr</button>
+              <button class="toggle-btn active" data-range="day">Day</button>
+              <button class="toggle-btn" data-range="week">Week</button>
+              <button class="toggle-btn" data-range="month">Month</button>
+
+            </div>
+          </div>
+        </div>
+        <div class="chart-container">
+          <canvas id="tradeChart"></canvas>
         </div>
       </div>
-    </div>
-    <div class="chart-container">
-      <canvas id="tradeChart"></canvas>
-    </div>
-  </div>
-  <!--... rest same -->
-
 
       <div class="section">
         <h2><i class="fa-solid fa-fire"></i> Top Performing</h2>
@@ -121,10 +119,10 @@
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
           <h2><i class="fa-solid fa-play"></i> Quick Player</h2>
           <div style="display:flex;gap:8px;">
-            <button class="action-btn" id="playerEditBtn" onclick="editCurrentTrack()" title="Edit Beat">
+            <button class="action-btn" id="playerEditBtn" title="Edit Beat">
               <i class="fa-solid fa-edit"></i>
             </button>
-            <button class="action-btn" id="monetizeBtn" onclick="cycleMonetization()" title="Monetization">
+            <button class="action-btn" id="monetizeBtn" title="Monetization">
               <i class="fa-solid fa-dollar-sign"></i>
             </button>
           </div>
@@ -176,83 +174,60 @@
       </div>
     </div>
 
-    <!-- FAKE TRAFFIC GENERATOR -->
-    <div class="section" id="fakeTrafficSection">
-      <h2><i class="fa-solid fa-robot"></i> Fake Traffic Generator <span style="color:#ef4444;font-size:12px;">DEVIL MODE 💀</span></h2>
-      <p style="color:#666;font-size:13px;margin-bottom:16px;">Auto-generate views & likes to boost social proof. Runs in background.</p>
-      <div class="fake-controls">
-        <button class="fake-btn" id="fakeViewsBtn">
-          <i class="fa-solid fa-eye"></i> Auto Views: OFF
-        </button>
-        <button class="fake-btn" id="fakeLikesBtn">
-          <i class="fa-solid fa-heart"></i> Auto Likes: OFF
-        </button>
-        <button class="fake-btn" id="fakeCartBtn">
-          <i class="fa-solid fa-cart-plus"></i> Auto Cart: OFF
-        </button>
-      </div>
-      <div style="margin-top:12px;font-size:12px;color:#666;">
-        Speed: <input type="range" id="fakeSpeed" min="1" max="10" value="5" style="width:200px;">
-        <span id="speedLabel">5x</span>
-      </div>
-    </div>
-
-    <!-- NOTICE BOARD CONTROL - UPGRADED -->
     <!-- NOTICE BOARD CONTROL - PROMO READY -->
-<div class="section" id="noticeBoardControl">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">
-    <h2><i class="fa-solid fa-scroll"></i> DT DROP ZONE Control</h2>
-    <span style="font-size:11px;color:#00ff88;"><span class="live-dot"></span> Promo Mode</span>
-  </div>
-
-  <div class="notice-composer">
-    <textarea id="noticeText" placeholder="Drop text... or paste any link (image, video, beat)" rows="3" style="width:100%;padding:10px;background:#0a0a0a;border:1px solid #333;color:#fff;border-radius:6px;resize:vertical;"></textarea>
-
-    <div style="display:flex;gap:8px;margin:10px 0;flex-wrap:wrap;">
-      <select id="noticeType" style="padding:8px;background:#0a0a0a;border:1px solid #333;color:#fff;border-radius:4px;">
-        <option value="text">Text</option>
-        <option value="image">Image</option>
-        <option value="video">Video</option>
-      </select>
-      <input type="file" id="noticeFile" accept="image/*,video/*" style="flex:1;min-width:150px;padding:6px;background:#0a0a0a;border:1px solid #333;color:#fff;border-radius:4px;font-size:12px;">
-      <button id="promoteBtn" class="fake-btn" style="background:#8b5cf6;padding:8px 12px;white-space:nowrap;"><i class="fa-solid fa-bullhorn"></i> Promote</button>
-    </div>
-
-    <div id="promotePicker" style="display:none;margin:10px 0;max-height:220px;overflow-y:auto;border:1px solid #333;border-radius:6px;background:#050505;padding:8px;">
-      <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
-        <input type="text" id="beatSearch" placeholder="Search beats..." style="flex:1;padding:6px;background:#111;border:1px solid #333;color:#fff;border-radius:4px;font-size:12px;">
-        <span style="font-size:11px;color:#666;margin-left:8px;" id="selectedCount">0/4</span>
+    <div class="section" id="noticeBoardControl">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">
+        <h2><i class="fa-solid fa-scroll"></i> DT DROP ZONE Control</h2>
+        <span style="font-size:11px;color:#00ff88;"><span class="live-dot"></span> Promo Mode</span>
       </div>
-      <div id="beatList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;"></div>
+
+      <div class="notice-composer">
+        <textarea id="noticeText" placeholder="Drop text... or paste any link (image, video, beat)" rows="3" style="width:100%;padding:10px;background:#0a0a0a;border:1px solid #333;color:#fff;border-radius:6px;resize:vertical;"></textarea>
+
+        <div style="display:flex;gap:8px;margin:10px 0;flex-wrap:wrap;">
+          <select id="noticeType" style="padding:8px;background:#0a0a0a;border:1px solid #333;color:#fff;border-radius:4px;">
+            <option value="text">Text</option>
+            <option value="image">Image</option>
+            <option value="video">Video</option>
+          </select>
+          <input type="file" id="noticeFile" accept="image/*,video/*" style="flex:1;min-width:150px;padding:6px;background:#0a0a0a;border:1px solid #333;color:#fff;border-radius:4px;font-size:12px;">
+          <button id="promoteBtn" class="fake-btn" style="background:#8b5cf6;padding:8px 12px;white-space:nowrap;"><i class="fa-solid fa-bullhorn"></i> Promote</button>
+        </div>
+
+        <div id="promotePicker" style="display:none;margin:10px 0;max-height:220px;overflow-y:auto;border:1px solid #333;border-radius:6px;background:#050505;padding:8px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+            <input type="text" id="beatSearch" placeholder="Search beats..." style="flex:1;padding:6px;background:#111;border:1px solid #333;color:#fff;border-radius:4px;font-size:12px;">
+            <span style="font-size:11px;color:#666;margin-left:8px;" id="selectedCount">0/4</span>
+          </div>
+          <div id="beatList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;"></div>
+        </div>
+
+        <div id="noticePreview" style="display:none;margin:10px 0;">
+          <img id="noticeImgPreview" style="max-width:200px;max-height:150px;border-radius:6px;border:1px solid #333;display:none;">
+          <video id="noticeVidPreview" style="max-width:300px;max-height:200px;border-radius:6px;border:1px solid #333;display:none;" controls></video>
+        </div>
+
+        <div id="promotePreview" style="margin:10px 0;"></div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;margin:12px 0;">
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:#999;cursor:pointer;">
+            <input type="checkbox" id="noticeAutoDelete" style="accent-color:#8b5cf6;"> Auto-delete after 24h
+          </label>
+          <div style="font-size:11px;color:#666;" id="fileInfo"></div>
+        </div>
+
+        <div style="display:flex;gap:10px;">
+          <button class="fake-btn" id="noticePreviewBtn"><i class="fa-solid fa-eye"></i> Preview</button>
+          <button class="fake-btn" id="noticePostBtn" style="background:#0066ff;"><i class="fa-solid fa-paper-plane"></i> Post</button>
+        </div>
+        <div id="noxPreviewArea" style="margin-top:10px;"></div>
+      </div>
+
+      <div style="margin-top:20px;">
+        <h3 style="font-size:13px;margin-bottom:10px;color:#8b5cf6;">Recent Posts <span id="postCount" style="color:#666;"></span></h3>
+        <div id="noticeHistoryList" style="max-height:320px;overflow-y:auto;border:1px solid #222;border-radius:6px;padding:8px;background:#050505;"></div>
+      </div>
     </div>
-
-    <div id="noticePreview" style="display:none;margin:10px 0;">
-      <img id="noticeImgPreview" style="max-width:200px;max-height:150px;border-radius:6px;border:1px solid #333;display:none;">
-      <video id="noticeVidPreview" style="max-width:300px;max-height:200px;border-radius:6px;border:1px solid #333;display:none;" controls></video>
-    </div>
-
-    <div id="promotePreview" style="margin:10px 0;"></div>
-
-    <div style="display:flex;align-items:center;justify-content:space-between;margin:12px 0;">
-      <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:#999;cursor:pointer;">
-        <input type="checkbox" id="noticeAutoDelete" style="accent-color:#8b5cf6;"> Auto-delete after 24h
-      </label>
-      <div style="font-size:11px;color:#666;" id="fileInfo"></div>
-    </div>
-
-    <div style="display:flex;gap:10px;">
-      <button class="fake-btn" id="noticePreviewBtn"><i class="fa-solid fa-eye"></i> Preview</button>
-      <button class="fake-btn" id="noticePostBtn" style="background:#0066ff;"><i class="fa-solid fa-paper-plane"></i> Post</button>
-    </div>
-    <div id="noxPreviewArea" style="margin-top:10px;"></div>
-  </div>
-
-  <div style="margin-top:20px;">
-    <h3 style="font-size:13px;margin-bottom:10px;color:#8b5cf6;">Recent Posts <span id="postCount" style="color:#666;"></span></h3>
-    <div id="noticeHistoryList" style="max-height:320px;overflow-y:auto;border:1px solid #222;border-radius:6px;padding:8px;background:#050505;"></div>
-  </div>
-</div>
-
 
     <!-- BEATS TABLE WITH SEARCH -->
     <div class="section" id="beatsAnalyticsSection">
@@ -289,154 +264,61 @@
   <!-- EDIT MODAL -->
   <div class="modal" id="editModal"></div>
 
+  <!-- LIBS -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
-  <script src="js/control-center.js"></script>
-  <script src="js/control-center-helpers.js"></script>
-  <script src="js/notice-board-control.js"></script>
-
-  <!-- ===== NOX CLOUD PLUG-IN - UPGRADED ===== -->
-  <script>
-const NOX_API = 'https://dope-tone-api.dopetone701.workers.dev';
-let selectedBeats = [];
-
-function noxToast(msg, err=false){
-  let t=document.getElementById('noxToast');
-  if(!t){t=document.createElement('div');t.id='noxToast';t.style.cssText='position:fixed;top:20px;right:20px;padding:15px 20px;border-radius:4px;font-weight:bold;z-index:99999;font-family:monospace;';document.body.appendChild(t);}
-  t.style.background=err?'#f00':'#0f0';t.style.color=err?'#fff':'#000';t.innerText=msg;t.style.display='block';setTimeout(()=>t.style.display='none',3000);
-}
-
-document.addEventListener('DOMContentLoaded',()=>{
-  const postBtn=document.getElementById('noticePostBtn');
-  const textInput=document.getElementById('noticeText');
-  const fileInput=document.getElementById('noticeFile');
-  const typeSel=document.getElementById('noticeType');
-  const autoDel=document.getElementById('noticeAutoDelete');
-  const promoteBtn=document.getElementById('promoteBtn');
-  const picker=document.getElementById('promotePicker');
-  const beatSearch=document.getElementById('beatSearch');
-  const beatList=document.getElementById('beatList');
-  const promoPreview=document.getElementById('promotePreview');
-
-  // Load beats for promotion
-  async function loadBeats(q=''){
-    const res=await fetch(`${NOX_API}/beats`);
-    const beats=await res.json();
-    const filtered=beats.filter(b=>!q||b.title.toLowerCase().includes(q.toLowerCase())).slice(0,20);
-    beatList.innerHTML=filtered.map(b=>`
-      <div class="beat-pick" data-id="${b.id}" style="border:1px solid #333;border-radius:6px;padding:6px;cursor:pointer;background:#111;${selectedBeats.find(x=>x.id===b.id)?'border-color:#8b5cf6;':''}">
-        <img src="${b.cover_url||b.cover}" style="width:100%;height:70px;object-fit:cover;border-radius:4px;">
-        <div style="font-size:11px;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${b.title}</div>
-      </div>
-    `).join('');
-    document.querySelectorAll('.beat-pick').forEach(el=>{
-      el.onclick=()=>{
-        const id=parseInt(el.dataset.id);
-        const beat=filtered.find(b=>b.id===id);
-        const idx=selectedBeats.findIndex(x=>x.id===id);
-        if(idx>-1){selectedBeats.splice(idx,1);}else{if(selectedBeats.length<4)selectedBeats.push(beat);}
-        document.getElementById('selectedCount').textContent=`${selectedBeats.length}/4`;
-        loadBeats(beatSearch.value);
-        renderPromoPreview();
-      };
-    });
-  }
-
-  function renderPromoPreview(){
-    if(selectedBeats.length===0){promoPreview.innerHTML='';return;}
-    const [main,...rest]=selectedBeats;
-    promoPreview.innerHTML=`
-      <div style="border:1px solid #8b5cf6;border-radius:8px;padding:10px;background:#0a0a0a;">
-        <div style="font-size:11px;color:#8b5cf6;margin-bottom:8px;">PROMOTION PREVIEW (${selectedBeats.length} beats)</div>
-        <div style="display:flex;gap:8px;">
-          <div style="flex:1.5;">
-            <img src="${main.cover_url||main.cover}" style="width:100%;height:120px;object-fit:cover;border-radius:6px;">
-            <div style="font-size:12px;margin-top:4px;font-weight:bold;">${main.title}</div>
-          </div>
-          <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:6px;">
-            ${rest.map(b=>`<img src="${b.cover_url||b.cover}" style="width:100%;height:56px;object-fit:cover;border-radius:4px;" title="${b.title}">`).join('')}
-            ${Array(3-rest.length).fill(0).map(()=>`<div style="background:#111;border-radius:4px;height:56px;"></div>`).join('')}
-          </div>
-        </div>
-      </div>
-    `;
-  }
-
-  promoteBtn.onclick=()=>{
-    picker.style.display=picker.style.display==='none'?'block':'none';
-    if(picker.style.display==='block')loadBeats();
-  };
-  beatSearch.oninput=()=>loadBeats(beatSearch.value);
-
-  // Auto-detect links in text
-  textInput.addEventListener('paste',async e=>{
-    setTimeout(()=>{
-      const text=textInput.value;
-      const url=text.match(/https?:\/\/[^\s]+/)?.[0];
-      if(!url)return;
-      if(/\.(jpg|jpeg|png|gif|webp)$/i.test(url)){
-        typeSel.value='image';
-        noxToast('Image link detected');
-      }else if(/\.(mp4|webm|mov)$/i.test(url)){
-        typeSel.value='video';
-        noxToast('Video link detected');
-      }else if(url.includes('dopetone')&&url.includes('beat')){
-        noxToast('Beat link - use Promote button for best display');
-      }
-    },100);
-  });
-
-  // File preview (existing code)
-  fileInput?.addEventListener('change',()=>{
-    const f=fileInput.files[0];
-    const img=document.getElementById('noticeImgPreview');
-    const vid=document.getElementById('noticeVidPreview');
-    const wrap=document.getElementById('noticePreview');
-    if(!f){wrap.style.display='none';return;}
-    wrap.style.display='block';
-    if(f.type.startsWith('image/')){img.src=URL.createObjectURL(f);img.style.display='block';vid.style.display='none';}
-    else{vid.src=URL.createObjectURL(f);vid.style.display='block';img.style.display='none';}
-  });
-
-  // POST
-  postBtn.onclick=async e=>{
-    e.preventDefault();
-    const text=textInput.value.trim();
-    const file=fileInput.files[0];
-    if(!text&&!file&&selectedBeats.length===0){noxToast('Need content',true);return;}
-    
-    postBtn.disabled=true;postBtn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> POSTING...';
-    
-    const payload={
-      type: selectedBeats.length>0?'promotion':typeSel.value,
-      content:text,
-      from:'admin',
-      expiresAt:autoDel.checked?Date.now()+86400000:null,
-      promotion: {type:'beats', items:selectedBeats.map(b=>({id:b.id,title:b.title,cover_url:b.cover_url||b.cover,plays:b.play_count||0,likes:b.like_count||0,price:b.price,audio_url:b.mp3_url||b.audio||''}))}
-
-    };
-
-    const send=async()=>{
-      try{
-        await fetch(`${NOX_API}/api/notices`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-        textInput.value='';fileInput.value='';selectedBeats=[];renderPromoPreview();document.getElementById('noticePreview').style.display='none';
-        noxToast('POST LIVE ✓');loadNoticeHistory();
-      }catch(err){noxToast('ERROR',true);}
-      postBtn.disabled=false;postBtn.innerHTML='<i class="fa-solid fa-paper-plane"></i> Post';
-    };
-
-    if(file){
-      const rd=new FileReader();
-      rd.onload=e=>{payload.media={type:file.type.startsWith('image/')?'image':'video',url:e.target.result};send();};
-      rd.readAsDataURL(file);
-    }else send();
-  };
-
-  async function loadNoticeHistory(){/* existing code */}
-  setTimeout(()=>{if(typeof loadNoticeHistory==='function')loadNoticeHistory();},1000);
-});
-</script>
-
   
+  <!-- CC MODULES - CONNECTED -->
+  <script type="module">
+    import { initCharts } from './js/control-center/cc-charts.js';
+    import { initPlayer } from './js/control-center/cc-player.js';
+    import { loadTopTracks } from './js/control-center/cc-top-tracks.js';
+    import { initBeatsTable } from './js/control-center/cc-beats-table.js';
+    import { initEmails } from './js/control-center/cc-emails.js';
+    import { initTickets } from './js/control-center/cc-tickets.js';
+    import { initNotices } from './js/control-center/cc-notices.js';
+   
+    import { loadDashboardStats } from './js/control-center/cc-config.js';
+
+    // Initialize all modules
+    document.addEventListener('DOMContentLoaded', async () => {
+      console.log('[CC] Initializing Control Center...');
+      
+      // Load base stats first
+      await loadDashboardStats();
+      
+      // Init all modules
+      initCharts();
+      initPlayer();
+      await loadTopTracks();
+      await initBeatsTable();
+      await initEmails();
+      await initTickets();
+      initNotices();
+       // Only shows in dev mode
+      
+      console.log('[CC] All modules loaded ✓');
+      
+      // Wire up search bar to beats table
+      document.getElementById('searchBar')?.addEventListener('input', (e) => {
+        document.getElementById('beatsSearch').value = e.target.value;
+        document.getElementById('beatsSearch').dispatchEvent(new Event('input'));
+      });
+      
+      // Wire up edit/monetize buttons
+      document.getElementById('playerEditBtn')?.addEventListener('click', () => {
+        if (window.editCurrentTrack) window.editCurrentTrack();
+      });
+      
+      document.getElementById('monetizeBtn')?.addEventListener('click', () => {
+        if (window.cycleMonetization) window.cycleMonetization();
+      });
+    });
+    
+    // Global refresh handler
+    window.addEventListener('cc_dashboard_refresh', () => {
+      console.log('[CC] Dashboard refresh triggered');
+    });
+  </script>
 </body>
 </html>

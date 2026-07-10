@@ -197,24 +197,16 @@ function initMobileMenu() {
     if (e.key === "Escape") closeMenu()
   })
 
-  // MOBILE PROFILE - USES AuthManager.toggleAccountPanel()
   if (mobileProfileBtn) {
     mobileProfileBtn.addEventListener("click", (e) => {
       e.preventDefault()
       e.stopPropagation()
-      
       const isLoggedIn =!!window.Auth?.user &&!!localStorage.getItem('dopetone_user')
-      
       closeMenu()
-      
       setTimeout(() => {
         if (isLoggedIn) {
-          // SIGNED IN → Open auth panel dropdown
-          console.log('[SCOFIELD] Opening account panel')
           window.Auth?.toggleAccountPanel()
         } else {
-          // GUEST → Open signup modal
-          console.log('[SCOFIELD] Opening signup')
           window.Auth?.openModal(true)
         }
       }, 350)
@@ -255,11 +247,9 @@ function initMobileMenu() {
   return true
 }
 
-
 window.addEventListener('navbarLoaded', () => {
   initMobileMenu()
 })
-
 
 window.initMobileMenu = initMobileMenu
 
@@ -321,7 +311,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ========================================
-// 🌍 GLOBAL BUY BUTTON SYSTEM
+// 🌍 GLOBAL BUY BUTTON SYSTEM - FIXED NO IMPORT
 // ========================================
 function setupGlobalBuyButtons(){
   const buttons = document.querySelectorAll(".buy-btn");
@@ -350,6 +340,14 @@ function setupGlobalBuyButtons(){
       if(!exists){
         cart.push(beat);
         localStorage.setItem("dopetone_cart", JSON.stringify(cart));
+        // 🔥 D1 SYNC - DIRECT FETCH, NO IMPORT, CAN'T BREAK BEATS
+        try {
+          fetch('https://dopetone-stats.dopetone701.workers.dev/api/stats/event', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({beatId: parseInt(beat.id), eventType: 'cart'})
+          }).then(()=>console.log('✅ D1 cart logged for', beat.id)).catch(()=>{});
+        } catch(e){}
       }
 
       localStorage.setItem("dopetone_active_beat", JSON.stringify(beat));
@@ -369,12 +367,11 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ========================================
-// 📊 UPDATED: TRACK BEAT PLAYS TO D1 WITH USER ID
+// 📊 TRACK BEAT PLAYS
 // ========================================
 export async function trackBeatPlay(beatId) {
   try {
-    const userId = 'anonymous'; // Auth removed - will handle in auth.js
-
+    const userId = 'anonymous';
     await fetch('https://dope-tone-api.dopetone701.workers.dev/api/track-play', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -383,12 +380,9 @@ export async function trackBeatPlay(beatId) {
         user_id: userId
       })
     });
-
     const beat = window.store.beats.find(b => b.id == beatId);
     if (beat) beat.play_count = (beat.play_count || 0) + 1;
-
     console.log(`[Dopetone] Tracked play: beat ${beatId} by ${userId}`);
-
   } catch (err) {
     console.error('Failed to track play:', err);
   }

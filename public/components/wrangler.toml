@@ -1,0 +1,20 @@
+name = "dope-tone-vault"
+main = "worker.js"
+compatibility_date = "2026-07-04"
+compatibility_flags = ["nodejs_compat"]
+
+[assets]
+directory = "."
+binding = "ASSETS"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "dope-tone-db-v2"
+database_id = "54cd2593-5b3e-4531-9fe6-221da9e7af95"
+
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "dope-tone-beats"
+
+[observability]
+enabled = true

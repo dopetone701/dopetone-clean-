@@ -1,7 +1,9 @@
 import { renderSimilarTracks } from "./licence-similar.js"
 
-const API_URL = 'https://api.dopetonevault.com/api/beats'
+const API_URL = 'https://api.dopetonevault.com'
 const WORKER_URL = API_URL;
+const STATS_API = 'https://dopetone-stats.dopetone701.workers.dev';
+
 const params = new URLSearchParams(window.location.search);
 let beatId = params.get("id");
 let audio = null;
@@ -824,6 +826,20 @@ function renderCartBeatRow(){
 
     const cart = JSON.parse(localStorage.getItem("dopetone_cart")) || [];
     wrap.innerHTML = "";
+       // 🔥 D1 - LOG CURRENT CART STATE ON EVERY RENDER
+    cart.forEach(beat => {
+        // avoid double log spam - only log once per session per beat
+        const loggedKey = `d1_cart_logged_${beat.id}`;
+        if (!sessionStorage.getItem(loggedKey)) {
+            fetch(`${STATS_API}/api/stats/event`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({beatId: parseInt(beat.id), eventType: 'cart'})
+            }).catch(()=>{});
+            sessionStorage.setItem(loggedKey, '1');
+        }
+    });
+
 
     cart.forEach((beat) => {
         const card = document.createElement("div");
@@ -1467,221 +1483,97 @@ window.__CURRENT_BEAT__
 // ========================================
 
 
+// ========================================
+// 🛒 ADD TO CART + D1 SYNC
+// ========================================
+
 function setupAddToCart(){
-
-
-    const addBtn =
-    document.getElementById(
-        "addBtn"
-    );
-
-
+    const addBtn = document.getElementById("addBtn");
     if(!addBtn) return;
 
+    addBtn.addEventListener("click", async () => {
+        if(!window.currentBeat) return;
 
-    addBtn.addEventListener(
-    "click",
-    () => {
+        const panel = document.getElementById("quickPlaylistPanel");
+        if(panel){
+            const playlists = window.getPlaylists?.()?.filter(p =>!p.isLiked) || [];
+            panel.innerHTML = "";
 
+            playlists.forEach(playlist => {
+                const btn = document.createElement("button");
+                btn.className = "quick-playlist-item";
+                btn.textContent = playlist.name;
+                btn.onclick = (e) => {
+                    e.stopPropagation();
+                    window.addBeatToPlaylist?.(playlist.id, window.currentBeat);
+                    panel.classList.remove("active");
+                };
+                panel.appendChild(btn);
+            });
 
-        if(!window.currentBeat){
-            return;
-        }
-        const panel =
-document.getElementById(
-    "quickPlaylistPanel"
-)
-
-
-if(panel){
-
-
-    const playlists =
-    window.getPlaylists?.()
-    ?.filter(
-        p => !p.isLiked
-    ) || []
-
-
-    panel.innerHTML = ""
-
-
-    // existing playlists
-    playlists.forEach(
-    playlist => {
-
-
-        const btn =
-        document.createElement(
-            "button"
-        )
-
-
-        btn.className =
-        "quick-playlist-item"
-
-
-        btn.textContent =
-        playlist.name
-
-
-        btn.onclick = (e) => {
-
-
-            e.stopPropagation()
-
-
-            window.addBeatToPlaylist?.(
-                playlist.id,
-                window.currentBeat
-            )
-
-
-            panel.classList.remove(
-                "active"
-            )
+            const createBtn = document.createElement("button");
+            createBtn.className = "quick-playlist-item create";
+            createBtn.textContent = "+ Create Playlist";
+            createBtn.onclick = (e) => {
+                e.stopPropagation();
+                panel.classList.remove("active");
+                window.openPlaylistModal?.(window.currentBeat);
+            };
+            panel.appendChild(createBtn);
+            panel.classList.toggle("active");
         }
 
-
-        panel.appendChild(btn)
-    })
-
-
-    // create playlist
-    const createBtn =
-    document.createElement(
-        "button"
-    )
-
-
-    createBtn.className =
-    "quick-playlist-item create"
-
-
-    createBtn.textContent =
-    "+ Create Playlist"
-
-
-    createBtn.onclick = (e) => {
-
-
-        e.stopPropagation()
-
-
-        panel.classList.remove(
-            "active"
-        )
-
-
-        window.openPlaylistModal?.(
-            window.currentBeat
-        )
-    }
-
-
-    panel.appendChild(createBtn)
-
-
-    panel.classList.toggle(
-        "active"
-    )
-}
-
-
-
-        let cart =
-        JSON.parse(
-            localStorage.getItem(
-                "dopetone_cart"
-            )
-        ) || [];
-
+        let cart = JSON.parse(localStorage.getItem("dopetone_cart")) || [];
 
         const beat = {
-    id: window.currentBeat.id,
-    title: window.currentBeat.title,
-    cover: window.currentBeat.cover,
-    cover_url: window.currentBeat.cover_url,
-    genre: window.currentBeat.genre,
-    bpm: window.currentBeat.bpm,
-    type: window.currentBeat.type,
-    mood: window.currentBeat.mood,
-    key: window.currentBeat.key,
-    audio: window.currentBeat.audio,
-    play_count: window.currentBeat.play_count || 0, // 🔥
-    monetization_mode: window.currentBeat.monetization_mode || 'paid',
-    has_free_tagged: window.currentBeat.has_free_tagged || 0
-};
+            id: window.currentBeat.id,
+            title: window.currentBeat.title,
+            cover: window.currentBeat.cover,
+            cover_url: window.currentBeat.cover_url,
+            genre: window.currentBeat.genre,
+            bpm: window.currentBeat.bpm,
+            type: window.currentBeat.type,
+            mood: window.currentBeat.mood,
+            key: window.currentBeat.key,
+            audio: window.currentBeat.audio,
+            play_count: window.currentBeat.play_count || 0,
+            monetization_mode: window.currentBeat.monetization_mode || 'paid',
+            has_free_tagged: window.currentBeat.has_free_tagged || 0
+        };
 
+        const exists = cart.find(item => item.id == beat.id);
+        if(exists) return;
 
-
-
-        const exists =
-        cart.find(
-            item => item.id == beat.id
-        );
-
-
-        if(exists){
-            return;
-        }
-
-
-        // =========================
-        // ADD TRACK
-        // =========================
-
-
+        // 1. Add to localStorage cart
         cart.push(beat);
+        localStorage.setItem("dopetone_cart", JSON.stringify(cart));
 
-
-        localStorage.setItem(
-            "dopetone_cart",
-            JSON.stringify(cart)
-        );
-
-
-        // =========================
-        // FIRST TRACK ACTIVE
-        // =========================
-
-
-        if(cart.length === 1){
-
-
-            activeCartBeat =
-            beat;
-
-
-            beatId =
-            beat.id;
-
-
-            
-
-
-            switchActiveBeat(
-                beat
-            );
-
-
+        // 2. 🔥 LOG CART EVENT TO D1
+        try {
+            await fetch(`${WORKER_URL}/api/stats/track`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    beat_id: parseInt(beat.id),
+                    event_type: 'cart'
+                })
+            });
+            console.log('✅ Cart logged to D1:', beat.id);
+        } catch (err) {
+            console.log('❌ Cart log failed:', err);
         }
 
+        // 3. First track becomes active
+        if(cart.length === 1){
+            activeCartBeat = beat;
+            beatId = beat.id;
+            switchActiveBeat(beat);
+        }
 
         renderCartBeatRow();
-
-
         updateCartCount();
-
-
-        document.body.classList.remove(
-            "empty-mode"
-        );
-
-
+        document.body.classList.remove("empty-mode");
     });
-
-
 }
 
 
@@ -2556,7 +2448,11 @@ function updateSelectedBar(){
 // ========================================
 
 
-function removeBeatFromCart(event, id){
+// ========================================
+// 🗑 REMOVE TRACK FROM CART + D1 SYNC
+// ========================================
+
+async function removeBeatFromCart(event, id){
     event.stopPropagation();
     event.preventDefault();
 
@@ -2570,6 +2466,8 @@ function removeBeatFromCart(event, id){
     let licences = JSON.parse(localStorage.getItem("dopetone_licences") || "{}");
     delete licences[id];
     localStorage.setItem("dopetone_licences", JSON.stringify(licences));
+
+    
 
     updateCartCount();
 
@@ -2630,9 +2528,8 @@ function removeBeatFromCart(event, id){
     renderSimilarTracks();
     updateSelectedBar();
     updateCheckoutTheme();
-    
-
 }
+
 
 
 document.addEventListener(

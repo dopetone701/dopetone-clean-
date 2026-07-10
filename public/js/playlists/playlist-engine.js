@@ -1,5 +1,5 @@
 // ===============================
-// 🎵 PLAYLIST ENGINE - CLOUDFLARE READY
+// 🎵 PLAYLIST ENGINE - CLOUDFLARE READY + D1 LIKES SYNC
 // ===============================
 
 import {
@@ -9,6 +9,7 @@ import {
 from "./playlist-storage.js"
 
 const WORKER_URL = 'https://dope-tone-api.dopetone701.workers.dev';
+const STATS_API = 'https://dopetone-stats.dopetone701.workers.dev';
 
 // ===============================
 // 🔄 NORMALIZE BEAT FIELDS
@@ -25,6 +26,17 @@ function normalizeBeat(beat) {
     project_file: beat.project_file || beat.zip_url,
     sample: beat.sample || beat.mp3_url || beat.audio
   };
+}
+
+// ===============================
+// 🔑 USER KEY FOR D1 DEDUPE
+// ===============================
+function getUserKeyForStats(){
+  return window.Auth?.user?.id || localStorage.getItem('dopetone_user_id') || `anon_${localStorage.getItem('dopetone_device_id') || 'device'}` ;
+}
+// Ensure device id
+if (!localStorage.getItem('dopetone_device_id')) {
+  localStorage.setItem('dopetone_device_id', Math.random().toString(36).slice(2) + Date.now());
 }
 
 // ===============================
@@ -252,7 +264,7 @@ window.deletePlaylist = deletePlaylist
 window.toggleLikedBeat = toggleLikedBeat
 
 // =====================================
-// ❤️ GLOBAL LIKE SYSTEM FINAL CLEAN
+// ❤️ GLOBAL LIKE SYSTEM FINAL CLEAN - D1 CART-STYLE
 // =====================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -369,41 +381,86 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // =====================================
-    // ❤️ TOGGLE LIKE - D1 SYNC ADDED
+    // 🌍 LOAD GLOBAL LIKE COUNT FROM D1
+    // =====================================
+    async function loadGlobalLikeCount(beatId){
+        if(!beatId) return;
+        try {
+            const res = await fetch(`${STATS_API}/api/stats/track/${beatId}?range=day`);
+            if(!res.ok) return;
+            const json = await res.json();
+            const count = json.stats?.like_count || 0;
+            const countEl = document.getElementById("likeCount");
+            if(countEl) {
+                countEl.textContent = count;
+                const cached = JSON.parse(localStorage.getItem("dopetone_like_counts")) || {};
+                cached[beatId] = count;
+                localStorage.setItem("dopetone_like_counts", JSON.stringify(cached));
+            }
+        } catch(e){}
+    }
+    window.loadGlobalLikeCount = loadGlobalLikeCount;
+
+    // =====================================
+    // ❤️ TOGGLE LIKE - D1 CART LOGIC (1 USER = 1 LIKE)
     // =====================================
 
-    function toggleBeatLike(){
+    async function toggleBeatLike(){
         const beat = window.__CURRENT_BEAT__
         if(!beat) return
         let liked = getLikedBeats()
         const exists = liked.includes(String(beat.id))
+        const userKey = getUserKeyForStats();
 
-        // REMOVE
+        // Optimistic UI update
         if(exists){
             liked = liked.filter(id => String(id) !== String(beat.id))
             updateLikedPlaylist(beat, false)
-        }
-        // ADD
-        else{
+        } else {
             liked.push(String(beat.id))
             updateLikedPlaylist(beat, true)
         }
-
         saveLikedBeats(liked)
 
-        // 🔥 D1 SYNC FOR CONTROL CENTER
-        fetch(`${WORKER_URL}/api/like`, {
-            method: 'POST',
-            headers: {'Content-Type':'application/json'},
-            body: JSON.stringify({
-                beat_id: beat.id,
-                user_id: window.Auth?.user?.id || 'anonymous',
-                action: exists ? 'unlike' : 'like'
-            })
-        }).catch(()=>{});
+        // 🔥 D1 SYNC - SAME AS CART SYSTEM
+        try {
+            if (exists) {
+                // UNLIKE - remove from active_likes (or active_carts table re-used for likes)
+                await fetch(`${STATS_API}/api/stats/untrack`, {
+                    method: 'POST',
+                    headers: {'Content-Type':'application/json'},
+                    body: JSON.stringify({
+                        beat_id: parseInt(beat.id),
+                        beatId: parseInt(beat.id),
+                        event_type: 'like',
+                        eventType: 'like',
+                        user_id: userKey,
+                        user_key: userKey
+                    })
+                });
+            } else {
+                // LIKE - add to active_likes, deduped per user
+                await fetch(`${STATS_API}/api/stats/event`, {
+                    method: 'POST',
+                    headers: {'Content-Type':'application/json'},
+                    body: JSON.stringify({
+                        beatId: parseInt(beat.id),
+                        beat_id: parseInt(beat.id),
+                        eventType: 'like',
+                        event_type: 'like',
+                        user_id: userKey,
+                        user_key: userKey
+                    })
+                });
+            }
+            // Refresh global count after D1 update
+            setTimeout(() => loadGlobalLikeCount(beat.id), 500);
+        } catch(err) {
+            console.error('[LIKE D1] sync failed', err);
+        }
 
         // =====================================
-        // 🌍 LIVE GLOBAL COUNT UPDATE
+        // 🌍 LIVE GLOBAL COUNT UPDATE (optimistic)
         // =====================================
         const countEl = document.getElementById("likeCount")
         if(countEl){
@@ -447,7 +504,7 @@ document.addEventListener("DOMContentLoaded", () => {
         window.__CURRENT_BEAT__ = normalizeBeat(beat)
         // ❤️ refresh licence heart
         window.updateLicenceLikeUI?.()
-        // 🔢 refresh global count
+        // 🔢 refresh global count from D1
         loadGlobalLikeCount?.(beat.id)
     })
 
@@ -466,18 +523,11 @@ document.addEventListener("DOMContentLoaded", () => {
     window.toggleBeatLike = toggleBeatLike
 })
 
-// =====================================
-// ☁️ SUPABASE REMOVED - CLOUDFLARE ONLY
-// =====================================
-// async function syncGlobalLike(beat, shouldLike){ REMOVED }
-
 // ===============================
 // 🔥 MORE BUTTON SLIDEOUT - DELEGATED
 // ===============================
 
-// Use event delegation so it works even if #mpMore loads later
 document.addEventListener("click", async (e) => {
-  // Check if clicked element is the more button
   const moreBtn = e.target.closest("#mpMore, #gpMore")
   if(!moreBtn) return
  
@@ -488,18 +538,14 @@ document.addEventListener("click", async (e) => {
     return
   }
 
-  const normalizedBeat = normalizeBeat(beat) // 🔥 NORMALIZE
+  const normalizedBeat = normalizeBeat(beat)
 
-  // remove old panel - toggle behavior
   const old = document.getElementById("playerMorePanel")
   if (old) {
     old.remove()
     return
   }
 
-  // ===============================
-  // CREATE SLIDEOUT PANEL
-  // ===============================
   const panel = document.createElement("div")
   panel.id = "playerMorePanel"
 
@@ -548,23 +594,16 @@ document.addEventListener("click", async (e) => {
 
   document.body.appendChild(panel)
 
-  // ===============================
-  // ANIMATE IN
-  // ===============================
   requestAnimationFrame(() => {
     panel.classList.add("active")
   })
 
-  // ===============================
-  // CLOSE
-  // ===============================
   const closeBtn = panel.querySelector(".more-close")
   closeBtn.onclick = () => {
     panel.classList.remove("active")
     setTimeout(() => panel.remove(), 250)
   }
 
-  // Click outside to close
   setTimeout(() => {
     document.addEventListener("click", closeOutside)
     function closeOutside(ev){
@@ -576,9 +615,6 @@ document.addEventListener("click", async (e) => {
     }
   }, 50)
 
-  // ===============================
-  // ACTIONS
-  // ===============================
   panel.querySelectorAll(".more-item").forEach(btn => {
     btn.onclick = async () => {
       const action = btn.dataset.action
@@ -597,6 +633,13 @@ document.addEventListener("click", async (e) => {
         if(!exists){
           cart.push(normalizedBeat)
           localStorage.setItem("dopetone_cart", JSON.stringify(cart))
+          // 🔥 D1 CART SYNC
+          const userKey = getUserKeyForStats();
+          fetch(`${STATS_API}/api/stats/event`, {
+            method: 'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({beatId: parseInt(normalizedBeat.id), eventType: 'cart', user_id: userKey})
+          }).catch(()=>{});
         }
         if(window.renderCartBeatRow) window.renderCartBeatRow()
         if(window.checkEmptyState) window.checkEmptyState()
@@ -628,7 +671,6 @@ document.addEventListener("click", async (e) => {
         window.location.href = `licence-page.html?id=${normalizedBeat.id}`
       }
 
-      // close panel
       panel.classList.remove("active")
       setTimeout(() => panel.remove(), 250)
     }
