@@ -3,12 +3,11 @@
 // ===============================
 
 import { renderWave } from "./sections/wave.js"
-import { logCart } from "./cc-config.js"
 
 console.log("🚀 Beats.js loaded")
 
 document.addEventListener('DOMContentLoaded', async () => {
-
+ 
   // Wait for app.js to load beats
   if (!window.store?.loaded) {
     console.log('⏳ Waiting for store...')
@@ -21,7 +20,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       }, 50)
     })
   }
-
+ 
   const beats = window.filteredPlaylistBeats || window.store.beats || []
   console.log(`✅ Beats ready: ${beats.length}`)
 
@@ -72,7 +71,7 @@ function initToggle() {
 function initSearch() {
   const input = document.getElementById('beatSearch');
   const dropdown = document.getElementById('searchDropdown');
-
+  
   if (!input ||!dropdown) {
     console.log('[Search] Input not found - skipping');
     return;
@@ -117,7 +116,7 @@ function initSearch() {
           beat.mood,
           beat.bpm
         ].map(x => String(x || '').toLowerCase()).join(' ');
-
+        
         return searchable.includes(query);
       });
 
@@ -145,12 +144,12 @@ function initSearch() {
     if (window.renderWave && document.getElementById("arsenalSection")?.style.display!== "none") {
       window.renderWave(beats);
     }
-
+    
     // GRID VIEW
     if (document.getElementById("gridSection")?.style.display!== "none") {
       renderGridView(beats);
     }
-
+    
     console.log(`[Search] Filtered to ${beats.length} beats`);
   }
 
@@ -167,7 +166,7 @@ function initSearch() {
         </div>
         <div class="search-item-play">▶</div>
       `;
-
+      
       item.onclick = () => {
         input.value = beat.title;
         dropdown.classList.remove('active');
@@ -176,7 +175,7 @@ function initSearch() {
         }
         rerenderAllSections([beat]);
       };
-
+      
       dropdown.appendChild(item);
     });
     dropdown.classList.add('active');
@@ -212,7 +211,7 @@ function initSearch() {
       }
       rerenderAllSections([firstBeat]);
     }
-
+    
     if (e.key === 'Escape') {
       input.value = '';
       input.dispatchEvent(new Event('input'));
@@ -229,15 +228,15 @@ function initSearch() {
 function renderGridView(filteredBeats = null) {
   const container = document.getElementById('gridContainer')
   const beats = filteredBeats || window.filteredPlaylistBeats || window.store.beats || []
-
+ 
   if (!container) return
-
+ 
   const oldCards = container.querySelectorAll('.grid-card')
   oldCards.forEach(card => {
     card.style.opacity = '0'
     card.style.transform = 'scale(0.95)'
   })
-
+  
   setTimeout(() => {
     container.innerHTML = ''
     container.className = 'grid-container'
@@ -251,7 +250,7 @@ function renderGridView(filteredBeats = null) {
       card.style.opacity = '0'
       card.style.transform = 'scale(0.95)'
       card.style.transition = 'all 0.3s ease'
-
+      
       card.innerHTML = `
         <div class="grid-media">
           <img src="${beat.cover_url || 'images/studio.jpg'}" />
@@ -267,20 +266,20 @@ function renderGridView(filteredBeats = null) {
           <button class="grid-buy">Buy</button>
         </div>
       `
-
+     
       // 🔥 TOGGLE PLAY/PAUSE
       card.querySelector('.grid-play').onclick = (e) => {
         e.stopPropagation()
-        const isCurrentBeat = window.globalPlayer?.currentIndex === index &&
+        const isCurrentBeat = window.globalPlayer?.currentIndex === index && 
                              window.__CURRENT_LIST__ === 'grid'
-
+        
         if (isCurrentBeat && window.globalPlayer?.isPlaying) {
           window.globalPlayer.pause()
         } else {
           window.globalPlayer.play(index, finalBeats, 'grid')
         }
       }
-
+      
       card.querySelector('.grid-buy').onclick = (e) => {
         e.stopPropagation()
         let cart = JSON.parse(localStorage.getItem("dopetone_cart")) || []
@@ -302,13 +301,12 @@ function renderGridView(filteredBeats = null) {
         if(!exists){
           cart.push(cartBeat)
           localStorage.setItem("dopetone_cart", JSON.stringify(cart))
-          logCart(beat.id, true) // 🔥 D1 SYNC - NOW LOGS TO beat_events
         }
         window.location.href = `licence-page.html?id=${beat.id}`
       }
-
+     
       container.appendChild(card)
-
+      
       setTimeout(() => {
         card.style.opacity = '1'
         card.style.transform = 'scale(1)'
