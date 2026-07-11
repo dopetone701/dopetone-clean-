@@ -48,6 +48,7 @@
     <link rel="stylesheet" href="styles/trending.css">
     <link rel="stylesheet" href="styles/recent-played.css">
     <link rel="stylesheet" href="styles/dopetone-footer.css">
+    <link rel="stylesheet" href="dt-footer-mobile-premium.css">
 
     <style>
         /* Fix: make room for fixed global player */
@@ -464,6 +465,7 @@ fetch("auth.html")
 <script type="module" src="js/playlists/playlist-similar.js"></script>
 
 
+
 <!-- ================= PAGE ================= -->
 <script type="module" src="js/playlists/playlists-page.js"></script>
 
@@ -482,51 +484,43 @@ fetch("auth.html")
 🔥 DOPE TONE FOOTER
 =============================== -->
 <footer class="dt-footer">
-    <!-- glow -->
-    <div class="dt-footer-glow"></div>
+  <div class="dt-footer-glow"></div>
+  <div class="dt-footer-main">
+    <div class="dt-footer-left">
+      <h2>DOPE TONE</h2>
+      <p>Premium beats • Future sound • Industry vibes</p>
+      <div class="footer-socials">
+  <a href="https://instagram.com/dopetone701" target="_blank" class="footer-social ig" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+  <a href="https://www.youtube.com/channel/UCKddIkawOD4w_79Hc4zDw7Q" target="_blank" class="footer-social yt" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+  <a href="https://www.tiktok.com/@dopetonevault?_r=1&_t=ZS-97w8x9oFU19" target="_blank" class="footer-social tk" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+</div>
 
-    <div class="dt-footer-top">
-        <!-- BRAND -->
-        <div class="dt-footer-brand">
-            <h2>DOPE TONE</h2>
-            <p>Premium beats, futuristic sound, dark energy & industry vibes.</p>
-            <div class="footer-socials">
-                <a href="#" class="footer-social ig" target="_blank">
-                    <i class="fab fa-instagram"></i>
-                </a>
-                <a href="#" class="footer-social yt" target="_blank">
-                    <i class="fab fa-youtube"></i>
-                </a>
-                <a href="#" class="footer-social tk" target="_blank">
-                    <i class="fab fa-tiktok"></i>
-                </a>
-            </div>
-        </div>
-
-        <!-- LINKS -->
-        <div class="dt-footer-links">
-            <div class="dt-footer-col">
-                <h4>Explore</h4>
-                <a href="beats.html">Beats</a>
-                <a href="index.html">Samples</a>
-                <a href="#">Trending</a>
-            </div>
-           
-            <div class="dt-footer-col">
-                <h4>Support</h4>
-                <a href="#">Licensing</a>
-                <a href="#">Terms</a>
-                <a href="#">Contact</a>
-            </div>
-        </div>
     </div>
-
-    <!-- bottom -->
-    <div class="dt-footer-bottom">
-        <span>© 2026 DOPE TONE — All Rights Reserved</span>
-        <span class="footer-dna">SOUND • FUTURE • CULTURE</span>
+    <div class="dt-footer-nav">
+      <div class="col"><span>Explore</span><a href="beats.html">Beats</a><a href="index.html">Samples</a><a href="beats.html?filter=trending">Trending</a></div>
+      <div class="col"><span>Support</span><a href="#" onclick="openTicket();return false;">Help</a><a href="#" onclick="openTicket();return false;">Ticket</a><a href="licensing.html">License</a></div>
+      <div class="col"><span>Legal</span><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="faq.html">FAQ</a></div>
+      <div class="col"><span>Vault</span><a href="about.html">About</a><a href="mailto:creators@dopetonevault.com">Contact</a><a href="https://instagram.com/dopetone701">IG</a></div>
     </div>
+    <div class="dt-footer-right">
+      <span>Stay in vault</span>
+      <div class="vault-join"><input id="vault-email" placeholder="Email"><button onclick="joinVault()">→</button></div>
+      <div class="pay-row">
+  <div style="background:#fff;color:#1A1F71;font-weight:900;font-size:10px;padding:5px 8px;border-radius:5px;min-width:32px;text-align:center">VISA</div>
+  <div class="pay"><img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard"></div>
+  <div class="pay pay-pp"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></div>
+  <div class="pay"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b0/Apple_Pay_logo.svg" alt="Apple Pay"></div>
+</div>
+
+    </div>
+  </div>
+  <div class="dt-footer-bottom">
+    <small>© 2026 DOPE TONE VAULT</small>
+    <small class="dna">SOUND • FUTURE • CULTURE</small>
+    <small>Dubai • Worldwide</small>
+  </div>
 </footer>
+
 <!-- ================= SCOFIELD: MOBILE MENU INLINE ================= -->
 <script>
 document.addEventListener('DOMContentLoaded', () => {

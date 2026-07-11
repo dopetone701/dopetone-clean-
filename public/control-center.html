@@ -153,18 +153,46 @@
     <!-- EMAIL LIST + TICKETS -->
     <div class="grid-2">
       <div class="section">
-        <h2><i class="fa-solid fa-envelope"></i> Email List <span id="emailCount" style="color:#8b5cf6;">(0)</span></h2>
-        <div class="table-wrap">
-          <table class="data-table">
-            <thead>
-              <tr><th>Email</th><th>Source</th><th>Date</th></tr>
-            </thead>
-            <tbody id="emailTableBody">
-              <tr><td colspan="3" class="empty-state">Loading...</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+  <!-- PRO HEADER -->
+  <div id="emailListHeader" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+    <h2><i class="fa-solid fa-envelope"></i> Email Audiences <span id="emailCount" style="color:#8b5cf6;">(0)</span></h2>
+    <span style="font-size:10px;color:#00ff88;"><span class="live-dot"></span> D1 Synced</span>
+  </div>
+
+  <!-- FILTERS - EXPANDS DOWN ONLY -->
+  <div id="proFilterBar" style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;align-items:center;background:#0a0a0a;padding:10px;border-radius:8px;border:1px solid #222">
+    <button class="filter-pill active" data-filter="all" style="padding:5px 10px;border-radius:20px;border:1px solid #333;background:#fff;color:#000;font-size:11px;cursor:pointer">All <b id="c_all" style="background:rgba(0,0,0,.15);padding:1px 6px;border-radius:10px;margin-left:4px">0</b></button>
+    <button class="filter-pill" data-filter="account" style="padding:5px 10px;border-radius:20px;border:1px solid #333;background:#111;color:#999;font-size:11px;cursor:pointer"><i class="fa-solid fa-user"></i> Accounts <b id="c_acc" style="background:rgba(255,255,255,.1);padding:1px 6px;border-radius:10px;margin-left:4px">0</b></button>
+    <button class="filter-pill" data-filter="newsletter" style="padding:5px 10px;border-radius:20px;border:1px solid #333;background:#111;color:#999;font-size:11px;cursor:pointer"><i class="fa-solid fa-envelope"></i> Newsletter <b id="c_news" style="background:rgba(255,255,255,.1);padding:1px 6px;border-radius:10px;margin-left:4px">0</b></button>
+    <button class="filter-pill" data-filter="subscription" style="padding:5px 10px;border-radius:20px;border:1px solid #333;background:#111;color:#999;font-size:11px;cursor:pointer"><i class="fa-solid fa-download"></i> Subs <b id="c_sub" style="background:rgba(255,255,255,.1);padding:1px 6px;border-radius:10px;margin-left:4px">0</b></button>
+    <button class="filter-pill" data-filter="never_subscribed" style="padding:5px 10px;border-radius:20px;border:1px solid #ff5050;background:#111;color:#ff5050;font-size:11px;cursor:pointer"><i class="fa-solid fa-user-xmark"></i> Never Sub <b id="c_never" style="background:rgba(255,80,80,.2);padding:1px 6px;border-radius:10px;margin-left:4px">0</b></button>
+    <button class="filter-pill" data-filter="vip" style="padding:5px 10px;border-radius:20px;border:1px solid #00ff88;background:#111;color:#00ff88;font-size:11px;cursor:pointer"><i class="fa-solid fa-crown"></i> VIP <b id="c_vip" style="background:rgba(0,255,136,.2);padding:1px 6px;border-radius:10px;margin-left:4px">0</b></button>
+    <button class="filter-pill" data-filter="warm" style="padding:5px 10px;border-radius:20px;border:1px solid #333;background:#111;color:#999;font-size:11px;cursor:pointer"><i class="fa-solid fa-fire"></i> Warm <b id="c_warm" style="background:rgba(255,255,255,.1);padding:1px 6px;border-radius:10px;margin-left:4px">0</b></button>
+    <div style="margin-left:auto;display:flex;gap:6px">
+      <button class="fake-btn" id="copyAudienceBtn" style="padding:6px 10px;font-size:11px"><i class="fa-solid fa-copy"></i> Copy</button>
+      <button class="fake-btn" id="exportBtn" style="background:#8b5cf6;padding:6px 10px;font-size:11px"><i class="fa-solid fa-download"></i> CSV</button>
+    </div>
+  </div>
+
+  <!-- BULK SEND -->
+  <div style="display:flex;gap:8px;margin-bottom:12px;padding:8px;background:#0f0f0f;border:1px solid #222;border-radius:8px">
+    <input type="text" id="bulkSubject" placeholder="Subject: Your pack is waiting 👀" style="flex:1;padding:6px 10px;background:#0a0a0a;border:1px solid #333;color:#fff;border-radius:6px;font-size:11px">
+    <button id="bulkSendBtn" class="fake-btn" style="background:#00ff88;color:#000;white-space:nowrap;padding:6px 12px;font-size:11px"><i class="fa-solid fa-paper-plane"></i> Send to <span id="bulkCount">0</span></button>
+  </div>
+
+  <!-- TABLE - EXPANDS DOWNWARDS -->
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr><th>Email</th><th>Audiences</th><th>Date</th><th>Copy</th></tr>
+      </thead>
+      <tbody id="emailTableBody">
+        <tr><td colspan="4" class="empty-state">Loading...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
 
       <div class="section">
         <h2><i class="fa-solid fa-ticket"></i> Support Tickets <span id="ticketCount" style="color:#8b5cf6;">(0)</span></h2>
@@ -320,5 +348,62 @@
       console.log('[CC] Dashboard refresh triggered');
     });
   </script>
+  <script src="./email-composer.js"></script>
+  <script src="./vault-email.js"></script>
+<script>
+(function(){
+  const API = "https://emails-api.dopetone701.workers.dev";
+  function getAudience(){
+    return [...document.querySelectorAll('#emailTableBody tr')].map(tr=>{
+      const email=(tr.innerText.match(/[\w.-]+@[\w.-]+\.\w+/)||[])[0];
+      const name=tr.querySelector('td span')?.innerText?.split(' ')[0] || email?.split('@')[0] || 'there';
+      return email? {email, name} : null;
+    }).filter(Boolean);
+  }
+  async function getBeats(){
+    try{
+      // tries to get your beats from D1
+      const r = await fetch(API+'/api/beats/list');
+      const j = await r.json();
+      return j.beats || j.products || [];
+    }catch{ return []; }
+  }
+  async function openBox(){
+    if(document.getElementById('vault-composer')) return;
+    const aud = getAudience();
+    const beats = await getBeats();
+    const beatOptions = beats.map(b=>`<option value="${b.id}">${b.title||b.name} - ${b.bpm||''}</option>`).join('') || '<option>No beats found</option>';
+
+    const d=document.createElement('div');
+    d.id='vault-composer';
+    d.innerHTML=`<div id="vault-backdrop" style="position:fixed;inset:0;background:#000b;z-index:999999;display:flex;align-items:center;justify-content:center;padding:20px"><div id="vault-box" style="width:100%;max-width:420px;background:#121212;border:1px solid #333;border-radius:20px;padding:22px"><div style="display:flex;justify-content:space-between;margin-bottom:14px"><div><b style="color:#fff">Email ${aud.length}</b><div style="color:#00ff88;font-size:11px">● ${aud.length} filtered</div></div><button onclick="document.getElementById('vault-composer').remove()" style="background:#222;border:1px solid #333;color:#888;width:30px;height:30px;border-radius:50%">✕</button></div>
+    <label style="font-size:11px;color:#666">H2</label><input id="vh2" value="you didnt just open the vault u dived" style="width:100%;background:#1a1a1a;border:1px solid #333;color:#fff;padding:12px;border-radius:10px;margin:6px 0 10px 0;box-sizing:border-box">
+    <label style="font-size:11px;color:#666">PARAGRAPH</label><textarea id="vp" style="width:100%;height:80px;background:#1a1a1a;border:1px solid #333;color:#ccc;padding:12px;border-radius:10px;box-sizing:border-box">This is for u pick it up.</textarea>
+    <label style="font-size:11px;color:#666;display:block;margin-top:10px">SELECT BEAT (optional)</label><select id="vbeat" style="width:100%;background:#1a1a1a;border:1px solid #333;color:#fff;padding:10px;border-radius:10px;margin-top:4px"><option value="">-- No beat / Aura only --</option>${beatOptions}</select>
+    <button id="vs" style="width:100%;background:#fff;color:#000;border:none;padding:13px;border-radius:99px;font-weight:900;margin-top:14px">Send Personalized to ${aud.length} →</button><div id="vst" style="font-size:11px;color:#666;margin-top:8px;text-align:center">Click outside to close • Auto-close after send</div></div></div>`;
+    document.body.appendChild(d);
+
+    // Close on outside click
+    document.getElementById('vault-backdrop').onclick = (e)=>{ if(e.target.id==='vault-backdrop') document.getElementById('vault-composer').remove(); };
+
+    document.getElementById('vs').onclick = async()=>{
+      const h2=document.getElementById('vh2').value, p=document.getElementById('vp').value;
+      const beatId=document.getElementById('vbeat').value;
+      const selectedBeat = beats.find(b=>b.id==beatId) || null;
+      const btn=document.getElementById('vs'); btn.disabled=true; btn.textContent='Sending...';
+      try{
+        const r=await fetch(API+'/api/emails/bulk',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({emails:aud.map(a=>a.email), h2, p, beat: selectedBeat})});
+        const j=await r.json(); if(!j.success) throw new Error(j.error);
+        document.getElementById('vst').innerHTML='<span style="color:#0f8">✅ Sent '+j.count+'</span>';
+        setTimeout(()=>document.getElementById('vault-composer')?.remove(),1200);
+      }catch(e){ document.getElementById('vst').innerHTML='<span style="color:#f55">❌ '+e.message+'</span>'; btn.disabled=false; }
+    };
+  }
+  function addBtn(){ const bar=document.getElementById('proFilterBar'); if(!bar||document.getElementById('vault-email-btn')) return; const b=document.createElement('button'); b.id='vault-email-btn'; b.textContent='✉️ Email'; b.style.cssText='background:#fff;color:#000;border:none;padding:7px 16px;border-radius:99px;font-weight:800;font-size:12px;margin-left:12px;cursor:pointer'; b.onclick=openBox; bar.appendChild(b); }
+  setInterval(addBtn,1000);
+})();
+</script>
+
+
 </body>
 </html>

@@ -1971,3 +1971,259 @@
 
 
 }
+/* ===============================
+🎵 PLAYLIST SECTION
+=============================== */
+.playlist-section{
+    width:100%;
+    margin-top:42px;
+    padding:0 18px;
+}
+.playlist-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:22px;
+}
+.playlist-view-all{
+    color:#7fd6ff;
+    font-size:14px;
+    text-decoration:none;
+    font-family:'Poppins',sans-serif;
+}
+
+/* ===============================
+🔥 GRID
+=============================== */
+.playlist-grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fit,minmax(320px,1fr));
+    gap:22px;
+    align-items:start;
+}
+
+/* ===============================
+🎵 CARD
+=============================== */
+.playlist-card{
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    min-height:340px;
+    overflow:hidden;
+    border-radius:26px;
+    padding:22px;
+    background: linear-gradient(145deg, rgba(15,20,40,.95), rgba(8,12,24,.98));
+    border: 1px solid rgba(90,160,255,.18);
+    box-shadow: 0 10px 40px rgba(0,0,0,.45);
+    transition:.35s;
+}
+.playlist-card:hover{
+    transform: translateY(-6px);
+    border-color: rgba(90,180,255,.45);
+}
+.playlist-card-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:18px;
+}
+.playlist-name{
+    font-size:22px;
+    font-family:'Orbitron',sans-serif;
+    color:white;
+    margin-bottom:6px;
+}
+.playlist-count{
+    font-size:13px;
+    color:#8fa8c7;
+    font-family:'Poppins',sans-serif;
+}
+.playlist-play-btn{
+    width:54px;
+    height:54px;
+    border-radius:50%;
+    border:none;
+    cursor:pointer;
+    background: linear-gradient(135deg, #00c6ff, #7b5cff);
+    color:white;
+    font-size:20px;
+    flex-shrink:0;
+    box-shadow: 0 0 20px rgba(0,198,255,.35);
+}
+
+/* ===============================
+🎵 ROW AREA
+=============================== */
+.playlist-rows{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    max-height:180px;
+    overflow-y:auto;
+    padding-right:4px;
+    margin-bottom:18px;
+}
+.playlist-rows::-webkit-scrollbar{ width:4px; }
+.playlist-rows::-webkit-scrollbar-thumb{
+    background: linear-gradient(180deg, #00f0ff, #6a5cff);
+    border-radius:999px;
+}
+
+/* ===============================
+🎵 ROW - 🔥 FIXED NO OVERLAP
+=============================== */
+.playlist-row{
+    position:relative;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    min-height:64px;
+    padding:10px 12px;
+    border-radius:16px;
+    background: rgba(255,255,255,.04);
+    flex-shrink:0;
+    overflow:visible;
+}
+.playlist-row:hover{ background:rgba(255,255,255,.06); }
+
+.playlist-row-left{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    flex: 0 0 auto;
+    min-width:0;
+    max-width: 170px;
+}
+.playlist-cover-wrap{
+    width:52px;
+    height:52px;
+    min-width:52px;
+    position:relative;
+    flex-shrink:0;
+    border-radius:12px;
+    overflow:hidden;
+}
+.playlist-cover{
+    width:52px!important;
+    height:52px!important;
+    object-fit:cover;
+    border-radius:12px;
+    display:block!important;
+    background:#0f172a;
+}
+
+.playlist-row-info{
+    flex:1;
+    min-width:0;
+    max-width:110px;
+}
+.playlist-track-title{
+    color:#fff;
+    font-weight:700;
+    font-size:14px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    font-family:'Poppins',sans-serif;
+}
+.playlist-track-meta{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    color:rgba(255,255,255,.55);
+    font-size:11px;
+    margin-top:3px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+/* 🔥 WAVE - FIXED IN MIDDLE, NOT ABSOLUTE OVER COVER */
+.playlist-wave{
+    flex:1!important;
+    min-width:0!important;
+    height:40px!important;
+    margin:0!important;
+    position:relative!important;
+    left:auto!important;
+    top:auto!important;
+    width:auto!important;
+    opacity:.85!important;
+    z-index:1!important;
+    pointer-events:auto!important;
+}
+
+.playlist-track-play{
+    width:38px;
+    height:38px;
+    border:none;
+    border-radius:50%;
+    background: linear-gradient(135deg, #00e5ff, #9b5cff);
+    color:#fff;
+    font-size:14px;
+    cursor:pointer;
+    flex-shrink:0;
+    z-index:2;
+}
+
+/* EMPTY / FOOTER */
+.playlist-empty{
+    min-height:64px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:16px;
+    text-align:center;
+    color:#7e8ca5;
+    background: rgba(255,255,255,.03);
+}
+.playlist-footer{
+    margin-top:auto;
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+.playlist-open-btn{
+    flex:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    height:50px;
+    border-radius:16px;
+    text-decoration:none;
+    color:white;
+    font-family:'Orbitron',sans-serif;
+    background: linear-gradient(90deg, #00c6ff, #7b5cff);
+    box-shadow: 0 0 30px rgba(0,198,255,.18), 0 0 80px rgba(123,92,255,.12);
+}
+.playlist-delete-btn{
+    width:52px;
+    height:52px;
+    border:none;
+    border-radius:16px;
+    background: rgba(255,0,80,.12);
+    color:#ff4d8d;
+    cursor:pointer;
+    transition:.25s;
+    font-size:18px;
+    flex-shrink:0;
+}
+.playlist-delete-btn:hover{
+    transform:scale(1.06);
+    background: rgba(255,0,80,.22);
+}
+
+/* MOBILE */
+@media(max-width:768px){
+    .playlist-grid{ grid-template-columns:1fr; }
+    .playlist-name{ font-size:18px; }
+    .playlist-card{ min-height:300px; }
+    .playlist-row-left{ max-width:140px; }
+    .playlist-cover-wrap, .playlist-cover{
+        width:44px!important;
+        height:44px!important;
+        min-width:44px!important;
+    }
+    .playlist-row-info{ max-width:90px; }
+}

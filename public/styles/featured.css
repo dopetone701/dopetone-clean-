@@ -570,3 +570,65 @@ Place at END of featured.css
   }
 
 }
+/* ===============================
+🔥 FORCE PLAY BUTTON VISIBLE - FINAL OVERRIDE
+=============================== */
+.featured-card .play-overlay,
+.featured-card .featured-play,
+#featuredTrack .play-overlay,
+#featuredTrack .featured-play {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 999 !important;
+  background: rgba(0,0,0,0.7) !important;
+  backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(255,255,255,0.15) !important;
+  width: 52px !important;
+  height: 52px !important;
+  top: 35% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  border-radius: 50% !important;
+}
+
+.featured-card .play-overlay .play-icon,
+.featured-card .featured-play .play-icon {
+  display: flex !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  width: 20px !important;
+  height: 20px !important;
+  color: white !important;
+}
+
+.featured-card .play-overlay .play-icon svg,
+.featured-card .featured-play .play-icon svg {
+  width: 100% !important;
+  height: 100% !important;
+  fill: white !important;
+  display: block !important;
+}
+
+/* Desktop hover still works but always visible as fallback */
+@media (min-width: 769px) {
+  .featured-card .play-overlay {
+    opacity: 0 !important;
+  }
+  .featured-card:hover .play-overlay,
+  .featured-card.active .play-overlay {
+    opacity: 1 !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .featured-card .play-overlay {
+    opacity: 1 !important;
+    width: 46px !important;
+    height: 46px !important;
+    top: 38% !important;
+  }
+}

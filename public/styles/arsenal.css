@@ -1008,3 +1008,17 @@ body.licence-page #waveList .wave-row:not(.explore-row){
 .wave-play svg {
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.9)) !important;
 }
+/* 🔥 FORCE PRICE POINTER + 10 FILTER VISUAL */
+.wave-price,
+.wave-price .old-price,
+.wave-price .new-price {
+  cursor: pointer !important;
+  user-select: none;
+}
+.wave-price:hover .new-price {
+  color: #ff003c !important;
+  text-decoration: underline;
+}
+.wave-price[data-mode="free"]:hover .new-price {
+  color: #3b82f6 !important;
+}

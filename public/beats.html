@@ -32,6 +32,72 @@
 <!-- CROPPER -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.css" />
 
+<!-- 🔥 INFINITE SCROLL + BG FIX -->
+<style>
+html { scroll-behavior: smooth; }
+body {
+  background: #05070d!important;
+  background-attachment: fixed!important;
+  overflow-anchor: none!important;
+  -webkit-overflow-scrolling: touch;
+  min-height: 100vh;
+  padding-bottom: 140px!important;
+}
+#gridSection {
+  min-height: 100vh;
+  will-change: transform;
+  transform: translateZ(0);
+  padding-bottom: 40px!important;
+}
+#gridContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 280px));
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
+  content-visibility: auto;
+  contain-intrinsic-size: 300px;
+}
+.grid-card {
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+  contain: layout paint;
+  background: linear-gradient(145deg, #0f172a, #020617);
+  border-radius: 16px;
+  padding: 14px;
+  border: 1px solid rgba(255,255,255,0.06);
+  width: 100%;
+  max-width: 280px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+.grid-card:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
+.grid-card img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 12px;
+  background: #0f172a;
+  margin-bottom: 10px;
+}
+.grid-media { position: relative; }
+.grid-title { font-size: 14px; font-weight: 600; color: #fff; }
+.grid-tag { font-size: 12px; color: #00f0ff; opacity: 0.8; }
+.grid-price-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; cursor: pointer; }
+.grid-price-row .new-price { color: #00f0ff; font-weight: bold; font-size: 15px; }
+.grid-actions { display: flex; gap: 8px; margin-top: 10px; }
+.grid-buy { flex: 1; background: linear-gradient(135deg, #00f0ff, #7c3aed); border: none; padding: 8px; border-radius: 8px; color: white; font-size: 13px; cursor: pointer; }
+#gridSentinel { height: 400px!important; width: 100%; }
+#arsenalSection .arsenal-container { display: flex!important; flex-direction: column!important; gap: 12px; padding: 20px; }
+.global-player{ position:fixed!important; bottom:12px!important; left:50%!important; transform:translateX(-50%)!important; z-index:99999!important; }
+@media (max-width: 768px){
+  #gridContainer { grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 10px; }
+  .grid-card img { height: 110px; }
+  body{ padding-bottom:180px!important; }
+}
+</style>
 </head>
 
 <body>
@@ -56,7 +122,6 @@
 <div class="view-toggle">
   <button id="listBtn" class="active">List</button>
   <button id="gridBtn">Grid</button>
- 
   <div class="arsenal-search">
     <input
       type="search"
@@ -83,9 +148,10 @@
 </div>
 </section>
 
-<!-- ================= GRID VIEW ================= -->
+<!-- ================= GRID VIEW - FIXED WITH SENTINEL ================= -->
 <section id="gridSection" style="display:none;">
-<div id="gridContainer"></div>
+  <div id="gridContainer"></div>
+  <div id="gridSentinel"></div>
 </section>
 
 <!-- ================= CREATE SYSTEM ================= -->
@@ -96,7 +162,7 @@
 <a href="create-sample.html"><button>Upload Sample</button></a>
 </div>
 
-<!-- ================= GLOBAL PLAYER - SVG ONLY ================= -->
+<!-- ================= GLOBAL PLAYER ================= -->
 <div id="globalPlayerUI" class="global-player">
         <div class="gp-left">
             <img id="gpCover" src="images/logo.png" />
@@ -105,59 +171,36 @@
                 <button id="gpAdd">+</button>
             </div>
         </div>
-       
         <div class="gp-center">
             <div class="gp-controls">
                <button id="gpShuffle" class="player-btn" title="Enable shuffle">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M10.59 9.17L5.41 4L4 5.41l5.17 5.17l1.42-1.41zM14.5 4l2.04 2.04L4 18.59L5.41 20L17.96 7.46L20 9.5V4h-5.5zm.33 9.41l-1.41 1.41l3.13 3.13L14.5 20H20v-5.5l-2.04 2.04l-3.13-3.13z"/>
-                    </svg>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10.59 9.17L5.41 4L4 5.41l5.17 5.17l1.42-1.41zM14.5 4l2.04 2.04L4 18.59L5.41 20L17.96 7.46L20 9.5V4h-5.5zm.33 9.41l-1.41 1.41l3.13 3.13L14.5 20H20v-5.5l-2.04 2.04l-3.13-3.13z"/></svg>
                 </button>
-
                 <button id="gpPrev" class="player-btn" title="Previous">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
-                    </svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
                 </button>
-
                 <button id="gpPlay" class="player-btn" title="Play" aria-label="Play/Pause">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                        <path id="gpPlayPath" d="M8 5v14l11-7z"/>
-                    </svg>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path id="gpPlayPath" d="M8 5v14l11-7z"/></svg>
                 </button>
-
                 <button id="gpNext" class="player-btn" title="Next">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
-                    </svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
                 </button>
-
                 <button id="gpRepeat" class="player-btn" title="Enable repeat">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/>
-                    </svg>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
                 </button>
-
                 <button id="gpDownload" class="gp-side player-btn" title="Download">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
-                    </svg>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
                 </button>
                 <button id="gpMore" class="gp-side player-btn" title="More">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
-                    </svg>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
                 </button>
-
             </div>
-           
             <div class="gp-progress-wrap">
                 <span id="gpCurrent">0:00</span>
                 <div id="gpProgress"><div id="gpBar"></div></div>
                 <span id="gpDuration">0:00</span>
             </div>
         </div>
-       
         <div class="gp-right">
             <button id="loveTrackBtn" class="love-track-btn">
                 <span class="love-text">LOVE IT</span>
@@ -168,87 +211,32 @@
             </div>
         </div>
     </div>
-<!-- ================= MOBILE PLAYER - SVG ONLY ================= -->
+
 <div id="mobilePlayer" class="mobile-player">
         <div class="mp-header">
             <span id="mpClose">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
-                </svg>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
             </span>
         </div>
         <img id="mpCover" src="images/logo.png">
         <div id="mpTitle">No track</div>
-       
         <div class="mp-controls">
-            <button id="mpPrev" class="player-btn">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
-                </svg>
-            </button>
-           
-            <button id="mpPlay" class="player-btn play-btn" title="Play" aria-label="Play/Pause">
-    <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
-        <path id="mpPlayPath" d="M8 5v14l11-7z"/>
-    </svg>
-</button>
-
-           
-            <button id="mpNext" class="player-btn">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
-                </svg>
-            </button>
+            <button id="mpPrev" class="player-btn"><svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
+            <button id="mpPlay" class="player-btn play-btn" title="Play" aria-label="Play/Pause"><svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path id="mpPlayPath" d="M8 5v14l11-7z"/></svg></button>
+            <button id="mpNext" class="player-btn"><svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></button>
         </div>
-       
         <div id="mpProgress"><div id="mpBar"></div></div>
-       
-        <div class="mp-time">
-            <span id="mpCurrent">0:00</span>
-            <span id="mpDuration">0:00</span>
-        </div>
-       
+        <div class="mp-time"><span id="mpCurrent">0:00</span><span id="mpDuration">0:00</span></div>
         <div class="mp-actions">
-            <button id="mpLike" class="love-track-btn">
-                <span class="love-heart">♡</span>
-            </button>
-           
-            <button id="mpShuffle" class="player-btn" title="Shuffle">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M10.59 9.17L5.41 4L4 5.41l5.17 5.17l1.42-1.41zM14.5 4l2.04 2.04L4 18.59L5.41 20L17.96 7.46L20 9.5V4h-5.5zm.33 9.41l-1.41 1.41l3.13 3.13L14.5 20H20v-5.5l-2.04 2.04l-3.13-3.13z"/>
-                </svg>
-            </button>
-           
-            <button id="mpRepeat" class="player-btn" title="Repeat">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/>
-                </svg>
-            </button>
-           
-            <button id="mpDownload">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
-                </svg>
-            </button>
-           
-            <button id="mpBuy" class="player-btn" title="Buy Track">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
-    </svg>
-</button>
-
-
-
-            <button id="mpMore">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
-                </svg>
-            </button>
+            <button id="mpLike" class="love-track-btn"><span class="love-heart">♡</span></button>
+            <button id="mpShuffle" class="player-btn" title="Shuffle"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10.59 9.17L5.41 4L4 5.41l5.17 5.17l1.42-1.41zM14.5 4l2.04 2.04L4 18.59L5.41 20L17.96 7.46L20 9.5V4h-5.5zm.33 9.41l-1.41 1.41l3.13 3.13L14.5 20H20v-5.5l-2.04 2.04l-3.13-3.13z"/></svg></button>
+            <button id="mpRepeat" class="player-btn" title="Repeat"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg></button>
+            <button id="mpDownload"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg></button>
+            <button id="mpBuy" class="player-btn" title="Buy Track"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg></button>
+            <button id="mpMore"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2-.9 2-2-.9-2-2-2z"/></svg></button>
         </div>
     </div>
 
-
-<!-- ================= OWNER ================= -->
 <script>
 const isOwner = localStorage.getItem("isOwner")
 if (isOwner === "true") {
@@ -257,27 +245,16 @@ document.getElementById("createPanel").style.display = "block"
 }
 </script>
 
-<!-- ================= LIBS ================= -->
 <script src="https://unpkg.com/wavesurfer.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.js"></script>
-
-<!-- ================= APP BOOT - CONTROLS LOAD ORDER ================= -->
 <script type="module" src="js/app-loader.js"></script>
-
-<!-- ================= PLAYER ================= -->
 <script src="js/global-player.js"></script>
 <script src="js/mini-eq.js"></script>
 <script src="js/more-btn-override.js"></script>
-
-<!-- ================= SHARED ================= -->
 <script src="js/shared/data.js"></script>
 <script src="js/shared/ui.js"></script>
-
-<!-- ================= APP ================= -->
 <script type="module" src="js/app.js"></script>
 <script type="module" src="js/beats.js"></script>
-
-<!-- ================= PLAYLIST SYSTEM ================= -->
 <script type="module" src="js/playlists/playlist-storage.js"></script>
 <script type="module" src="js/playlists/playlist-engine.js"></script>
 <script type="module" src="js/playlists/playlist-render.js"></script>
