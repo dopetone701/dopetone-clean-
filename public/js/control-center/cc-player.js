@@ -1,5 +1,4 @@
-// cc-player.js - FINAL - MONETIZE BTN PER TRACK ID FROM DB - PRO
-// STATS stay on STATS_API, MONETIZATION only on track-price-api
+// cc-player.js - LIVE CLOUD VERIFY - player calls price API while modal open
 import {
   MAIN_API,
   STATS_API,
@@ -22,7 +21,9 @@ let audio = null;
 let playBtn = null;
 let monetizeBtn = null;
 let d1StatsCache = {};
-let monetizeCache = {}; // { beatId: mode }
+let monetizeCache = {};
+let liveVerifyInterval = null;
+let lastCloudHash = '';
 
 async function fetchD1BeatStats(beatId) {
   try {
@@ -44,11 +45,9 @@ async function fetchD1BeatStats(beatId) {
   } catch(e){ return null; }
 }
 
-// 🔥 MONETIZATION - ONLY track-price-api
 async function fetchMonetizationById(beatId) {
   if (monetizeCache[beatId]) return monetizeCache[beatId];
   try {
-    // 1. Primary: track-price-api
     const res = await fetch(`${TRACK_PRICE_API}/beats/${beatId}`);
     if (res.ok) {
       const data = await res.json();
@@ -59,18 +58,66 @@ async function fetchMonetizationById(beatId) {
         return mode;
       }
     }
-    // 2. Fallback: top list already has mode
-    const res2 = await fetch(`${STATS_API}/api/stats/top`);
-    if (res2.ok) {
-      const list = await res2.json();
-      const found = list.find(b => String(b.id) === String(beatId));
-      if (found?.monetization_mode) {
-        monetizeCache[beatId] = found.monetization_mode;
-        return found.monetization_mode;
-      }
-    }
   } catch(e){}
   return 'paid';
+}
+
+// LIVE VERIFY - calls cloud every 1.5s while modal is open
+function startLiveCloudVerify(beatId) {
+  stopLiveCloudVerify();
+  lastCloudHash = '';
+  console.log('[LiveVerify] START for ID', beatId);
+
+  liveVerifyInterval = setInterval(async () => {
+    const modal = document.getElementById('editModal');
+    const isModalOpen = modal && modal.classList.contains('active');
+    if (!isModalOpen) {
+      stopLiveCloudVerify();
+      return;
+    }
+
+    try {
+      const res = await fetch(`${TRACK_PRICE_API}/beats/${beatId}?t=${Date.now()}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      const cloudBeat = data.beat || data;
+
+      // Create hash to check changes
+      const hash = `${cloudBeat.title}|${cloudBeat.artist}|${cloudBeat.cover_url}|${cloudBeat.monetization_mode}|${cloudBeat.has_free_tagged}|${cloudBeat.price}|${cloudBeat.revenue}`;
+      if (hash === lastCloudHash) return;
+      lastCloudHash = hash;
+
+      console.log('[LiveVerify] Cloud changed:', cloudBeat);
+
+      // Update cache
+      monetizeCache[beatId] = cloudBeat.monetization_mode;
+
+      // Update topTracks
+      const idx = topTracks.findIndex(t=> String(t.id) === String(beatId));
+      if (idx!== -1) {
+        topTracks[idx] = {...topTracks[idx],...cloudBeat };
+      }
+
+      // If this is current playing track, update player INSTANTLY
+      if (currentTrack && String(currentTrack.id) === String(beatId)) {
+        const wasPlaying = isPlaying;
+        const merged = {...currentTrack,...cloudBeat };
+        await updateQuickPlayerUI(merged, wasPlaying);
+        console.log('[LiveVerify] Player updated instantly - Title:', merged.title, 'Artist:', merged.artist, 'Mode:', merged.monetization_mode);
+      }
+
+    } catch(e){
+      console.warn('[LiveVerify] error', e);
+    }
+  }, 1500);
+}
+
+function stopLiveCloudVerify() {
+  if (liveVerifyInterval) {
+    clearInterval(liveVerifyInterval);
+    liveVerifyInterval = null;
+    console.log('[LiveVerify] STOPPED');
+  }
 }
 
 export function initPlayer() {
@@ -152,7 +199,6 @@ export async function updateQuickPlayerUI(beat, playing) {
   const cart = JSON.parse(localStorage.getItem('dopetone_cart')||'[]');
   if (cartEl) cartEl.textContent = cart.filter(c=>c.id==beat.id).length;
 
-  // 🔥 MONETIZATION PER ID - from price API only
   let realMode = beat.monetization_mode || beat.monetizationMode;
   if (!realMode) {
     const cached = topTracks.find(t=> String(t.id)===String(beat.id));
@@ -174,13 +220,7 @@ export async function updateQuickPlayerUI(beat, playing) {
       if (likesEl && d1.like_count!==undefined) likesEl.textContent = Number(d1.like_count).toLocaleString();
       if (downloadsEl && d1.download_count!==undefined) downloadsEl.textContent = Number(d1.download_count).toLocaleString();
       if (cartEl && d1.cart_count!==undefined) cartEl.textContent = Number(d1.cart_count).toLocaleString();
-      if (likesEl && d1.likes!==undefined) likesEl.textContent = Number(d1.likes).toLocaleString();
-      if (cartEl && d1.carts!==undefined) cartEl.textContent = Number(d1.carts).toLocaleString();
       d1StatsCache[beat.id]=d1;
-      beat.play_count = d1.play_count?? beat.play_count;
-      beat.like_count = d1.like_count?? d1.likes?? beat.like_count;
-      beat.download_count = d1.download_count?? beat.download_count;
-      beat.cart_count = d1.cart_count?? d1.carts?? 0;
     }
   } catch(e){}
 
@@ -223,8 +263,8 @@ export async function playBeat(id) {
   updatePlayButton(id,true);
   try {
     await fetch(`${STATS_API}/api/stats/event`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({beat_id:parseInt(id),event_type:'play',user_id:'admin'})});
-    setTimeout(()=>{ refreshD1Counts(id); window.dispatchEvent(new CustomEvent('cc_stats_updated')); selectTrackForGraph(beat.id,beat.title); },800);
-  } catch(err){ console.error('[CC Player] log failed',err); }
+    setTimeout(()=>{ refreshD1Counts(id); },800);
+  } catch(err){}
 }
 
 export function togglePlay(id) {
@@ -255,9 +295,9 @@ function updateMonetizeUI(beat) {
   if(!btn||!badge) return;
   const mode = beat.monetization_mode || beat.monetizationMode || monetizeCache[beat.id] || 'paid';
   const config={
-    'paid':{icon:'fa-dollar-sign',color:'#10b981',text:'PAID',title:`ID ${beat.id} - Paid Only - Click for TAGGED FREE`},
-    'hybrid':{icon:'fa-tags',color:'#f59e0b',text:'TAGGED FREE',title:`ID ${beat.id} - Tagged Free + Paid - Click for FREE`},
-    'free':{icon:'fa-gift',color:'#3b82f6',text:'FREE',title:`ID ${beat.id} - Fully Free - Click for PAID`}
+    'paid':{icon:'fa-dollar-sign',color:'#10b981',text:'PAID',title:`ID ${beat.id} - Paid Only - ${beat.price}$`},
+    'hybrid':{icon:'fa-tags',color:'#f59e0b',text:'TAGGED FREE',title:`ID ${beat.id} - Tagged Free - ${beat.price}$`},
+    'free':{icon:'fa-gift',color:'#3b82f6',text:'FREE',title:`ID ${beat.id} - Free`}
   };
   const c=config[mode]||config['paid'];
   btn.innerHTML=`<i class="fa-solid ${c.icon}"></i>`;
@@ -272,71 +312,69 @@ function updateMonetizeUI(beat) {
   btn.onclick=()=>cycleMonetization();
   badge.style.cursor='pointer';
   badge.onclick=()=>cycleMonetization();
-  console.log(`[CC Monetize] UI for ID ${beat.id} = ${mode} from PRICE API`);
 }
+
+// 🔥 LIVE VERIFY TRIGGERS
+window.addEventListener('cc_edit_beat', (e) => {
+  const beatId = e.detail;
+  if (beatId) startLiveCloudVerify(beatId);
+});
+
+window.addEventListener('cc_beat_updated', (e) => {
+  const updated = e.detail;
+  if (!updated) return;
+  monetizeCache[updated.id] = updated.monetization_mode;
+  const idx = topTracks.findIndex(t=> String(t.id) === String(updated.id));
+  if (idx!== -1) topTracks[idx] = {...topTracks[idx],...updated };
+  if (currentTrack && String(currentTrack.id) === String(updated.id)) {
+    updateQuickPlayerUI({...currentTrack,...updated }, isPlaying);
+  }
+});
+
+// Stop verify when modal closes
+const observer = new MutationObserver(() => {
+  const modal = document.getElementById('editModal');
+  if (modal &&!modal.classList.contains('active')) {
+    stopLiveCloudVerify();
+  }
+});
+document.addEventListener('DOMContentLoaded', () => {
+  const modal = document.getElementById('editModal');
+  if (modal) observer.observe(modal, { attributes: true, attributeFilter: ['class'] });
+});
 
 window.addEventListener('cc_play_track',(e)=>{
   const track=e.detail; if(!track) return;
   setCurrentTrack(track); setCurrentBeatId(track.id);
-  if(audio){ audio.src=track.audio||track.mp3_url; audio.load(); audio.play().then(()=>{ setIsPlaying(true); updateQuickPlayerUI(track,true); window.dispatchEvent(new CustomEvent('cc_playback_changed')); window.dispatchEvent(new CustomEvent('cc_track_changed')); }).catch(err=>console.error(err)); }
+  if(audio){ audio.src=track.audio||track.mp3_url; audio.load(); audio.play().then(()=>{ setIsPlaying(true); updateQuickPlayerUI(track,true); }).catch(()=>{}); }
 });
 window.addEventListener('cc_load_track',(e)=>{
   const track=e.detail; if(!track) return;
   setCurrentTrack(track); setCurrentBeatId(track.id);
   if(audio){ audio.src=track.audio||track.mp3_url; audio.load(); }
   setIsPlaying(false); updateQuickPlayerUI(track,false);
-  window.dispatchEvent(new CustomEvent('cc_track_changed')); window.dispatchEvent(new CustomEvent('cc_playback_changed'));
 });
 window.editCurrentTrack=function(){ if(!currentTrack) return alert('No track loaded'); window.dispatchEvent(new CustomEvent('cc_edit_beat',{detail:currentTrack.id})); };
 
-// 🔥 ONLY PLACE THAT CALLS track-price-api FOR WRITE
 window.cycleMonetization=async function(){
   if(!currentTrack) return alert('No track loaded');
   const modes=['paid','hybrid','free'];
-  const currentMode=currentTrack.monetization_mode||currentTrack.monetizationMode||monetizeCache[currentTrack.id]||'paid';
-  const nextIndex=(modes.indexOf(currentMode)+1)%3;
-  const newMode=modes[nextIndex];
-  console.log(`[CC Monetize] ID ${currentTrack.id}: ${currentMode} -> ${newMode} via ${TRACK_PRICE_API}`);
-
-  // Optimistic UI
+  const currentMode=currentTrack.monetization_mode||monetizeCache[currentTrack.id]||'paid';
+  const newMode=modes[(modes.indexOf(currentMode)+1)%3];
   currentTrack.monetization_mode=newMode;
-  currentTrack.monetizationMode=newMode;
   currentTrack.has_free_tagged=newMode==='hybrid'?1:0;
   monetizeCache[currentTrack.id]=newMode;
   updateMonetizeUI(currentTrack);
-
   try{
-    const res = await fetch(`${TRACK_PRICE_API}/beats/monetize`,{
+    await fetch(`${TRACK_PRICE_API}/beats/monetize`,{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body: JSON.stringify({id:currentTrack.id, mode:newMode, has_free_tagged:newMode==='hybrid'?1:0})
     });
-
-    if(!res.ok){
-      console.warn('[CC Monetize] PRICE API fail',res.status);
-      const errText = await res.text();
-      console.warn(errText);
-      return;
-    }
-    const data=await res.json().catch(()=>({}));
-    console.log('[CC Monetize] Success',data);
     const idx=topTracks.findIndex(t=>t.id==currentTrack.id);
-    if(idx!==-1){
-      topTracks[idx].monetization_mode=newMode;
-      topTracks[idx].monetizationMode=newMode;
-      topTracks[idx].has_free_tagged=newMode==='hybrid'?1:0;
-    }
+    if(idx!==-1){ topTracks[idx].monetization_mode=newMode; topTracks[idx].has_free_tagged=newMode==='hybrid'?1:0; }
     localStorage.setItem('dt_cc_current',JSON.stringify(currentTrack));
-    window.dispatchEvent(new CustomEvent('cc_monetize_changed',{detail:{beatId:currentTrack.id,mode:newMode}}));
-    window.dispatchEvent(new CustomEvent('cc_dashboard_refresh'));
-    const toast=document.createElement('div');
-    toast.textContent=`ID ${currentTrack.id}: ${newMode.toUpperCase()}`;
-    toast.style.cssText=`position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1a1a1a;border:1px solid #333;color:#fff;padding:10px 20px;border-radius:8px;z-index:9999;font-size:13px;`;
-    document.body.appendChild(toast);
-    setTimeout(()=>toast.remove(),2000);
-  }catch(err){
-    console.error('[CC Monetize] Error',err);
-  }
+  }catch(err){}
 };
 
 function updateActiveSpeaker(){
@@ -352,6 +390,4 @@ function updateActiveSpeaker(){
   });
 }
 export { updateActiveSpeaker };
-window.addEventListener('cc_cart_updated',(e)=>{ if(e.detail?.beat_id==currentBeatId) refreshD1Counts(e.detail.beat_id); });
-window.addEventListener('cc_like_updated',(e)=>{ if(e.detail?.beat_id==currentBeatId) refreshD1Counts(e.detail.beat_id); });
 document.addEventListener('DOMContentLoaded',()=>{ const btn=document.getElementById('monetizeBtn'); if(btn) btn.onclick=()=>window.cycleMonetization(); });

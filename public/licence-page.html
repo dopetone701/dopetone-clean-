@@ -15,6 +15,14 @@
   <link rel="stylesheet" href="styles/auth.css">
   <link rel="stylesheet" href="styles/playlist-modal.css">
   <link rel="stylesheet" href="styles/playlists.css">
+
+
+
+  <script type="module">
+import { createStripeCheckout } from "./js/licence/checkout.js";
+window.createStripeCheckout = createStripeCheckout;
+</script>
+
   
 
 
@@ -177,7 +185,8 @@
         <span>Total</span>
         <strong id="totalPrice">$0</strong>
       </div>
-      <button id="checkoutBtn">Checkout</button>
+      <button id="checkoutBtn" onclick="createStripeCheckout()">Checkout</button>
+
     </div>
   </div>
 
@@ -370,7 +379,7 @@
     </div>
 
 
-  <script src="https://js.stripe.com/v3/"></script>
+ 
   <script type="module" src="js/app.js"></script>
   <script src="https://unpkg.com/wavesurfer.js"></script>
   <script src="js/global-player.js"></script>

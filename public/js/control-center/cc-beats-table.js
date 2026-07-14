@@ -1,167 +1,141 @@
-// cc-beats-table.js - All Beats Analytics Table Module
-import { 
-  MAIN_API, 
-  STATS_API,
-  allBeats, 
-  filteredBeats, 
-  setAllBeats, 
+// cc-beats-table.js - PRO - Fixed: BEATS_API only, DELETE works, Search + Edit
+import {
+  BEATS_API,
+  allBeats,
+  setAllBeats,
   setFilteredBeats,
   currentTrack,
   isPlaying
 } from './cc-config.js';
 import { togglePlay } from './cc-player.js';
 
-// ===== INIT BEATS TABLE =====
 export async function initBeatsTable() {
-  // Search input
   const searchInput = document.getElementById('beatsSearch');
-  if (searchInput) {
-    searchInput.addEventListener('input', debounce((e) => {
-      const query = e.target.value.toLowerCase().trim();
-      const filtered = query
-        ? allBeats.filter(b =>
-            b.title.toLowerCase().includes(query) ||
-            (b.artist && b.artist.toLowerCase().includes(query)) ||
-            (b.genre && b.genre.toLowerCase().includes(query)) ||
-            (b.tags && b.tags.toLowerCase().includes(query))
-          )
-        : allBeats;
-      setFilteredBeats(filtered);
-      renderBeatsTable(filtered);
-    }, 300));
-  }
+  const topSearch = document.getElementById('searchBar');
 
-  // Load initial beats
+  const handleSearch = debounce((query) => {
+    const q = query.toLowerCase().trim();
+    const filtered = q
+      ? allBeats.filter(b =>
+          (b.title||'').toLowerCase().includes(q) ||
+          (b.artist||'').toLowerCase().includes(q) ||
+          (b.genre||'').toLowerCase().includes(q) ||
+          (b.tags||'').toLowerCase().includes(q) ||
+          (b.mood||'').toLowerCase().includes(q)
+        )
+      : allBeats;
+    setFilteredBeats(filtered);
+    renderBeatsTable(filtered);
+  }, 200);
+
+  if (searchInput) searchInput.addEventListener('input', (e) => handleSearch(e.target.value));
+  if (topSearch) topSearch.addEventListener('input', (e) => {
+    if (searchInput) searchInput.value = e.target.value;
+    handleSearch(e.target.value);
+  });
+
   await loadBeats();
 }
 
-// ===== LOAD BEATS FROM MAIN API =====
 async function loadBeats() {
   try {
-    console.log('[CC Beats Table] Fetching beats from MAIN_API');
-    
-    const res = await fetch(`${MAIN_API}/beats`);
-    if (!res.ok) throw new Error(`Beats failed: ${res.status}`);
-    
-    const beats = await res.json();
-    setAllBeats(beats);
-    setFilteredBeats(beats);
-    
-    renderBeatsTable(beats);
-    
-    console.log('[CC Beats Table] Loaded beats:', beats.length);
+    // ALWAYS BEATS_API - has DELETE CORS, has beats/ covers/ wavs/ projects/
+    const res = await fetch(`${BEATS_API}/beats`, { cache: 'no-store' });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    const list = Array.isArray(data) ? data : (data.beats || data.data || []);
+    setAllBeats(list);
+    setFilteredBeats(list);
+    renderBeatsTable(list);
   } catch (err) {
-    console.error('[CC Beats Table] Load failed:', err);
+    console.error('[Beats Table] Load failed:', err);
     const tbody = document.getElementById('beatsTableBody');
-    if (tbody) {
-      tbody.innerHTML = `<tr><td colspan="7" class="empty-state">Failed to load beats</td></tr>`;
-    }
+    if (tbody) tbody.innerHTML = `<tr><td colspan="7" class="empty-state">Failed: ${err.message}<br><small>${BEATS_API}/beats</small></td></tr>`;
   }
 }
 
-// ===== RENDER BEATS TABLE =====
 export function renderBeatsTable(beats) {
   const tbody = document.getElementById('beatsTableBody');
   if (!tbody) return;
-
-  if (beats.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="7" class="empty-state">No beats found</td></tr>`;
+  if (!beats || beats.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7" class="empty-state">No beats found — Create your first beat</td></tr>`;
     return;
   }
-
   tbody.innerHTML = beats.map(beat => {
-    const isFree = beat.monetization_mode === 'free';
-    const revenue = isFree? 'FREE' : `$${((beat.download_count || 0) * (beat.price || 0)).toFixed(2)}`;
-    const isThisTrackPlaying = currentTrack && currentTrack.id == beat.id && isPlaying;
+       const isFree = beat.monetization_mode === 'free';
+    const realRev = parseFloat(beat.real_revenue || 0);
+    const revenue = isFree ? 'FREE' : (realRev > 0 ? `$${realRev.toFixed(2)}` : `$${((beat.download_count || 0) * (beat.price || 0)).toFixed(2)}`);
 
+    const isThisTrackPlaying = currentTrack && currentTrack.id == beat.id && isPlaying;
+    const cover = beat.cover_url || beat.cover || 'images/logo.png';
     return `
       <tr data-beat-id="${beat.id}">
         <td>
           <div style="display:flex;align-items:center;gap:10px;">
-            <img src="${beat.cover_url || beat.cover || 'images/logo.png'}" style="width:32px;height:32px;border-radius:4px;object-fit:cover;" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect fill=%22%238b5cf6%22 width=%22100%22 height=%22100%22/%3E%3C/svg%3E'">
+            <img src="${cover}" style="width:36px;height:36px;border-radius:6px;object-fit:cover;border:1px solid #222" loading="lazy"
+              onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzYiIGhlaWdodD0iMzYiIHZpZXdCb3g9IjAgMCAzNiAzNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzYiIGhlaWdodD0iMzYiIHJ4PSI4IiBmaWxsPSIjOGI1Y2Y2Ii8+PHRleHQgeD0iMTgiIHk9IjIxIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSIgZm9udC1zaXplPSIxMiIgZm9udC13ZWlnaHQ9IjcwMCI+RFQ8L3RleHQ+PC9zdmc+'">
             <div>
-              <strong>${beat.title}</strong>
-              <div style="font-size:11px;color:#666;">${beat.artist || 'DopeTone'}</div>
+              <strong style="color:#fff;font-size:13px">${escapeHtml(beat.title)}</strong>
+              <div style="font-size:11px;color:#888;">${escapeHtml(beat.artist || 'DopeTone')} • ${beat.bpm||'-'} BPM • ${beat.key||''}</div>
+              <div style="font-size:10px;color:#555;">${beat.genre||''} ${beat.mood? '• '+beat.mood : ''}</div>
             </div>
           </div>
         </td>
-        <td>${beat.play_count || 0}</td>
-        <td>${beat.download_count || 0}</td>
-        <td>${beat.like_count || 0}</td>
-        <td>0</td>
-        <td style="${isFree? 'color:#3b82f6;font-weight:600;' : ''}">${revenue}</td>
+        <td>${beat.play_count ?? beat.plays ?? 0}</td>
+        <td>${beat.download_count ?? beat.downloads ?? 0}</td>
+        <td>${beat.like_count ?? beat.likes ?? 0}</td>
+        <td>${beat.cart_count ?? 0}</td>
+        <td style="${isFree? 'color:#3b82f6;font-weight:700;' : 'color:#00ff88;font-weight:600;'}">${revenue}</td>
         <td>
-          <button class="action-btn play-btn" onclick="window.ccTogglePlay(${beat.id})" data-id="${beat.id}" title="${isThisTrackPlaying? 'Pause' : 'Play'}">
-            <i class="fa-solid fa-${isThisTrackPlaying? 'pause' : 'play'}"></i>
-          </button>
-          <button class="action-btn" onclick="window.ccEditBeat(${beat.id})" title="Edit">
-            <i class="fa-solid fa-edit"></i>
-          </button>
-          <button class="action-btn delete" onclick="window.ccDeleteBeat(${beat.id})" title="Delete">
-            <i class="fa-solid fa-trash"></i>
-          </button>
+          <div style="display:flex;gap:6px">
+            <button class="action-btn play-btn" onclick="window.ccTogglePlay(${JSON.stringify(beat.id)})" data-id="${beat.id}" title="${isThisTrackPlaying? 'Pause' : 'Play'}" style="width:28px;height:28px;border-radius:6px;border:1px solid #333;background:#111;color:#fff;cursor:pointer"><i class="fa-solid fa-${isThisTrackPlaying? 'pause' : 'play'}"></i></button>
+            <button class="action-btn" onclick="window.ccEditBeat(${JSON.stringify(beat.id)})" title="Edit / Replace beats/ covers/ wavs/ projects/" style="width:28px;height:28px;border-radius:6px;border:none;background:#8b5cf6;color:#fff;cursor:pointer"><i class="fa-solid fa-pen-to-square"></i></button>
+            <button class="action-btn delete" onclick="window.ccDeleteBeat(${JSON.stringify(beat.id)})" title="Delete from R2 + D1" style="width:28px;height:28px;border-radius:6px;border:none;background:#ff3b3b;color:#fff;cursor:pointer"><i class="fa-solid fa-trash"></i></button>
+          </div>
         </td>
-      </tr>
-    `;
+      </tr>`;
   }).join('');
 }
 
-// ===== TOGGLE PLAY - Exposed to window for inline onclick =====
-window.ccTogglePlay = function(id) {
-  togglePlay(id);
-};
+function escapeHtml(s){ return (s||'').toString().replace(/[&<>"']/g, c=> ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
-// ===== EDIT BEAT =====
-window.ccEditBeat = function(id) {
-  window.dispatchEvent(new CustomEvent('cc_edit_beat', { detail: id }));
-};
+// Globals
+window.ccTogglePlay = (id)=> togglePlay(id);
+window.ccEditBeat = (id)=> window.dispatchEvent(new CustomEvent('cc_edit_beat', {detail:id}));
 
-// ===== DELETE BEAT =====
-window.ccDeleteBeat = async function(id) {
-  if (!confirm('Delete this beat? This cannot be undone.')) return;
-  
-  try {
-    const res = await fetch(`${MAIN_API}/beats/${id}`, { method: 'DELETE' });
-    if (!res.ok) throw new Error('Delete failed');
-    
-    // Remove from local state
-    const updatedBeats = allBeats.filter(b => b.id != id);
-    setAllBeats(updatedBeats);
-    setFilteredBeats(updatedBeats.filter(b => filteredBeats.some(f => f.id == b.id)));
-    
-    renderBeatsTable(filteredBeats);
-    
-    // Refresh stats
+window.ccDeleteBeat = async (id)=>{
+  if(!confirm(`Delete beat ${id} permanently?\n\nDeletes:\n- beats/ preview\n- covers/ image\n- wavs/ wav\n- projects/ zip\n- D1 row\n\nCannot be undone.`)) return;
+  const tbody = document.getElementById('beatsTableBody');
+  const row = tbody?.querySelector(`tr[data-beat-id="${id}"]`);
+  if (row) row.style.opacity = '0.5';
+
+  try{
+    const res = await fetch(`${BEATS_API}/beats/${id}`, { method: 'DELETE' });
+    const text = await res.text();
+    if(!res.ok) throw new Error(text || `HTTP ${res.status}`);
+
+    // Local state update
+    const updated = allBeats.filter(b=> String(b.id) != String(id));
+    setAllBeats(updated);
+    setFilteredBeats(updated);
+    renderBeatsTable(updated);
     window.dispatchEvent(new CustomEvent('cc_stats_updated'));
-    
-    alert('Beat deleted successfully');
-  } catch (err) {
-    alert('Delete failed: ' + err.message);
+    console.log('[CC Delete] OK', id);
+  }catch(err){
+    console.error('[CC Delete] Failed', err);
+    alert(`Delete failed: ${err.message}\n\nBEATS_API: ${BEATS_API}/beats/${id}\n\nIf CORS error, deploy the new worker to that domain.`);
+    if (row) row.style.opacity = '1';
   }
 };
 
-// ===== REFRESH BEATS TABLE =====
-export async function refreshBeatsTable() {
-  await loadBeats();
-}
+export async function refreshBeatsTable(){ await loadBeats(); }
 
-// ===== UPDATE PLAY BUTTON IN TABLE =====
-export function updatePlayButtonInTable(id, playing) {
+export function updatePlayButtonInTable(id, playing){
   const btn = document.querySelector(`.play-btn[data-id="${id}"]`);
   if (btn) btn.innerHTML = `<i class="fa-solid fa-${playing? 'pause' : 'play'}"></i>`;
 }
 
-// ===== UTILITY: Debounce =====
-function debounce(func, wait) {
-  let timeout;
-  return function executedFunction(...args) {
-    const later = () => { clearTimeout(timeout); func(...args); };
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
-  };
-}
+function debounce(func, wait){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>func(...a),wait); }; }
 
-// Listen for external refresh requests
-window.addEventListener('cc_dashboard_refresh', () => {
-  loadBeats();
-});
+window.addEventListener('cc_dashboard_refresh', loadBeats);
+window.addEventListener('cc_beats_loaded', (e)=> renderBeatsTable(e.detail));

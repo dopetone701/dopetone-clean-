@@ -1,167 +1,248 @@
-// cc-tickets.js - Support Tickets Module
+// cc-tickets.js - PRO SPOTIFY / YOUTUBE STYLE - FINAL
 import { MAIN_API } from './cc-config.js';
+
+const TICKETS_API = "https://support-tickets-api.dopetone701.workers.dev";
 
 let ticketsLoading = false;
 let ticketsCache = null;
+let allTicketsRaw = [];
+let activeTicketFilter = 'all';
+let ticketSearchQuery = '';
 
-// ===== INIT TICKETS =====
+// ===== INIT =====
 export async function initTickets() {
+  const refreshBtn = document.getElementById('ticketRefreshBtn');
+  const searchToggle = document.getElementById('ticketSearchToggle');
+  const searchInput = document.getElementById('ticketSearchInput');
+  const markAllBtn = document.getElementById('ticketMarkAllBtn');
+  const exportBtn = document.getElementById('ticketExportBtn');
+
+  if (refreshBtn) refreshBtn.onclick = () => refreshTickets();
+  if (searchToggle) searchToggle.onclick = () => {
+    if (searchInput) {
+      searchInput.style.display = searchInput.style.display === 'none'? 'block' : 'none';
+      if (searchInput.style.display!== 'none') searchInput.focus();
+    }
+  };
+  if (searchInput) searchInput.oninput = (e) => {
+    ticketSearchQuery = e.target.value.toLowerCase().trim();
+    renderTickets({ success: true, tickets: allTicketsRaw });
+  };
+  if (markAllBtn) markAllBtn.onclick = () => {
+    document.querySelectorAll('.ticket-row').forEach(r => r.style.opacity = '0.6');
+  };
+  if (exportBtn) exportBtn.onclick = () => exportTicketsCSV();
+
+  // Filter pills
+  document.querySelectorAll('#ticketFilterBar.filter-pill').forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll('#ticketFilterBar.filter-pill').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeTicketFilter = btn.dataset.filter;
+      renderTickets({ success: true, tickets: allTicketsRaw });
+    };
+  });
+
   await loadTickets();
-  
-  // Auto-refresh every 15 seconds
-  setInterval(() => {
-    loadTickets();
-  }, 15000);
+  setInterval(() => loadTickets(true), 15000);
 }
 
-// ===== LOAD TICKETS - FROM MAIN_API =====
-export async function loadTickets() {
+// ===== LOAD =====
+export async function loadTickets(silent = false) {
   if (ticketsLoading) return;
   ticketsLoading = true;
 
-  const listEl = document.getElementById('ticketList');
-  const countEl = document.getElementById('ticketCount');
+  const skeleton = document.getElementById('ticketSkeleton');
+  const refreshBtn = document.getElementById('ticketRefreshBtn');
 
-  // Use cache if fresh (< 30 seconds)
-  if (ticketsCache && Date.now() - ticketsCache.time < 30000) {
-    renderTickets(ticketsCache.data);
-    ticketsLoading = false;
-    return;
-  }
+  if (refreshBtn &&!silent) refreshBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
 
   try {
-    const res = await fetch(`${MAIN_API}/api/tickets/list`);
-    if (!res.ok) throw new Error(`Tickets fetch failed: ${res.status}`);
-    
+    const res = await fetch(`${TICKETS_API}/api/tickets/list?t=${Date.now()}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
-    
-    // Cache for 30 seconds
-    ticketsCache = { data, time: Date.now() };
-    renderTickets(data);
-    
+
+    if (data.success && data.tickets) {
+      // Detect new tickets for live count
+      const newCount = ticketsCache? data.tickets.length - (ticketsCache.data.tickets?.length || 0) : 0;
+      const liveCountEl = document.getElementById('ticketLiveCount');
+      if (liveCountEl && newCount > 0 && ticketsCache) {
+        liveCountEl.textContent = `${newCount} new`;
+        liveCountEl.style.color = '#00ff88';
+        setTimeout(() => { liveCountEl.textContent = '0 new'; liveCountEl.style.color = '#444'; }, 3000);
+      }
+
+      allTicketsRaw = data.tickets;
+      ticketsCache = { data, time: Date.now() };
+      if (skeleton) skeleton.style.display = 'none';
+      renderTickets(data);
+    }
   } catch (err) {
     console.error('[CC Tickets] Load error:', err);
-    if (listEl) {
-      listEl.innerHTML = '<div class="empty-state"><i class="fa-solid fa-circle-exclamation"></i><p>Failed to load</p></div>';
+    const listEl = document.getElementById('ticketList');
+    if (listEl &&!silent) {
+      listEl.innerHTML = `<div style="padding:40px;text-align:center;color:#666"><i class="fa-solid fa-circle-exclamation" style="font-size:20px;margin-bottom:8px"></i><p>Failed to load tickets<br><small>${err.message}</small></p><button onclick="window.ccTicketsRefresh()" style="margin-top:10px;padding:6px 12px;background:#222;border:1px solid #333;border-radius:6px;color:#fff;font-size:11px">Retry</button></div>`;
     }
-    if (countEl) countEl.textContent = '(0)';
   } finally {
     ticketsLoading = false;
+    if (refreshBtn) refreshBtn.innerHTML = '<i class="fa-solid fa-rotate"></i>';
   }
 }
 
-// ===== RENDER TICKETS =====
+// ===== RENDER - SPOTIFY ROW STYLE =====
 function renderTickets(data) {
   const listEl = document.getElementById('ticketList');
   const countEl = document.getElementById('ticketCount');
-  
+  const footerCount = document.getElementById('ticketFooterCount');
   if (!listEl) return;
 
-  if (!data.success ||!data.tickets ||!data.tickets.length) {
-    listEl.innerHTML = '<div class="empty-state"><i class="fa-solid fa-inbox"></i><p>No open tickets</p></div>';
-    if (countEl) countEl.textContent = '(0)';
+  let tickets = data.tickets || [];
+
+  // Update pill counts
+  const counts = {
+    all: tickets.length,
+    open: tickets.filter(t => t.status === 'open').length,
+    answered: tickets.filter(t => t.status === 'answered').length,
+    Critical: tickets.filter(t => (t.priority || '').toLowerCase() === 'critical' || (t.priority || '').toLowerCase() === 'high').length,
+    Resolved: tickets.filter(t => t.status === 'Resolved' || t.status === 'closed').length
+  };
+  const setCount = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  setCount('t_all', counts.all);
+  setCount('t_open', counts.open);
+  setCount('t_ans', counts.answered);
+  setCount('t_crit', counts.Critical);
+  setCount('t_done', counts.Resolved);
+  if (countEl) countEl.textContent = `(${tickets.length})`;
+  if (footerCount) footerCount.textContent = `${tickets.length} tickets`;
+
+  // Apply filter
+  if (activeTicketFilter!== 'all') {
+    if (activeTicketFilter === 'open') tickets = tickets.filter(t => t.status === 'open');
+    else if (activeTicketFilter === 'answered') tickets = tickets.filter(t => t.status === 'answered');
+    else if (activeTicketFilter === 'Critical') tickets = tickets.filter(t => ['critical','high'].includes((t.priority||'').toLowerCase()));
+    else if (activeTicketFilter === 'Resolved') tickets = tickets.filter(t => ['resolved','closed'].includes((t.status||'').toLowerCase()));
+  }
+
+  // Apply search
+  if (ticketSearchQuery) {
+    tickets = tickets.filter(t =>
+      (t.subject||'').toLowerCase().includes(ticketSearchQuery) ||
+      (t.email||'').toLowerCase().includes(ticketSearchQuery) ||
+      (t.message||'').toLowerCase().includes(ticketSearchQuery) ||
+      (t.name||t.username||'').toLowerCase().includes(ticketSearchQuery)
+    );
+  }
+
+  if (!tickets.length) {
+    listEl.innerHTML = `<div style="padding:50px 20px;text-align:center;color:#444"><i class="fa-solid fa-inbox" style="font-size:24px;display:block;margin-bottom:10px;opacity:0.5"></i><p style="font-size:13px">No tickets in ${activeTicketFilter}</p><small style="font-size:11px;color:#333">${ticketSearchQuery? `Search: "${ticketSearchQuery}"` : 'All caught up ✓'}</small></div>`;
     return;
   }
 
-  if (countEl) countEl.textContent = `(${data.tickets.length})`;
-
-  const newHTML = data.tickets.map(t => {
-    const priorityColors = {
-      'Critical': '#dc2626',
-      'High': '#ef4444',
-      'Medium': '#f59e0b',
-      'Low': '#666'
-    };
-    const priorityColor = priorityColors[t.priority] || '#666';
-
-    const statusColors = {
-      'open': '#ef4444',
-      'InProgress': '#f59e0b',
-      'Resolved': '#10b981',
-      'closed': '#666'
-    };
-    const statusColor = statusColors[t.status] || '#ef4444';
-
+  const html = tickets.map(t => {
+    const initial = (t.name||t.username||t.email||'U').charAt(0).toUpperCase();
+    const colors = { 'Critical': '#dc2626', 'High': '#ef4444', 'Medium': '#f59e0b', 'Low': '#555' };
+    const pColor = colors[t.priority] || '#555';
+    const statusMap = { 'open': { bg:'#ef444422', color:'#ef4444', label:'OPEN' }, 'answered': { bg:'#3b82f622', color:'#3b82f6', label:'REPLIED' }, 'Resolved': { bg:'#10b98122', color:'#10b981', label:'DONE' }, 'closed': { bg:'#222', color:'#666', label:'CLOSED' } };
+    const s = statusMap[t.status] || statusMap['open'];
     const timeAgo = getTimeAgo(t.created_at);
 
     return `
-      <div class="ticket-item" style="padding:12px;border-bottom:1px solid #2a2a2a;background:#0a0a0a;margin-bottom:8px;border-radius:6px;">
-        <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
-          <strong style="color:#fff;font-size:13px;">${t.subject}</strong>
-          <span style="font-size:11px;color:#666;">${timeAgo}</span>
-        </div>
-        <div style="font-size:12px;color:#999;margin-bottom:8px;">
-          ${t.name} - ${t.email}
-          <span style="margin-left:8px;padding:2px 6px;background:${priorityColor}20;color:${priorityColor};border-radius:3px;font-size:10px;font-weight:600;">${t.priority || 'Medium'}</span>
-          <span style="margin-left:4px;padding:2px 6px;background:${statusColor}20;color:${statusColor};border-radius:3px;font-size:10px;font-weight:600;">${t.status}</span>
-        </div>
-        <div style="font-size:13px;color:#ccc;margin-bottom:10px;line-height:1.4;">${t.message}</div>
-        ${t.ai_reply? `
-          <div style="background:#1a1a;border-left:3px solid #8b5cf6;padding:8px;margin-bottom:10px;border-radius:4px;">
-            <div style="font-size:11px;color:#8b5cf6;margin-bottom:4px;">AI Reply:</div>
-            <div style="font-size:12px;color:#999;">${t.ai_reply}</div>
+      <div class="ticket-row" data-id="${t.id}" style="display:flex;gap:12px;padding:12px 16px;border-bottom:1px solid #0f0f0f;background:#080808;transition:background.15s;cursor:pointer">
+        <div style="width:36px;height:36px;border-radius:50%;background:#1a1a1a;border:1px solid #222;display:flex;align-items:center;justify-content:center;color:#666;font-weight:700;font-size:13px;flex-shrink:0">${initial}</div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;flex-wrap:wrap">
+            <span style="color:#fff;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px">${escapeHtml(t.subject||'Support Request')}</span>
+            <span style="padding:1px 6px;border-radius:4px;background:${s.bg};color:${s.color};font-size:9px;font-weight:700;letter-spacing:.5px">${s.label}</span>
+            <span style="padding:1px 5px;border-radius:4px;background:${pColor}22;color:${pColor};font-size:9px;font-weight:600">${(t.priority||'Medium').toUpperCase()}</span>
+            <span style="margin-left:auto;font-size:10px;color:#444">${timeAgo}</span>
           </div>
-        ` : ''}
-        ${t.status!== 'Resolved' && t.status!== 'closed'? `
-          <button onclick="window.ccCloseTicket(${t.id})" style="padding:6px 12px;background:#ef4444;border:none;border-radius:4px;color:#fff;font-size:11px;cursor:pointer;font-weight:600;">
-            <i class="fa-solid fa-check"></i> Close Ticket
-          </button>
-        ` : ''}
+          <div style="font-size:11px;color:#888;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHtml(t.name||t.username||'') } • ${escapeHtml(t.email||'')} </div>
+          <div style="font-size:12px;color:#aaa;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${escapeHtml((t.message||'').slice(0,120))}</div>
+        </div>
+        <div class="ticket-actions" style="display:flex;flex-direction:column;gap:4px;opacity:0;transition:opacity.15s;flex-shrink:0">
+          <button onclick="event.stopPropagation(); window.ccCloseTicket('${t.id}')" style="width:28px;height:28px;border-radius:50%;background:#111;border:1px solid #222;color:#666;display:flex;align-items:center;justify-content:center;cursor:pointer" title="Close"><i class="fa-solid fa-check" style="font-size:10px"></i></button>
+          <button onclick="event.stopPropagation(); window.ccOpenTicket('${t.id}')" style="width:28px;height:28px;border-radius:50%;background:#111;border:1px solid #222;color:#666;display:flex;align-items:center;justify-content:center;cursor:pointer" title="View"><i class="fa-solid fa-ellipsis" style="font-size:10px"></i></button>
+        </div>
       </div>
     `;
   }).join('');
 
-  // Only update DOM if content changed
-  if (listEl.innerHTML!== newHTML) {
-    listEl.innerHTML = newHTML;
-  }
+  listEl.innerHTML = html;
 }
 
-// ===== CLOSE TICKET - Exposed to window =====
+// ===== ACTIONS =====
 window.ccCloseTicket = async function(id) {
   if (!confirm('Close this ticket?')) return;
-  
   try {
-    const res = await fetch(`${MAIN_API}/api/tickets/close`, {
+    const btn = document.querySelector(`.ticket-row[data-id="${id}"]`);
+    if (btn) btn.style.opacity = '0.3';
+
+    const res = await fetch(`${TICKETS_API}/api/tickets/close`, {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ id })
+      body: JSON.stringify({ id, status: 'closed' })
     });
-    
-    if (!res.ok) throw new Error('Close failed');
-    
-    // Invalidate cache and reload
-    ticketsCache = null;
-    await loadTickets();
-    
-    // Dispatch event for dashboard refresh
-    window.dispatchEvent(new CustomEvent('cc_stats_updated'));
-    
+    const data = await res.json();
+    if (!res.ok ||!data.success) throw new Error(data.error||'Failed');
+
+    // Instant remove animation
+    const row = document.querySelector(`.ticket-row[data-id="${id}"]`);
+    if (row) {
+      row.style.transform = 'translateX(100%)';
+      row.style.transition = 'all.3s';
+      setTimeout(() => {
+        allTicketsRaw = allTicketsRaw.filter(t => t.id!== id);
+        ticketsCache = null;
+        renderTickets({ success: true, tickets: allTicketsRaw });
+        window.dispatchEvent(new CustomEvent('cc_dashboard_refresh'));
+      }, 300);
+    } else {
+      await refreshTickets();
+    }
   } catch (err) {
-    console.error('[CC Tickets] Close failed:', err);
-    alert('Close ticket failed: ' + err.message);
+    alert('Close failed: ' + err.message);
+    await refreshTickets();
   }
 };
 
-// ===== REFRESH TICKETS =====
+window.ccOpenTicket = function(id) {
+  const ticket = allTicketsRaw.find(t => t.id === id);
+  if (!ticket) return;
+  alert(`Subject: ${ticket.subject}\nFrom: ${ticket.email}\n\n${ticket.message}\n\nStatus: ${ticket.status}`);
+};
+
 export async function refreshTickets() {
-  ticketsCache = null; // Invalidate cache
+  ticketsCache = null;
+  allTicketsRaw = [];
+  const skeleton = document.getElementById('ticketSkeleton');
+  if (skeleton) skeleton.style.display = 'block';
   await loadTickets();
 }
 
-// ===== HELPER: Time Ago =====
+function exportTicketsCSV() {
+  if (!allTicketsRaw.length) return alert('No tickets');
+  const csv = ['id,email,subject,status,priority,created_at'].concat(allTicketsRaw.map(t => `"${t.id}","${t.email}","${(t.subject||'').replace(/"/g,'""')}","${t.status}","${t.priority}","${t.created_at}"`)).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `tickets_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+}
+
+function escapeHtml(s){ return (s||'').toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
 function getTimeAgo(dateString) {
+  if (!dateString) return '';
   const date = new Date(dateString);
   const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
-  
-  if (seconds < 60) return 'just now';
-  if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
-  if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
-  if (seconds < 604800) return `${Math.floor(seconds / 86400)}d ago`;
+  if (seconds < 60) return 'now';
+  if (seconds < 3600) return `${Math.floor(seconds / 60)}m`;
+  if (seconds < 86400) return `${Math.floor(seconds / 3600)}h`;
+  if (seconds < 604800) return `${Math.floor(seconds / 86400)}d`;
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
-// Listen for external refresh requests
-window.addEventListener('cc_dashboard_refresh', () => {
-  refreshTickets();
-});
+window.ccTicketsRefresh = refreshTickets;
+window.addEventListener('cc_dashboard_refresh', () => refreshTickets());
+
+export default { initTickets, loadTickets, refreshTickets };

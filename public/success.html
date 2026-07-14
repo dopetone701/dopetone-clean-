@@ -3,149 +3,164 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Payment Successful</title>
-
+  <title>Payment Successful - Dope Tone Vault</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
-    }
-
-    body {
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      background: url("/images/vault-image.png") no-repeat center center fixed;
-      background-size: cover;
-    }
-
-    /* DARK GLASS OVERLAY */
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-
-      background: linear-gradient(
-        135deg,
-        rgba(8, 15, 40, 0.9),
-        rgba(40, 0, 10, 0.85)
-      );
-
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-
-      z-index: -1;
-    }
-
-    /* LIGHT GLOW */
-    body::after {
-      content: "";
-      position: fixed;
-      inset: 0;
-
-      background:
-        radial-gradient(circle at 30% 20%, rgba(0, 200, 255, 0.15), transparent),
-        radial-gradient(circle at 70% 80%, rgba(255, 0, 80, 0.15), transparent);
-
-      pointer-events: none;
-      z-index: -1;
-    }
-
-    .success-card {
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-
-      border-radius: 20px;
-      padding: 40px;
-      width: 90%;
-      max-width: 420px;
-
-      text-align: center;
-
-      border: 1px solid rgba(255,255,255,0.1);
-
-      box-shadow:
-        0 0 60px rgba(0, 200, 255, 0.2),
-        0 0 100px rgba(255, 0, 80, 0.1);
-
-      animation: float 4s ease-in-out infinite;
-    }
-
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
-    }
-
-    .logo {
-      width: 80px;
-      margin-bottom: 20px;
-      opacity: 0.95;
-    }
-
-    .success-icon {
-      font-size: 60px;
-      margin-bottom: 15px;
-    }
-
-    .success-title {
-      font-size: 26px;
-      color: #00ffcc;
-      margin-bottom: 10px;
-    }
-
-    .success-text {
-      color: #ccc;
-      margin-bottom: 30px;
-      font-size: 14px;
-    }
-
-    .btn {
-      display: inline-block;
-      padding: 12px 25px;
-      border-radius: 10px;
-      text-decoration: none;
-      font-weight: bold;
-
-      background: linear-gradient(135deg, #00c6ff, #ff0055);
-      color: white;
-
-      transition: 0.3s;
-    }
-
-    .btn:hover {
-      transform: scale(1.07);
-      box-shadow:
-        0 0 20px rgba(0,200,255,0.6),
-        0 0 30px rgba(255,0,85,0.6);
-    }
-
+    * { margin:0; padding:0; box-sizing:border-box; font-family:Arial,sans-serif; }
+    body { min-height:100vh; display:flex; align-items:center; justify-content:center; background:url("/images/vault-image.png") no-repeat center center fixed; background-size:cover; }
+    body::before { content:""; position:fixed; inset:0; background:linear-gradient(135deg, rgba(8,15,40,0.92), rgba(40,0,10,0.88)); backdrop-filter:blur(12px); z-index:-1; }
+    body::after { content:""; position:fixed; inset:0; background:radial-gradient(circle at 30% 20%, rgba(0,200,255,0.15), transparent), radial-gradient(circle at 70% 80%, rgba(255,0,80,0.15), transparent); pointer-events:none; z-index:-1; }
+    .success-card { background:rgba(255,255,255,0.06); backdrop-filter:blur(20px); border-radius:22px; padding:40px 32px; width:92%; max-width:460px; text-align:center; border:1px solid rgba(255,255,255,0.12); box-shadow:0 0 60px rgba(0,200,255,0.18); animation:float 4s ease-in-out infinite; }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+    .logo { width:78px; margin-bottom:18px; opacity:.95; }
+    .success-icon { font-size:58px; margin-bottom:14px; }
+    .success-title { font-size:26px; color:#00ffcc; margin-bottom:8px; font-weight:800; }
+    .success-text { color:#bbb; margin-bottom:10px; font-size:14px; line-height:1.6; }
+    .amount { font-size:32px; font-weight:900; color:#fff; margin:16px 0; text-shadow:0 0 12px rgba(0,255,204,.6); }
+    .details { background:rgba(0,0,0,0.4); border-radius:12px; padding:14px 16px; margin:18px 0; text-align:left; font-size:13px; color:#aaa; max-height:200px; overflow-y:auto; border:1px solid rgba(255,255,255,0.08); display:none; }
+    .btn { display:inline-block; padding:12px 24px; border-radius:11px; text-decoration:none; font-weight:800; background:linear-gradient(135deg, #00c6ff, #ff0055); color:white; transition:.25s; margin:6px; }
+    .btn:hover { transform:scale(1.05); box-shadow:0 0 22px rgba(0,200,255,.55); }
+    .btn-secondary { background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.14); }
+    #status { font-size:12.5px; color:#7af5e0; margin-top:16px; line-height:1.6; word-break:break-word; min-height:18px; }
+    .ok{color:#00ffcc} .warn{color:#ffcc55} .err{color:#ff6b6b}
   </style>
 </head>
-
 <body>
-
   <div class="success-card">
-
-    <!-- FIXED LOGO -->
-    <img src="/images/logo.png" class="logo" />
-
+    <img src="/images/logo.png" class="logo" onerror="this.style.display='none'" />
     <div class="success-icon">✅</div>
-
-    <div class="success-title">Payment Successful</div>
-
-    <div class="success-text">
-      Your sound has been unlocked.<br/>
-      Welcome to the vault.
-    </div>
-
-    <a href="/" class="btn">Enter Vault</a>
-
+    <div class="success-title" id="title">Payment Successful</div>
+    <div class="success-text" id="subtitle">Your sound has been unlocked.<br/>Welcome to the vault.</div>
+    <div class="amount" id="amount"></div>
+    <div class="details" id="details"></div>
+    <div><a href="/" class="btn">Enter Vault</a><a href="/beats.html" class="btn btn-secondary">More Beats</a></div>
+    <div id="status">Verifying payment via webhook...</div>
   </div>
 
+<script>
+// === PRO ENDPOINTS - MATCH YOUR WORKER ===
+const STRIPE_WORKER_URL = 'https://dopetone-stripe.dopetone701.workers.dev';
+
+const params = new URLSearchParams(window.location.search);
+const sessionId = params.get('session_id');
+const isFree = params.get('free') === '1';
+
+const titleEl = document.getElementById('title');
+const subEl = document.getElementById('subtitle');
+const amountEl = document.getElementById('amount');
+const detailsEl = document.getElementById('details');
+const statusEl = document.getElementById('status');
+
+const safeParse = (k,f)=>{ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):f }catch{ return f } };
+const shippedKey = (sid) => "dopetone_shipped_" + sid;
+
+function clearAllLocalHistory(sid){
+  console.log("🧹 PRO clear cart after verified payment", sid);
+  localStorage.setItem("dopetone_history", "[]");
+  localStorage.removeItem('dopetone_cart');
+  localStorage.removeItem('dopetone_licences');
+  localStorage.removeItem('dopetone_pending_checkout');
+  // keep shipped flag for idempotency
+  try{ window.dispatchEvent(new Event('storage')); }catch{}
+}
+
+async function verifyViaWorker(sid){
+  // NEW PRO endpoint: /order-status?session_id=cs_...
+  const url = `${STRIPE_WORKER_URL}/order-status?session_id=${encodeURIComponent(sid)}`;
+  const res = await fetch(url);
+  if(!res.ok){ const t=await res.text(); throw new Error(`order-status ${res.status}: ${t.slice(0,200)}`); }
+  return await res.json(); // { session:{...}, purchases:[{beat_title,dollars}] }
+}
+
+async function init(){
+  if(isFree){
+    titleEl.textContent="Download Ready"; subEl.innerHTML="FREE beat unlocked.<br/>Check your downloads.";
+    amountEl.textContent="FREE"; detailsEl.style.display='block'; detailsEl.innerHTML="Your FREE licence is ready.";
+    clearAllLocalHistory('free_'+Date.now()); statusEl.textContent="✅ Cart cleared"; return;
+  }
+
+  if(!sessionId){
+    statusEl.className="warn"; statusEl.textContent="No session_id in URL - if you paid, webhook already saved revenue.";
+    amountEl.textContent="⚠️ No session"; return;
+  }
+
+  // Prevent double clear on refresh
+  if(localStorage.getItem(shippedKey(sessionId))==="1"){
+    titleEl.textContent="Already Unlocked"; amountEl.textContent="✅ Saved";
+    subEl.innerHTML="This payment was already processed.<br/>Cart cleared.";
+    statusEl.textContent="✅ Webhook already saved - refresh safe, cart empty.";
+    clearAllLocalHistory(sessionId); return;
+  }
+
+  // Capture pre-clear display data for UI
+  const preHistory = safeParse("dopetone_history", []);
+  const preLicences = safeParse("dopetone_licences", {});
+
+  try{
+    statusEl.textContent="Verifying with Stripe webhook...";
+    const data = await verifyViaWorker(sessionId);
+    console.log("ORDER-STATUS:", data);
+
+    const session = data.session;
+    const purchases = data.purchases || [];
+
+    if(!session){
+      // Webhook may not have fired yet (rare, <2s). Retry once
+      statusEl.textContent="Webhook syncing... retrying in 2s";
+      await new Promise(r=>setTimeout(r,2000));
+      const retry = await verifyViaWorker(sessionId);
+      if(!retry.session){ throw new Error("Session not found yet - webhook pending. Refresh in 3s"); }
+      return init();
+    }
+
+    const totalCents = session.total_cents || purchases.reduce((s,p)=>s+(p.dollars*100),0) || 0;
+    const dollars = (totalCents/100).toFixed(2);
+
+    if(session.status === 'paid' || purchases.length>0){
+      titleEl.textContent="Payment Verified"; subEl.innerHTML="Stripe confirmed via webhook.<br/>Sounds unlocked.";
+      amountEl.textContent = `$${dollars} PAID`; statusEl.className="ok";
+
+      let html = "<strong>Unlocked:</strong><br/>";
+      if(purchases.length){
+        purchases.forEach(p=> html+=`• ${p.beat_title} - $${Number(p.dollars).toFixed(2)}<br/>`);
+      } else if(preHistory.length){
+        preHistory.forEach(i=>{ if(i.amount) html+=`• ${i.beat_title||'Beat '+i.beat_id} - ${i.license_type} - $${(i.amount/100).toFixed(2)}<br/>`; });
+      } else {
+        Object.values(preLicences).forEach(l=> html+=`• ${l.title||'Beat'} - ${l.name} - $${l.price}<br/>`);
+      }
+      if(session.customer_email) html+=`<br/><small>Receipt: ${session.customer_email}</small>`;
+      detailsEl.innerHTML=html; detailsEl.style.display='block';
+
+      localStorage.setItem(shippedKey(sessionId), "1");
+      clearAllLocalHistory(sessionId);
+      statusEl.textContent=`✅ Revenue secured by webhook - $${dollars} - cart cleared`;
+
+    } else {
+      statusEl.className="warn"; amountEl.textContent="Processing...";
+      statusEl.textContent=`Payment status: ${session.status} - webhook will auto-save when paid. Do not close.`;
+      // Do NOT clear cart yet
+      setTimeout(init, 2500);
+    }
+
+  }catch(e){
+    console.error("Verify error", e);
+    statusEl.className="err";
+    // Fallback: webhook likely saved even if order-status fails (network). Don't lose money.
+    // Mark shipped and clear so user isn't stuck, revenue is safe in Stripe + D1 via webhook
+    if(preHistory.length>0){
+      statusEl.textContent=`Verify failed (${e.message}) but local history found - cart cleared, webhook has your revenue. Refresh to re-verify.`;
+      localStorage.setItem(shippedKey(sessionId), "1");
+      clearAllLocalHistory(sessionId);
+      amountEl.textContent="Saved via webhook";
+      detailsEl.style.display='block';
+      detailsEl.innerHTML = preHistory.map(i=>`• ${i.beat_title} - $${(i.amount/100).toFixed(2)}`).join('<br/>');
+    } else {
+      statusEl.textContent=`Error: ${e.message} - Webhook will still save. Refresh in 3s`;
+      setTimeout(init, 3000);
+    }
+  }
+}
+
+init();
+</script>
 </body>
 </html>

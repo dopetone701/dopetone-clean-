@@ -3,145 +3,129 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Payment Cancelled</title>
-
+  <title>Payment Cancelled - Dope Tone Vault</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
-    }
-
-    body {
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      /* SAME VAULT BACKGROUND */
-      background: url("/images/vault-image.png") no-repeat center center fixed;
-      background-size: cover;
-    }
-
-    /* DARK GLASS OVERLAY */
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-
-      background: linear-gradient(
-        135deg,
-        rgba(8, 15, 40, 0.9),   /* deep blue */
-        rgba(40, 0, 10, 0.85)   /* deep red */
-      );
-
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-
-      z-index: -1;
-    }
-
-    /* MAIN CARD */
-    .cancel-card {
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-
-      border-radius: 20px;
-      padding: 40px;
-      width: 90%;
-      max-width: 420px;
-
-      text-align: center;
-
-      border: 1px solid rgba(255,255,255,0.1);
-
-      box-shadow:
-        0 0 40px rgba(255, 0, 80, 0.2);
-    }
-
-    .cancel-icon {
-      font-size: 60px;
-      margin-bottom: 20px;
-    }
-
-    .cancel-title {
-      font-size: 24px;
-      color: #ff4d6d;
-      margin-bottom: 10px;
-    }
-
-    .cancel-text {
-      color: #ccc;
-      margin-bottom: 30px;
-      font-size: 14px;
-    }
-
-    .btn-group {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    .btn {
-      padding: 12px 20px;
-      border-radius: 10px;
-      text-decoration: none;
-      font-weight: bold;
-      color: white;
-      transition: 0.3s;
-    }
-
-    .home {
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.2);
-    }
-
-    .btn:hover {
-      transform: scale(1.05);
-    }
-
-    .logo {
-      width: 80px;
-      margin-bottom: 20px;
-      opacity: 0.9;
-    }
-
+    *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+    body{height:100vh;display:flex;align-items:center;justify-content:center;background:url("/images/vault-image.png") no-repeat center center fixed;background-size:cover}
+    body::before{content:"";position:fixed;inset:0;background:linear-gradient(135deg, rgba(8,15,40,0.92), rgba(40,0,10,0.86));backdrop-filter:blur(10px);z-index:-1}
+    body::after{content:"";position:fixed;inset:0;background:radial-gradient(circle at 30% 20%, rgba(255,0,80,0.13), transparent),radial-gradient(circle at 70% 80%, rgba(0,200,255,0.11), transparent);pointer-events:none;z-index:-1}
+    .cancel-card{background:rgba(255,255,255,0.06);backdrop-filter:blur(20px);border-radius:20px;padding:38px 30px;width:92%;max-width:430px;text-align:center;border:1px solid rgba(255,255,255,0.12);box-shadow:0 0 40px rgba(255,0,80,0.22);animation:float 4s ease-in-out infinite}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+    .logo{width:78px;margin-bottom:16px;opacity:.92}
+    .cancel-icon{font-size:60px;margin-bottom:18px;filter:drop-shadow(0 0 10px rgba(255,0,80,.45))}
+    .cancel-title{font-size:24px;color:#ff4d6d;margin-bottom:10px;font-weight:900}
+    .cancel-text{color:#bbb;margin-bottom:16px;font-size:14px;line-height:1.6}
+    .cart-preview{background:rgba(0,0,0,0.42);border-radius:12px;padding:14px;margin:16px 0;text-align:left;font-size:12.5px;color:#aaa;border:1px solid rgba(255,255,255,0.07);max-height:160px;overflow-y:auto;display:none}
+    .cart-preview strong{color:#fff}
+    .btn-group{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+    .btn{padding:12px 20px;border-radius:11px;text-decoration:none;font-weight:800;color:#fff;transition:.25s;border:none;cursor:pointer;font-size:13px;display:inline-block}
+    .btn-primary{background:linear-gradient(135deg, #00c6ff, #ff0055);box-shadow:0 0 18px rgba(0,198,255,.32)}
+    .btn-primary:hover{transform:scale(1.05);box-shadow:0 0 26px rgba(0,200,255,.58)}
+    .home{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.14)}
+    .home:hover{background:rgba(255,255,255,0.14);transform:scale(1.03)}
+    #status{margin-top:15px;font-size:11.5px;color:#ff8fa3;min-height:16px}
+    @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+    .gear{display:inline-block;animation:spin .8s linear infinite;margin-left:6px}
   </style>
 </head>
-
 <body>
-
   <div class="cancel-card">
-
-    <!-- LOGO -->
-    <img src="/images/logo.png" class="logo" />
-
-    <!-- ICON -->
+    <img src="/images/logo.png" class="logo" onerror="this.style.display='none'" />
     <div class="cancel-icon">❌</div>
-
-    <!-- TITLE -->
     <div class="cancel-title">Payment Cancelled</div>
-
-    <!-- TEXT -->
-    <div class="cancel-text">
-      You didn’t unlock the vault yet.<br/>
-      Your sound is still waiting.
-    </div>
-
-    <!-- BUTTONS -->
+    <div class="cancel-text" id="msg">You didn't unlock the vault yet.<br/>Your sound is still waiting.</div>
+    <div class="cart-preview" id="preview"></div>
     <div class="btn-group">
-  <a href="/" class="btn home">Back to Vault</a>
-
-  
-</div>
-
+      <a href="#" id="retryBtn" class="btn btn-primary">Retry Checkout</a>
+      <a href="/licence-page.html" class="btn home">Back to Cart</a>
+      <a href="/" class="btn home">Vault</a>
+    </div>
+    <div id="status">Cart preserved - webhook did NOT charge</div>
   </div>
-<script>
 
+<script type="module">
+// === PRO CANCEL - KEEP CART, DO NOT TOUCH D1 ===
+const safeParse = (k,f)=>{ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):f }catch{ return f } };
+
+function loadState(){
+  return {
+    cart: safeParse("dopetone_cart", []),
+    licences: safeParse("dopetone_licences", {}),
+    pending: safeParse("dopetone_pending_checkout", null),
+    history: safeParse("dopetone_history", [])
+  };
+}
+
+function renderPreview(){
+  const { cart, licences } = loadState();
+  const el = document.getElementById('preview');
+  const msg = document.getElementById('msg');
+  const retry = document.getElementById('retryBtn');
+
+  if(!cart.length){
+    el.style.display='none';
+    msg.innerHTML="Your cart is empty.<br/>Add heat from the vault.";
+    retry.style.display='none';
+    document.getElementById('status').textContent="No tracks in cart";
+    return;
+  }
+
+  let total=0, count=0, html=`<strong>${cart.length} tracks saved:</strong><br/><br/>`;
+  cart.forEach(b=>{
+    const lic = licences[String(b.id)] || licences[b.id];
+    if(!lic){ html+=`• ${b.title||'Beat '+b.id} - <span style="color:#ffb020">select licence</span><br/>`; }
+    else { total+=Number(lic.price||0); count++; html+=`• ${b.title||'Beat '+b.id} - ${lic.name} - $${Number(lic.price).toFixed(2)}<br/>`; }
+  });
+
+  if(count>0){
+    html+=`<br/><strong style="color:#00ffcc">Total: $${total.toFixed(2)} ready</strong>`;
+    msg.innerHTML=`Payment cancelled - no charge.<br/>Your ${count} track${count>1?'s':''} are still waiting.`;
+  } else {
+    html+=`<br/><span style="color:#ffb020">Select licences to retry</span>`;
+    msg.innerHTML=`Select a licence for your tracks to continue.`;
+  }
+  el.innerHTML=html; el.style.display='block';
+}
+
+// Retry uses the SAME pro checkout.js - works even from cancel page
+async function handleRetry(e){
+  e.preventDefault();
+  const btn = e.currentTarget;
+  const original = btn.innerHTML;
+  btn.innerHTML=`Retrying <span class="gear">⚙️</span>`; btn.style.pointerEvents='none';
+
+  try{
+    // Try global from licence-page or imported module
+    if(window.createStripeCheckout){ await window.createStripeCheckout(); return; }
+
+    // Fallback import - try both paths (you have ./checkout.js and ./js/checkout.js in different deploys)
+    let mod;
+    try{ mod = await import("./checkout.js"); }
+    catch{ mod = await import("./js/checkout.js"); }
+    if(mod.createStripeCheckout){ await mod.createStripeCheckout(); }
+    else { window.location.href="/licence-page.html"; }
+  }catch(err){
+    console.error("Retry failed", err);
+    btn.innerHTML=original; btn.style.pointerEvents='auto';
+    document.getElementById('status').textContent="Retry failed: "+err.message+" - Going to cart...";
+    setTimeout(()=> window.location.href="/licence-page.html", 1200);
+  }
+}
+
+document.getElementById('retryBtn').addEventListener('click', handleRetry);
+
+console.log("❌ Cancel - cart preserved, D1 untouched", loadState());
+renderPreview();
+
+const p = new URLSearchParams(location.search);
+if(p.get('canceled')==='1' || p.has('session_id')){
+  document.getElementById('status').textContent="Stripe cancelled - cart preserved, no D1 write, no charge";
+}
+
+// Load checkout for retry (supports both locations)
+import("./checkout.js").then(m=>{ window.createStripeCheckout=m.createStripeCheckout; m.setupCheckout?.(); }).catch(()=>{
+  import("./js/checkout.js").then(m=>{ window.createStripeCheckout=m.createStripeCheckout; m.setupCheckout?.(); }).catch(()=>{});
+});
 </script>
-
 </body>
 </html>

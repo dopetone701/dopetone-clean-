@@ -6,6 +6,9 @@
   <title>Dopetone Control Center</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="styles/control-center.css">
+  <link rel="stylesheet" href="styles/cc-edit-modal.css">
+  <link rel="stylesheet" href="styles/cc-create-beat.css">
+
 </head>
 <body>
   <div class="nav">
@@ -194,11 +197,74 @@
 </div>
 
 
-      <div class="section">
-        <h2><i class="fa-solid fa-ticket"></i> Support Tickets <span id="ticketCount" style="color:#8b5cf6;">(0)</span></h2>
-        <div id="ticketList" style="max-height:400px;overflow-y:auto;">
-          <div class="empty-state"><i class="fa-solid fa-inbox"></i><p>Loading...</p></div>
+      <div class="section" id="ticketsSection" style="padding:0;overflow:hidden;background:#0a0a0a;border:1px solid #222;border-radius:12px">
+  <!-- HEADER LIKE EMAILS -->
+  <div id="ticketListHeader" style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid #1a1a1a">
+    <h2 style="margin:0;display:flex;align-items:center;gap:8px;font-size:15px">
+      <i class="fa-solid fa-ticket" style="color:#8b5cf6"></i> 
+      Support Inbox 
+      <span id="ticketCount" style="background:#8b5cf622;color:#8b5cf6;padding:2px 8px;border-radius:20px;font-size:11px">(0)</span>
+      <span id="ticketOpenDot" style="font-size:10px;color:#00ff88;margin-left:8px"><span class="live-dot"></span> Live</span>
+    </h2>
+    <div style="display:flex;gap:6px">
+      <button id="ticketRefreshBtn" style="background:#111;border:1px solid #222;color:#666;padding:6px 10px;border-radius:6px;font-size:11px;cursor:pointer"><i class="fa-solid fa-rotate"></i></button>
+      <button id="ticketSearchToggle" style="background:#111;border:1px solid #222;color:#666;padding:6px 10px;border-radius:6px;font-size:11px;cursor:pointer"><i class="fa-solid fa-magnifying-glass"></i></button>
+    </div>
+  </div>
+
+  <!-- FILTER BAR - LIKE SPOTIFY PILLS -->
+  <div id="ticketFilterBar" style="display:flex;gap:6px;padding:10px 16px;background:#050505;border-bottom:1px solid #111;flex-wrap:wrap;align-items:center;overflow-x:auto;white-space:nowrap">
+    <button class="filter-pill active" data-filter="all" style="padding:5px 12px;border-radius:20px;border:1px solid #333;background:#fff;color:#000;font-size:11px;cursor:pointer;white-space:nowrap">All <b id="t_all" style="background:rgba(0,0,0,.15);padding:1px 6px;border-radius:10px;margin-left:4px">0</b></button>
+    <button class="filter-pill" data-filter="open" style="padding:5px 12px;border-radius:20px;border:1px solid #ef4444;background:#111;color:#ef4444;font-size:11px;cursor:pointer;white-space:nowrap"><i class="fa-solid fa-circle-dot"></i> Open <b id="t_open" style="background:rgba(239,68,68,.2);padding:1px 6px;border-radius:10px;margin-left:4px">0</b></button>
+    <button class="filter-pill" data-filter="answered" style="padding:5px 12px;border-radius:20px;border:1px solid #3b82f6;background:#111;color:#3b82f6;font-size:11px;cursor:pointer;white-space:nowrap"><i class="fa-solid fa-reply"></i> Answered <b id="t_ans" style="background:rgba(59,130,246,.2);padding:1px 6px;border-radius:10px;margin-left:4px">0</b></button>
+    <button class="filter-pill" data-filter="Critical" style="padding:5px 12px;border-radius:20px;border:1px solid #dc2626;background:#111;color:#dc2626;font-size:11px;cursor:pointer;white-space:nowrap"><i class="fa-solid fa-triangle-exclamation"></i> Critical <b id="t_crit" style="background:rgba(220,38,.2);padding:1px 6px;border-radius:10px;margin-left:4px">0</b></button>
+    <button class="filter-pill" data-filter="Resolved" style="padding:5px 12px;border-radius:20px;border:1px solid #10b981;background:#111;color:#10b981;font-size:11px;cursor:pointer;white-space:nowrap"><i class="fa-solid fa-check"></i> Done <b id="t_done" style="background:rgba(16,185,129,.2);padding:1px 6px;border-radius:10px;margin-left:4px">0</b></button>
+    <div style="margin-left:auto;display:flex;gap:6px;align-items:center">
+      <input type="text" id="ticketSearchInput" placeholder="Search tickets..." style="display:none;padding:6px 10px;background:#0a0a0a;border:1px solid #222;color:#fff;border-radius:20px;font-size:11px;width:180px">
+      <span style="font-size:10px;color:#444" id="ticketLiveCount">0 new</span>
+    </div>
+  </div>
+
+  <!-- TICKET LIST - YOUTUBE COMMENT / SPOTIFY TRACK STYLE -->
+  <div id="ticketList" style="max-height:420px;overflow-y:auto;background:#070707">
+    <!-- SKELETON LOADING - SPOTIFY STYLE -->
+    <div id="ticketSkeleton">
+      <div style="display:flex;gap:10px;padding:12px 16px;border-bottom:1px solid #111;animation:pulse 1.5s infinite">
+        <div style="width:36px;height:36px;border-radius:50%;background:#1a1a1a"></div>
+        <div style="flex:1">
+          <div style="height:10px;width:40%;background:#1a1a1a;border-radius:4px;margin-bottom:8px"></div>
+          <div style="height:8px;width:80%;background:#111;border-radius:4px"></div>
         </div>
+      </div>
+      <div style="display:flex;gap:10px;padding:12px 16px;border-bottom:1px solid #111;animation:pulse 1.5s infinite">
+        <div style="width:36px;height:36px;border-radius:50%;background:#1a1a1a"></div>
+        <div style="flex:1">
+          <div style="height:10px;width:50%;background:#1a1a1a;border-radius:4px;margin-bottom:8px"></div>
+          <div style="height:8px;width:70%;background:#111;border-radius:4px"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER ACTION BAR - LIKE YOUTUBE STUDIO -->
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 16px;background:#050505;border-top:1px solid #111">
+    <div style="font-size:11px;color:#555"><span id="ticketFooterCount">0 tickets</span> • Auto refreshes every 15s</div>
+    <div style="display:flex;gap:6px">
+      <button id="ticketMarkAllBtn" style="padding:5px 10px;background:#111;border:1px solid #222;border-radius:6px;color:#666;font-size:11px;cursor:pointer">Mark all read</button>
+      <button id="ticketExportBtn" style="padding:5px 10px;background:#8b5cf6;border:none;border-radius:6px;color:#fff;font-size:11px;cursor:pointer;font-weight:600"><i class="fa-solid fa-download"></i> Export</button>
+    </div>
+  </div>
+</div>
+
+<style>
+@keyframes pulse { 0%{opacity:1} 50%{opacity:.5} 100%{opacity:1} }
+.filter-pill.active { background:#fff !important; color:#000 !important; border-color:#fff !important; }
+#ticketList::-webkit-scrollbar { width:4px; }
+#ticketList::-webkit-scrollbar-thumb { background:#222; border-radius:4px; }
+.ticket-row:hover { background:#111 !important; }
+.ticket-row:hover .ticket-actions { opacity:1 !important; }
+</style>
+
       </div>
     </div>
 
@@ -259,34 +325,84 @@
 
     <!-- BEATS TABLE WITH SEARCH -->
     <div class="section" id="beatsAnalyticsSection">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">
-        <h2><i class="fa-solid fa-music"></i> All Beats Analytics</h2>
-        <input
-          type="text"
-          id="beatsSearch"
-          placeholder="Search beats..."
-          style="padding:8px 12px;background:#0a0a0a;border:1px solid #333;border-radius:6px;color:#fff;width:250px;"
-        >
-      </div>
-      <div class="table-wrap">
-        <table class="data-table" id="beatsTable">
-          <thead style="position:sticky;top:0;background:#1a1a1a;z-index:10;">
-            <tr>
-              <th>Beat</th>
-              <th>Plays</th>
-              <th>Downloads</th>
-              <th>Likes</th>
-              <th>Cart Adds</th>
-              <th>Revenue</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="beatsTableBody">
-            <tr><td colspan="7" class="empty-state">Loading beats...</td></tr>
-          </tbody>
-        </table>
-      </div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;gap:12px;flex-wrap:wrap;">
+    <h2><i class="fa-solid fa-music"></i> All Beats Analytics</h2>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <input type="text" id="beatsSearch" placeholder="Search beats..." style="padding:8px 12px;background:#0a0a0a;border:1px solid #333;border-radius:6px;color:#fff;width:250px;">
+      <button id="createBeatBtn" style="padding:8px 16px;background:#8b5cf6;border:none;border-radius:6px;color:#fff;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;">
+        <i class="fa-solid fa-plus"></i> Create Beat
+      </button>
     </div>
+  </div>
+  <div class="table-wrap">
+    <table class="data-table" id="beatsTable">
+      <thead style="position:sticky;top:0;background:#1a1a1a;z-index:10;">
+        <tr><th>Beat</th><th>Plays</th><th>Downloads</th><th>Likes</th><th>Cart Adds</th><th>Revenue</th><th>Actions</th></tr>
+      </thead>
+      <tbody id="beatsTableBody"><tr><td colspan="7" class="empty-state">Loading beats...</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- EDIT MODAL (already exists) -->
+<div id="editModal" class="edit-modal"></div>
+
+<!-- CREATE MODAL - FINAL FIXED with beats/ covers/ wavs/ projects/ -->
+<div id="createModal" class="edit-modal">
+  <div class="edit-modal-box">
+    <div class="edit-modal-header">
+      <h3><i class="fa-solid fa-plus"></i> Create Beat</h3>
+      <button id="createModalClose">✕</button>
+    </div>
+    <div class="edit-modal-body">
+      <div class="edit-grid">
+        <div class="edit-field"><label>Title *</label><input id="createTitle" placeholder="HOLY RING"></div>
+        <div class="edit-field"><label>Artist</label><input id="createArtist" value="DopeTone"></div>
+        <div class="edit-field"><label>Price ($) *</label><input id="createPrice" type="number" step="0.01" value="29.99"></div>
+        <div class="edit-field"><label>BPM</label><input id="createBpm" type="number" placeholder="140"></div>
+        <div class="edit-field"><label>Key</label><input id="createKey" placeholder="Gm"></div>
+        <div class="edit-field"><label>Genre</label><select id="createGenre"><option value="">Select</option><option>Trap</option><option>Drill</option><option>Afro</option><option>R&B</option><option>Boom Bap</option><option>Plugg</option><option>Other</option></select></div>
+        <div class="edit-field"><label>Monetization</label><select id="createMode"><option value="paid">Paid</option><option value="free">FREE</option></select></div>
+        <div class="edit-field"><label>Tags</label><input id="createTags" placeholder="dark, melodic"></div>
+      </div>
+      <div class="edit-field"><label>Description</label><textarea id="createDesc" placeholder="About this beat..."></textarea></div>
+
+      <!-- UPLOADS: beats/ covers/ wavs/ projects/ -->
+      <div class="edit-upload-row" style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px;">
+        <div class="upload-box">
+          <label>Cover * <span style="color:#888;font-weight:400">→ covers/</span></label>
+          <input type="file" id="createCoverFile" accept="image/*">
+          <div class="upload-preview" id="createCoverPreview" style="margin-top:8px"></div>
+          <div id="createCoverName" style="font-size:10px;color:#888;margin-top:6px"></div>
+        </div>
+        <div class="upload-box">
+          <label>Preview MP3 * <span style="color:#888;font-weight:400">→ beats/</span></label>
+          <input type="file" id="createAudioFile" accept="audio/*,.mp3">
+          <div id="createAudioName" style="font-size:10px;color:#888;margin-top:6px"></div>
+          <audio id="createAudioPreview" controls style="width:100%;margin-top:8px;display:none"></audio>
+        </div>
+        <div class="upload-box">
+          <label>Full WAV <span style="color:#888;font-weight:400">→ wavs/</span></label>
+          <input type="file" id="createWavFile" accept=".wav,audio/wav">
+          <div id="createWavName" style="font-size:10px;color:#888;margin-top:6px"></div>
+        </div>
+        <div class="upload-box">
+          <label>Project ZIP <span style="color:#888;font-weight:400">→ projects/</span></label>
+          <input type="file" id="createZipFile" accept=".zip,.rar">
+          <div id="createZipName" style="font-size:10px;color:#888;margin-top:6px"></div>
+        </div>
+      </div>
+
+      <div id="createStatus" class="edit-status" style="margin-top:14px;color:#888">Ready — beats/ covers/ wavs/ projects/</div>
+    </div>
+    <div class="edit-modal-footer">
+      <button class="btn-ghost" id="createCancel">Cancel</button>
+      <button class="btn-primary" id="createSave">Create</button>
+    </div>
+  </div>
+</div>
+
+
   </div>
 
   <!-- EDIT MODAL -->
@@ -305,6 +421,9 @@
     import { initEmails } from './js/control-center/cc-emails.js';
     import { initTickets } from './js/control-center/cc-tickets.js';
     import { initNotices } from './js/control-center/cc-notices.js';
+    import './js/control-center/cc-edit-modal.js';
+    import './js/control-center/cc-create-beat.js';
+
    
     import { loadDashboardStats } from './js/control-center/cc-config.js';
 
@@ -350,6 +469,7 @@
   </script>
   <script src="./email-composer.js"></script>
   <script src="./vault-email.js"></script>
+  
 <script>
 (function(){
   const API = "https://emails-api.dopetone701.workers.dev";
