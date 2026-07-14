@@ -1,55 +1,111 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Your Vault - Dope Tone</title>
 <style>
-body{background:#0a0a0a;color:#fff;font-family:system-ui;padding:24px}
-.card{background:#151515;border:1px solid #222;border-radius:16px;padding:20px;margin:12px 0}
-.btn{display:inline-block;padding:10px 14px;background:#fff;color:#000;border-radius:10px;text-decoration:none;font-weight:700;margin:6px 6px 0 0;font-size:12px}
-.btn-wav{background:#8b5cf6;color:#fff}
-.btn-zip{background:#00ffc6;color:#000}
-h1{font-size:22px}
+body{background:#0a0a0a;color:#fff;font-family:system-ui;padding:24px;max-width:900px;margin:0 auto}
+.card{background:#151515;border:1px solid #222;border-radius:16px;padding:20px;margin:14px 0}
+.btn{display:inline-block;padding:10px 14px;background:#fff;color:#000;border-radius:10px;text-decoration:none;font-weight:700;margin:6px 6px 0 0;font-size:12px;border:0;cursor:pointer}
+.btn-wav{background:#8b5cf6;color:#fff}.btn-zip{background:#00ffc6;color:#000}
+.btn-doc{background:#222;color:#fff;border:1px solid #333}
+.badge{font-size:10px;padding:3px 8px;border-radius:99px;background:#222;color:#888;margin-left:8px}
+h1{font-size:22px} small{color:#666}
 </style>
 </head>
 <body>
 <h1>🔒 Your Private Vault</h1>
-<p id="status">Checking your purchase...</p>
+<p id="status">Checking purchase...</p>
 <div id="downloads"></div>
 
 <script>
 const VAULT_API = 'https://vault-orders-api.dopetone701.workers.dev';
 const sid = new URLSearchParams(location.search).get('session_id') || localStorage.getItem('dopetone_last_session_id');
+const statusEl = document.getElementById('status');
+const downloadsEl = document.getElementById('downloads');
+
+function getRule(type){
+  const t = (type||'basic').toLowerCase();
+  if(t.includes('exclusive')) return {mp3:true,wav:true,stems:true};
+  if(t.includes('premium')||t.includes('unlimited')) return {mp3:true,wav:true,stems:true};
+  if(t.includes('pro')||t.includes('wav')) return {mp3:true,wav:true,stems:false};
+  return {mp3:true,wav:false,stems:false};
+}
+
+function downloadTextFile(filename, content){
+  const blob = new Blob([content], {type:'text/plain'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href=url; a.download=filename; a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
 
 if(!sid){
-  document.getElementById('status').innerHTML = 'No session found. Go back to <a href="/success.html" style="color:#8b5cf6">success page</a> or re-enter your email.';
+  statusEl.innerHTML = 'No session found. Open from success page.';
 } else {
-  document.getElementById('status').textContent = 'Session: ' + sid.slice(0,20) + '... Verifying...';
-  fetch(`${VAULT_API}/api/orders/status?session_id=${encodeURIComponent(sid)}`)
-    .then(r=>r.json())
-    .then(data=>{
-      console.log(data);
-      if(data.status !== 'paid'){
-        document.getElementById('status').textContent = 'Not paid yet - status: ' + data.status;
-        return;
-      }
-      document.getElementById('status').innerHTML = `✅ Paid - $${(data.total_cents/100).toFixed(2)} - ${data.purchases.length} beats unlocked<br><small>${data.customer_email||''}</small>`;
-      let html = '';
-      (data.downloads || []).forEach(d=>{
-        html += `<div class="card">
-          <b>${d.beat_title}</b> - ${d.license_type} - $${(d.amount/100).toFixed(2)}
-          <br/><br/>
-          <a class="btn" href="${VAULT_API}${d.links.mp3}" download>MP3 Private Link</a>
-          <a class="btn btn-wav" href="${VAULT_API}${d.links.wav}" download>WAV Private Link</a>
-          <a class="btn btn-zip" href="${VAULT_API}${d.links.stems}" download>STEMS Private Link</a>
-        </div>`;
-      });
-      if(!html) html = '<p>No beats in this purchase. Check purchases table.</p>';
-      document.getElementById('downloads').innerHTML = html;
-    })
-    .catch(e=>{
-      document.getElementById('status').textContent = 'Error: ' + e.message;
+  statusEl.textContent = 'Verifying... ' + sid.slice(0,20) + '...';
+  fetch(VAULT_API + '/api/orders/status?session_id=' + encodeURIComponent(sid))
+ .then(r=>r.json())
+ .then(data=>{
+    if(data.status!== 'paid'){
+      statusEl.textContent = 'Not paid - ' + data.status;
+      return;
+    }
+    const email = data.customer_email || 'customer';
+    const date = new Date().toLocaleDateString();
+    statusEl.innerHTML = '✅ Paid - $' + (data.total_cents/100).toFixed(2) + ' - ' + data.purchases.length + ' beats<br><small>' + email + ' - ' + date + '</small>';
+
+    data.downloads.forEach(d=>{
+      const rule = getRule(d.license_type);
+      const div = document.createElement('div');
+      div.className = 'card';
+
+      let buttons = '';
+      if(rule.mp3) buttons += '<a class="btn" href="' + VAULT_API + d.links.mp3 + '">MP3 Private Link</a>';
+      if(rule.wav) buttons += '<a class="btn btn-wav" href="' + VAULT_API + d.links.wav + '">WAV Private Link</a>';
+      if(rule.stems) buttons += '<a class="btn btn-zip" href="' + VAULT_API + d.links.stems + '">STEMS Private Link</a>';
+      if(!rule.wav) buttons += '<span class="btn btn-doc" style="opacity:.3">WAV not in Basic</span>';
+      if(!rule.stems) buttons += '<span class="btn btn-doc" style="opacity:.3">STEMS only in Exclusive</span>';
+
+      div.innerHTML = '<b>' + d.beat_title + '</b> <span class="badge">' + d.license_type.toUpperCase() + ' - $' + (d.amount/100).toFixed(2) + '</span>' +
+                      '<div style="margin-top:12px">' + buttons + '<br><br></div>';
+
+      // Licence button
+      const licBtn = document.createElement('button');
+      licBtn.className = 'btn btn-doc';
+      licBtn.textContent = '📄 Download Licence';
+      licBtn.onclick = function(){
+        const text = 'DOPE TONE MUSIC - LICENCE AGREEMENT\n' +
+        'Beat: ' + d.beat_title + '\n' +
+        'Licence: ' + d.license_type + '\n' +
+        'Buyer: ' + email + '\n' +
+        'Order: ' + sid + '\n' +
+        'Date: ' + date + '\n' +
+        'Amount: $' + (d.amount/100).toFixed(2) + '\n\n' +
+        'RIGHTS: ' + d.license_type + ' - ' + (rule.stems?'MP3+WAV+STEMS':rule.wav?'MP3+WAV':'MP3 only') + '\n' +
+        'Credit: Prod. By Dope Tone\n' +
+        'Terms: https://dopetonevault.com/terms\n';
+        downloadTextFile(d.beat_title + '_LICENCE_' + d.license_type + '.txt', text);
+      };
+
+      // Readme button
+      const readBtn = document.createElement('button');
+      readBtn.className = 'btn btn-doc';
+      readBtn.textContent = '📖 Download Readme';
+      readBtn.onclick = function(){
+        const text = 'Thank you for buying ' + d.beat_title + '!\n\n' +
+        'FILES INCLUDED: ' + (rule.stems?'MP3, WAV, STEMS ZIP':rule.wav?'MP3, WAV':'MP3 only') + '\n\n' +
+        'HOW TO USE:\n1. Import to DAW\n2. Record\n3. Mix\n4. Credit: Prod. By Dope Tone\n\nSupport: support@dopetonevault.com\n';
+        downloadTextFile(d.beat_title + '_README.txt', text);
+      };
+
+      div.appendChild(licBtn);
+      div.appendChild(readBtn);
+      downloadsEl.appendChild(div);
     });
+  })
+ .catch(e=>{ statusEl.textContent = 'Error: ' + e.message; });
 }
 </script>
 </body>
