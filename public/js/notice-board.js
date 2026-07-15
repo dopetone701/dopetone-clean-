@@ -1,4 +1,4 @@
-// js/notice-board.js - SPOTIFY LAYOUT KEPT - ONLY COLOR BLUE DNA + CHAT SLIDE FIX + 15 AUTO REPLIES AI
+// js/notice-board.js - SPOTIFY LAYOUT KEPT - ONLY COLOR BLUE DNA + CHAT SLIDE FIX + 15 AUTO REPLIES AI + SAFE AI READY
 const DROP_API = "https://dt-drop-zone-api.dopetone701.workers.dev";
 const TICKETS_API = "https://support-tickets-api.dopetone701.workers.dev";
 const FEED = document.getElementById('noticeBoardFeed');
@@ -138,7 +138,7 @@ function appendBubble(c,isTemp=false){
   if(isCreator && String(c.reply_to_user_id)===String(uid)) showChatSmooth();
 }
 
-// ===== NEW AI PATIENCE AUTO-REPLY - 15 PRO MESSAGES =====
+// ===== 15 AUTO REPLIES + GIANT AI HOOK - SAFE =====
 const AUTO_REPLIES = [
   "Got you! 🔵 We're locked in studio right now - private reply dropping soon!",
   "Love that message! 💙 Creators saw it, we'll hit you back private in a sec",
@@ -156,17 +156,30 @@ const AUTO_REPLIES = [
   "My G! 🙌 Creators will reply private - we don't leave family hanging",
   "100% got it! ✨ Stay tuned in Drop Zone - private reply OTW, patience pays with freebies"
 ];
-// ===== SURGICAL FIX - REPLY TIME AFTER SWAP =====
-function showAutoReply(){
-  const {uid}=getRealUser();
+
+// GIANT AI PLUG - tries to load ai-replies folder if exists, else fallback
+async function getGiantReply(userText){
+  try{
+    if(window.DopeAI && window.DopeAI.getAIReply){
+      return window.DopeAI.getAIReply(userText);
+    }
+    const mod = await import('./ai-replies/index.js').catch(()=>null);
+    if(mod && mod.getAIReply){
+      return mod.getAIReply(userText);
+    }
+  }catch(e){}
+  // fallback
   let lastIdx = parseInt(localStorage.getItem('dt_auto_idx')||'-1');
   let idx;
   do{ idx = Math.floor(Math.random()*AUTO_REPLIES.length); } while(idx===lastIdx && AUTO_REPLIES.length>1);
   localStorage.setItem('dt_auto_idx', String(idx));
-  const msg = AUTO_REPLIES[idx];
+  return AUTO_REPLIES[idx];
+}
 
-  // Wait for real message to replace temp before typing
+async function showAutoReply(userText){
+  const {uid}=getRealUser();
   showTyping(true);
+  const msg = await getGiantReply(userText || lastSentContent);
   setTimeout(()=>{
     showTyping(false);
     appendBubble({id:'auto-'+Date.now(), user_name:'Dope Tone Creators', user_id:'admin', message:msg, is_admin:1, reply_to_user_id:uid, created_at:new Date().toISOString()});
@@ -186,32 +199,23 @@ async function sendChat(){
   lastSentContent=t;
   lastSentTime=Date.now();
 
-  // 1. Temp bubble instantly
   appendBubble({id:'tmp-'+Date.now(),user_name:name,user_id:uid,message:t,is_admin:0,created_at:new Date().toISOString()},true);
   showChatSmooth();
   scrollToLatest();
 
   if(SEND) SEND.disabled=true;
-
   try{
     await fetch(`${DROP_API}/api/chat`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_name:name,user_id:uid,email,message:t,is_admin:0})});
   }catch{}
-
   if(SEND) SEND.disabled=false;
   isSending=false;
 
-  // 2. Wait for pollChat to replace temp with real (poll every 3s)
-  // poll once quickly after 800ms to swap, THEN auto reply
   setTimeout(async ()=>{
-    await pollChat(); // forces real message to replace tmp
+    await pollChat();
     scrollToLatest();
-    // 3. Now auto reply AFTER swap - looks natural: user -> creator
-    setTimeout(()=> showAutoReply(), 800);
+    setTimeout(()=> showAutoReply(t), 800);
   }, 900);
 }
-
-
-
 
 // ============ POSTS - EXACTLY AS RESTORED - ONLY GREEN->BLUE ============
 async function loadDrops() {
@@ -267,7 +271,7 @@ async function loadDrops() {
           ${mediaHTML}
         </div>`;
     }).join('');
-  } catch(e){}
+  } catch(e){ console.log('drops error', e); }
 }
 async function pollChat(){ try{ const {uid}=getRealUser(); const r=await fetch(`${DROP_API}/api/chat?uid=${uid}&t=${Date.now()}`,{cache:'no-store'}); const chats=await r.json(); chats.forEach(c=>appendBubble(c)); }catch{} }
 
