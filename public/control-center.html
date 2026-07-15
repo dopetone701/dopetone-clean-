@@ -8,7 +8,16 @@
   <link rel="stylesheet" href="styles/control-center.css">
   <link rel="stylesheet" href="styles/cc-edit-modal.css">
   <link rel="stylesheet" href="styles/cc-create-beat.css">
-
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    .leaflet-container{ background:#050505!important; border-radius:12px }
+    .dz-dark-tiles .leaflet-tile{ filter: invert(1) hue-rotate(180deg) brightness(0.6) contrast(1.2) !important; }
+    .dz-sat-tiles .leaflet-tile{ filter: none !important; }
+    .fan-marker{ width:10px;height:10px;background:#0066ff;border-radius:50%;box-shadow:0 0 15px #0066ff, 0 0 30px #0066ff;border:2px solid #fff;animation:pulse 1.5s infinite }
+    #dzPillsWrap::-webkit-scrollbar{ width:5px } #dzPillsWrap::-webkit-scrollbar-thumb{ background:#222; border-radius:99px }
+    #dzThreadWrap::-webkit-scrollbar{ width:5px } #dzThreadWrap::-webkit-scrollbar-thumb{ background:#0066ff55; border-radius:99px }
+  </style>
 </head>
 <body>
   <div class="nav">
@@ -23,76 +32,15 @@
   </div>
 
   <div class="container">
-    <!-- LIVE STATS WITH SPARKLINES -->
     <div class="stats">
-      <div class="stat-card">
-        <div class="stat-header">
-          <h3><span class="live-dot"></span>Total Plays</h3>
-          <div class="stat-change" id="playsChange">+0%</div>
-        </div>
-        <p id="totalPlays">0</p>
-        <div class="sparkline-wrap">
-          <canvas id="playsSpark"></canvas>
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-header">
-          <h3><span class="live-dot"></span>Downloads</h3>
-          <div class="stat-change" id="downloadsChange">+0%</div>
-        </div>
-        <p id="totalDownloads">0</p>
-        <div class="sparkline-wrap">
-          <canvas id="downloadsSpark"></canvas>
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-header">
-          <h3><span class="live-dot"></span>Cart Items</h3>
-          <div class="stat-change" id="cartChange">+0%</div>
-        </div>
-        <p id="cartItems">0</p>
-        <div class="sparkline-wrap">
-          <canvas id="cartSpark"></canvas>
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-header">
-          <h3><span class="live-dot"></span>Total Likes</h3>
-          <div class="stat-change" id="likesChange">+0%</div>
-        </div>
-        <p id="totalLikes">0</p>
-        <div class="sparkline-wrap">
-          <canvas id="likesSpark"></canvas>
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-header">
-          <h3><span class="live-dot"></span>Orders</h3>
-          <div class="stat-change" id="ordersChange">+0%</div>
-        </div>
-        <p id="totalOrders">0</p>
-        <div class="sparkline-wrap">
-          <canvas id="ordersSpark"></canvas>
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-header">
-          <h3><span class="live-dot"></span>Revenue</h3>
-          <div class="stat-change" id="revenueChange">+0%</div>
-        </div>
-        <p id="totalRevenue">$0</p>
-        <div class="sparkline-wrap">
-          <canvas id="revenueSpark"></canvas>
-        </div>
-      </div>
+      <div class="stat-card"><div class="stat-header"><h3><span class="live-dot"></span>Total Plays</h3><div class="stat-change" id="playsChange">+0%</div></div><p id="totalPlays">0</p><div class="sparkline-wrap"><canvas id="playsSpark"></canvas></div></div>
+      <div class="stat-card"><div class="stat-header"><h3><span class="live-dot"></span>Downloads</h3><div class="stat-change" id="downloadsChange">+0%</div></div><p id="totalDownloads">0</p><div class="sparkline-wrap"><canvas id="downloadsSpark"></canvas></div></div>
+      <div class="stat-card"><div class="stat-header"><h3><span class="live-dot"></span>Cart Items</h3><div class="stat-change" id="cartChange">+0%</div></div><p id="cartItems">0</p><div class="sparkline-wrap"><canvas id="cartSpark"></canvas></div></div>
+      <div class="stat-card"><div class="stat-header"><h3><span class="live-dot"></span>Total Likes</h3><div class="stat-change" id="likesChange">+0%</div></div><p id="totalLikes">0</p><div class="sparkline-wrap"><canvas id="likesSpark"></canvas></div></div>
+      <div class="stat-card"><div class="stat-header"><h3><span class="live-dot"></span>Orders</h3><div class="stat-change" id="ordersChange">+0%</div></div><p id="totalOrders">0</p><div class="sparkline-wrap"><canvas id="ordersSpark"></canvas></div></div>
+      <div class="stat-card"><div class="stat-header"><h3><span class="live-dot"></span>Revenue</h3><div class="stat-change" id="revenueChange">+0%</div></div><p id="totalRevenue">$0</p><div class="sparkline-wrap"><canvas id="revenueSpark"></canvas></div></div>
     </div>
 
-    <!-- TRADE GRAPHS + TOP SONGS + PLAYER -->
     <div class="grid-3">
       <div class="section">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
@@ -104,39 +52,23 @@
               <button class="toggle-btn active" data-range="day">Day</button>
               <button class="toggle-btn" data-range="week">Week</button>
               <button class="toggle-btn" data-range="month">Month</button>
-
             </div>
           </div>
         </div>
-        <div class="chart-container">
-          <canvas id="tradeChart"></canvas>
-        </div>
+        <div class="chart-container"><canvas id="tradeChart"></canvas></div>
       </div>
-
-      <div class="section">
-        <h2><i class="fa-solid fa-fire"></i> Top Performing</h2>
-        <div class="top-list" id="topSongs"></div>
-      </div>
-
+      <div class="section"><h2><i class="fa-solid fa-fire"></i> Top Performing</h2><div class="top-list" id="topSongs"></div></div>
       <div class="section">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
           <h2><i class="fa-solid fa-play"></i> Quick Player</h2>
           <div style="display:flex;gap:8px;">
-            <button class="action-btn" id="playerEditBtn" title="Edit Beat">
-              <i class="fa-solid fa-edit"></i>
-            </button>
-            <button class="action-btn" id="monetizeBtn" title="Monetization">
-              <i class="fa-solid fa-dollar-sign"></i>
-            </button>
+            <button class="action-btn" id="playerEditBtn"><i class="fa-solid fa-edit"></i></button>
+            <button class="action-btn" id="monetizeBtn"><i class="fa-solid fa-dollar-sign"></i></button>
           </div>
         </div>
         <div class="player" id="quickPlayer">
           <img src="images/logo.png" id="playerCover" alt="Cover">
-          <div class="player-info">
-            <h4 id="playerTitle">No track selected</h4>
-            <p id="playerArtist">-</p>
-            <div id="monetizeBadge" style="margin-top:4px;font-size:10px;padding:2px 6px;border-radius:4px;display:inline-block;"></div>
-          </div>
+          <div class="player-info"><h4 id="playerTitle">No track selected</h4><p id="playerArtist">-</p><div id="monetizeBadge" style="margin-top:4px;font-size:10px;padding:2px 6px;border-radius:4px;display:inline-block;"></div></div>
           <div class="player-controls">
             <button class="player-btn" id="prevBtn"><i class="fa-solid fa-backward"></i></button>
             <button class="player-btn play" id="playBtn"><i class="fa-solid fa-play"></i></button>
@@ -153,266 +85,123 @@
       </div>
     </div>
 
-    <!-- EMAIL LIST + TICKETS -->
     <div class="grid-2">
       <div class="section">
-  <!-- PRO HEADER -->
-  <div id="emailListHeader" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-    <h2><i class="fa-solid fa-envelope"></i> Email Audiences <span id="emailCount" style="color:#8b5cf6;">(0)</span></h2>
-    <span style="font-size:10px;color:#00ff88;"><span class="live-dot"></span> D1 Synced</span>
-  </div>
-
-  <!-- FILTERS - EXPANDS DOWN ONLY -->
-  <div id="proFilterBar" style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;align-items:center;background:#0a0a0a;padding:10px;border-radius:8px;border:1px solid #222">
-    <button class="filter-pill active" data-filter="all" style="padding:5px 10px;border-radius:20px;border:1px solid #333;background:#fff;color:#000;font-size:11px;cursor:pointer">All <b id="c_all" style="background:rgba(0,0,0,.15);padding:1px 6px;border-radius:10px;margin-left:4px">0</b></button>
-    <button class="filter-pill" data-filter="account" style="padding:5px 10px;border-radius:20px;border:1px solid #333;background:#111;color:#999;font-size:11px;cursor:pointer"><i class="fa-solid fa-user"></i> Accounts <b id="c_acc" style="background:rgba(255,255,255,.1);padding:1px 6px;border-radius:10px;margin-left:4px">0</b></button>
-    <button class="filter-pill" data-filter="newsletter" style="padding:5px 10px;border-radius:20px;border:1px solid #333;background:#111;color:#999;font-size:11px;cursor:pointer"><i class="fa-solid fa-envelope"></i> Newsletter <b id="c_news" style="background:rgba(255,255,255,.1);padding:1px 6px;border-radius:10px;margin-left:4px">0</b></button>
-    <button class="filter-pill" data-filter="subscription" style="padding:5px 10px;border-radius:20px;border:1px solid #333;background:#111;color:#999;font-size:11px;cursor:pointer"><i class="fa-solid fa-download"></i> Subs <b id="c_sub" style="background:rgba(255,255,255,.1);padding:1px 6px;border-radius:10px;margin-left:4px">0</b></button>
-    <button class="filter-pill" data-filter="never_subscribed" style="padding:5px 10px;border-radius:20px;border:1px solid #ff5050;background:#111;color:#ff5050;font-size:11px;cursor:pointer"><i class="fa-solid fa-user-xmark"></i> Never Sub <b id="c_never" style="background:rgba(255,80,80,.2);padding:1px 6px;border-radius:10px;margin-left:4px">0</b></button>
-    <button class="filter-pill" data-filter="vip" style="padding:5px 10px;border-radius:20px;border:1px solid #00ff88;background:#111;color:#00ff88;font-size:11px;cursor:pointer"><i class="fa-solid fa-crown"></i> VIP <b id="c_vip" style="background:rgba(0,255,136,.2);padding:1px 6px;border-radius:10px;margin-left:4px">0</b></button>
-    <button class="filter-pill" data-filter="warm" style="padding:5px 10px;border-radius:20px;border:1px solid #333;background:#111;color:#999;font-size:11px;cursor:pointer"><i class="fa-solid fa-fire"></i> Warm <b id="c_warm" style="background:rgba(255,255,255,.1);padding:1px 6px;border-radius:10px;margin-left:4px">0</b></button>
-    <div style="margin-left:auto;display:flex;gap:6px">
-      <button class="fake-btn" id="copyAudienceBtn" style="padding:6px 10px;font-size:11px"><i class="fa-solid fa-copy"></i> Copy</button>
-      <button class="fake-btn" id="exportBtn" style="background:#8b5cf6;padding:6px 10px;font-size:11px"><i class="fa-solid fa-download"></i> CSV</button>
-    </div>
-  </div>
-
-  <!-- BULK SEND -->
-  <div style="display:flex;gap:8px;margin-bottom:12px;padding:8px;background:#0f0f0f;border:1px solid #222;border-radius:8px">
-    <input type="text" id="bulkSubject" placeholder="Subject: Your pack is waiting 👀" style="flex:1;padding:6px 10px;background:#0a0a0a;border:1px solid #333;color:#fff;border-radius:6px;font-size:11px">
-    <button id="bulkSendBtn" class="fake-btn" style="background:#00ff88;color:#000;white-space:nowrap;padding:6px 12px;font-size:11px"><i class="fa-solid fa-paper-plane"></i> Send to <span id="bulkCount">0</span></button>
-  </div>
-
-  <!-- TABLE - EXPANDS DOWNWARDS -->
-  <div class="table-wrap">
-    <table class="data-table">
-      <thead>
-        <tr><th>Email</th><th>Audiences</th><th>Date</th><th>Copy</th></tr>
-      </thead>
-      <tbody id="emailTableBody">
-        <tr><td colspan="4" class="empty-state">Loading...</td></tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-
+        <div id="emailListHeader" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <h2><i class="fa-solid fa-envelope"></i> Email Audiences <span id="emailCount" style="color:#8b5cf6;">(0)</span></h2>
+          <span style="font-size:10px;color:#00ff88;"><span class="live-dot"></span> D1 Synced</span>
+        </div>
+        <div id="proFilterBar" style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;align-items:center;background:#0a0a0a;padding:10px;border-radius:8px;border:1px solid #222">
+          <button class="filter-pill active" data-filter="all" style="padding:5px 10px;border-radius:20px;border:1px solid #333;background:#fff;color:#000;font-size:11px;cursor:pointer">All <b id="c_all" style="background:rgba(0,0,0,.15);padding:1px 6px;border-radius:10px;margin-left:4px">0</b></button>
+          <button class="filter-pill" data-filter="account" style="padding:5px 10px;border-radius:20px;border:1px solid #333;background:#111;color:#999;font-size:11px;cursor:pointer"><i class="fa-solid fa-user"></i> Accounts <b id="c_acc" style="background:rgba(255,255,255,.1);padding:1px 6px;border-radius:10px;margin-left:4px">0</b></button>
+          <button class="filter-pill" data-filter="newsletter" style="padding:5px 10px;border-radius:20px;border:1px solid #333;background:#111;color:#999;font-size:11px;cursor:pointer"><i class="fa-solid fa-envelope"></i> Newsletter <b id="c_news" style="background:rgba(255,255,255,.1);padding:1px 6px;border-radius:10px;margin-left:4px">0</b></button>
+          <button class="filter-pill" data-filter="subscription" style="padding:5px 10px;border-radius:20px;border:1px solid #333;background:#111;color:#999;font-size:11px;cursor:pointer"><i class="fa-solid fa-download"></i> Subs <b id="c_sub" style="background:rgba(255,255,255,.1);padding:1px 6px;border-radius:10px;margin-left:4px">0</b></button>
+          <button class="filter-pill" data-filter="never_subscribed" style="padding:5px 10px;border-radius:20px;border:1px solid #ff5050;background:#111;color:#ff5050;font-size:11px;cursor:pointer"><i class="fa-solid fa-user-xmark"></i> Never Sub <b id="c_never" style="background:rgba(255,80,80,.2);padding:1px 6px;border-radius:10px;margin-left:4px">0</b></button>
+          <button class="filter-pill" data-filter="vip" style="padding:5px 10px;border-radius:20px;border:1px solid #00ff88;background:#111;color:#00ff88;font-size:11px;cursor:pointer"><i class="fa-solid fa-crown"></i> VIP <b id="c_vip" style="background:rgba(0,255,136,.2);padding:1px 6px;border-radius:10px;margin-left:4px">0</b></button>
+          <button class="filter-pill" data-filter="warm" style="padding:5px 10px;border-radius:20px;border:1px solid #333;background:#111;color:#999;font-size:11px;cursor:pointer"><i class="fa-solid fa-fire"></i> Warm <b id="c_warm" style="background:rgba(255,255,255,.1);padding:1px 6px;border-radius:10px;margin-left:4px">0</b></button>
+          <div style="margin-left:auto;display:flex;gap:6px">
+            <button class="fake-btn" id="copyAudienceBtn" style="padding:6px 10px;font-size:11px"><i class="fa-solid fa-copy"></i> Copy</button>
+            <button class="fake-btn" id="exportBtn" style="background:#8b5cf6;padding:6px 10px;font-size:11px"><i class="fa-solid fa-download"></i> CSV</button>
+          </div>
+        <div style="display:flex;gap:8px;margin-bottom:12px;padding:8px;background:#0f0f0f;border:1px solid #222;border-radius:8px">
+          <input type="text" id="bulkSubject" placeholder="Subject: Your pack is waiting 👀" style="flex:1;padding:6px 10px;background:#0a0a0a;border:1px solid #333;color:#fff;border-radius:6px;font-size:11px">
+          <button id="bulkSendBtn" class="fake-btn" style="background:#00ff88;color:#000;white-space:nowrap;padding:6px 12px;font-size:11px"><i class="fa-solid fa-paper-plane"></i> Send to <span id="bulkCount">0</span></button>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table"><thead><tr><th>Email</th><th>Audiences</th><th>Date</th><th>Copy</th></tr></thead><tbody id="emailTableBody"><tr><td colspan="4" class="empty-state">Loading...</td></tr></tbody></table>
+        </div>
+      </div>
 
       <div class="section" id="ticketsSection" style="padding:0;overflow:hidden;background:#0a0a0a;border:1px solid #222;border-radius:12px">
-  <!-- HEADER LIKE EMAILS -->
-  <div id="ticketListHeader" style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid #1a1a1a">
-    <h2 style="margin:0;display:flex;align-items:center;gap:8px;font-size:15px">
-      <i class="fa-solid fa-ticket" style="color:#8b5cf6"></i> 
-      Support Inbox 
-      <span id="ticketCount" style="background:#8b5cf622;color:#8b5cf6;padding:2px 8px;border-radius:20px;font-size:11px">(0)</span>
-      <span id="ticketOpenDot" style="font-size:10px;color:#00ff88;margin-left:8px"><span class="live-dot"></span> Live</span>
-    </h2>
-    <div style="display:flex;gap:6px">
-      <button id="ticketRefreshBtn" style="background:#111;border:1px solid #222;color:#666;padding:6px 10px;border-radius:6px;font-size:11px;cursor:pointer"><i class="fa-solid fa-rotate"></i></button>
-      <button id="ticketSearchToggle" style="background:#111;border:1px solid #222;color:#666;padding:6px 10px;border-radius:6px;font-size:11px;cursor:pointer"><i class="fa-solid fa-magnifying-glass"></i></button>
-    </div>
-  </div>
-
-  <!-- FILTER BAR - LIKE SPOTIFY PILLS -->
-  <div id="ticketFilterBar" style="display:flex;gap:6px;padding:10px 16px;background:#050505;border-bottom:1px solid #111;flex-wrap:wrap;align-items:center;overflow-x:auto;white-space:nowrap">
-    <button class="filter-pill active" data-filter="all" style="padding:5px 12px;border-radius:20px;border:1px solid #333;background:#fff;color:#000;font-size:11px;cursor:pointer;white-space:nowrap">All <b id="t_all" style="background:rgba(0,0,0,.15);padding:1px 6px;border-radius:10px;margin-left:4px">0</b></button>
-    <button class="filter-pill" data-filter="open" style="padding:5px 12px;border-radius:20px;border:1px solid #ef4444;background:#111;color:#ef4444;font-size:11px;cursor:pointer;white-space:nowrap"><i class="fa-solid fa-circle-dot"></i> Open <b id="t_open" style="background:rgba(239,68,68,.2);padding:1px 6px;border-radius:10px;margin-left:4px">0</b></button>
-    <button class="filter-pill" data-filter="answered" style="padding:5px 12px;border-radius:20px;border:1px solid #3b82f6;background:#111;color:#3b82f6;font-size:11px;cursor:pointer;white-space:nowrap"><i class="fa-solid fa-reply"></i> Answered <b id="t_ans" style="background:rgba(59,130,246,.2);padding:1px 6px;border-radius:10px;margin-left:4px">0</b></button>
-    <button class="filter-pill" data-filter="Critical" style="padding:5px 12px;border-radius:20px;border:1px solid #dc2626;background:#111;color:#dc2626;font-size:11px;cursor:pointer;white-space:nowrap"><i class="fa-solid fa-triangle-exclamation"></i> Critical <b id="t_crit" style="background:rgba(220,38,.2);padding:1px 6px;border-radius:10px;margin-left:4px">0</b></button>
-    <button class="filter-pill" data-filter="Resolved" style="padding:5px 12px;border-radius:20px;border:1px solid #10b981;background:#111;color:#10b981;font-size:11px;cursor:pointer;white-space:nowrap"><i class="fa-solid fa-check"></i> Done <b id="t_done" style="background:rgba(16,185,129,.2);padding:1px 6px;border-radius:10px;margin-left:4px">0</b></button>
-    <div style="margin-left:auto;display:flex;gap:6px;align-items:center">
-      <input type="text" id="ticketSearchInput" placeholder="Search tickets..." style="display:none;padding:6px 10px;background:#0a0a0a;border:1px solid #222;color:#fff;border-radius:20px;font-size:11px;width:180px">
-      <span style="font-size:10px;color:#444" id="ticketLiveCount">0 new</span>
-    </div>
-  </div>
-
-  <!-- TICKET LIST - YOUTUBE COMMENT / SPOTIFY TRACK STYLE -->
-  <div id="ticketList" style="max-height:420px;overflow-y:auto;background:#070707">
-    <!-- SKELETON LOADING - SPOTIFY STYLE -->
-    <div id="ticketSkeleton">
-      <div style="display:flex;gap:10px;padding:12px 16px;border-bottom:1px solid #111;animation:pulse 1.5s infinite">
-        <div style="width:36px;height:36px;border-radius:50%;background:#1a1a1a"></div>
-        <div style="flex:1">
-          <div style="height:10px;width:40%;background:#1a1a1a;border-radius:4px;margin-bottom:8px"></div>
-          <div style="height:8px;width:80%;background:#111;border-radius:4px"></div>
+        <div id="ticketListHeader" style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid #1a1a1a">
+          <h2 style="margin:0;display:flex;align-items:center;gap:8px;font-size:15px"><i class="fa-solid fa-ticket" style="color:#8b5cf6"></i>Support Inbox<span id="ticketCount" style="background:#8b5cf622;color:#8b5cf6;padding:2px 8px;border-radius:20px;font-size:11px">(0)</span><span id="ticketOpenDot" style="font-size:10px;color:#00ff88;margin-left:8px"><span class="live-dot"></span> Live</span></h2>
+          <div style="display:flex;gap:6px"><button id="ticketRefreshBtn" style="background:#111;border:1px solid #222;color:#666;padding:6px 10px;border-radius:6px;font-size:11px;cursor:pointer"><i class="fa-solid fa-rotate"></i></button><button id="ticketSearchToggle" style="background:#111;border:1px solid #222;color:#666;padding:6px 10px;border-radius:6px;font-size:11px;cursor:pointer"><i class="fa-solid fa-magnifying-glass"></i></button></div>
         </div>
-      </div>
-      <div style="display:flex;gap:10px;padding:12px 16px;border-bottom:1px solid #111;animation:pulse 1.5s infinite">
-        <div style="width:36px;height:36px;border-radius:50%;background:#1a1a1a"></div>
-        <div style="flex:1">
-          <div style="height:10px;width:50%;background:#1a1a1a;border-radius:4px;margin-bottom:8px"></div>
-          <div style="height:8px;width:70%;background:#111;border-radius:4px"></div>
+        <div id="ticketFilterBar" style="display:flex;gap:6px;padding:10px 16px;background:#050505;border-bottom:1px solid #111;flex-wrap:wrap">
+          <button class="filter-pill active" data-filter="all" style="padding:5px 12px;border-radius:20px;border:1px solid #333;background:#fff;color:#000;font-size:11px">All <b id="t_all">0</b></button>
+          <button class="filter-pill" data-filter="open" style="padding:5px 12px;border-radius:20px;border:1px solid #ef4444;background:#111;color:#ef4444;font-size:11px"><i class="fa-solid fa-circle-dot"></i> Open <b id="t_open">0</b></button>
+          <button class="filter-pill" data-filter="answered" style="padding:5px 12px;border-radius:20px;border:1px solid #3b82f6;background:#111;color:#3b82f6;font-size:11px"><i class="fa-solid fa-reply"></i> Answered <b id="t_ans">0</b></button>
+          <button class="filter-pill" data-filter="Critical" style="padding:5px 12px;border-radius:20px;border:1px solid #dc2626;background:#111;color:#dc2626;font-size:11px">Critical <b id="t_crit">0</b></button>
+          <button class="filter-pill" data-filter="Resolved" style="padding:5px 12px;border-radius:20px;border:1px solid #10b981;background:#111;color:#10b981;font-size:11px">Done <b id="t_done">0</b></button>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- FOOTER ACTION BAR - LIKE YOUTUBE STUDIO -->
-  <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 16px;background:#050505;border-top:1px solid #111">
-    <div style="font-size:11px;color:#555"><span id="ticketFooterCount">0 tickets</span> • Auto refreshes every 15s</div>
-    <div style="display:flex;gap:6px">
-      <button id="ticketMarkAllBtn" style="padding:5px 10px;background:#111;border:1px solid #222;border-radius:6px;color:#666;font-size:11px;cursor:pointer">Mark all read</button>
-      <button id="ticketExportBtn" style="padding:5px 10px;background:#8b5cf6;border:none;border-radius:6px;color:#fff;font-size:11px;cursor:pointer;font-weight:600"><i class="fa-solid fa-download"></i> Export</button>
-    </div>
-  </div>
-</div>
-
-<style>
-@keyframes pulse { 0%{opacity:1} 50%{opacity:.5} 100%{opacity:1} }
-.filter-pill.active { background:#fff !important; color:#000 !important; border-color:#fff !important; }
-#ticketList::-webkit-scrollbar { width:4px; }
-#ticketList::-webkit-scrollbar-thumb { background:#222; border-radius:4px; }
-.ticket-row:hover { background:#111 !important; }
-.ticket-row:hover .ticket-actions { opacity:1 !important; }
-</style>
-
+        <div id="ticketList" style="max-height:420px;overflow-y:auto;background:#070707"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 16px;background:#050505;border-top:1px solid #111"><div style="font-size:11px;color:#555"><span id="ticketFooterCount">0 tickets</span> • Auto refresh 15s</div><div style="display:flex;gap:6px"><button id="ticketMarkAllBtn" style="padding:5px 10px;background:#111;border:1px solid #222;border-radius:6px;color:#666;font-size:11px">Mark all read</button><button id="ticketExportBtn" style="padding:5px 10px;background:#8b5cf6;border:none;border-radius:6px;color:#fff;font-size:11px"><i class="fa-solid fa-download"></i> Export</button></div></div>
       </div>
     </div>
 
-    <!-- NOTICE BOARD CONTROL - PROMO READY -->
     <div class="section" id="noticeBoardControl">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">
-        <h2><i class="fa-solid fa-scroll"></i> DT DROP ZONE Control</h2>
-        <span style="font-size:11px;color:#00ff88;"><span class="live-dot"></span> Promo Mode</span>
+        <h2 style="display:flex;align-items:center;gap:10px"><i class="fa-solid fa-satellite-dish" style="color:#0066ff"></i> DT DROP ZONE Control <span style="font-size:9px;background:#0066ff;color:#fff;padding:3px 8px;border-radius:99px">FUTURE OS v2.1</span></h2>
+        <span style="font-size:11px;color:#00ff88;display:flex;align-items:center;gap:6px"><span class="live-dot" style="background:#00ff88;box-shadow:0 0 8px #00ff88"></span> NEURAL LINK • LIVE</span>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1.2fr.8fr;gap:12px;margin-bottom:16px">
+        <div style="background:#0a0a0a;border:1px solid #1e1e1e;border-radius:16px;padding:12px;overflow:hidden">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+            <h3 style="margin:0;font-size:12px;color:#fff;display:flex;align-items:center;gap:6px"><i class="fa-solid fa-comments" style="color:#0066ff"></i> Live Fan Chat <span id="dzCount" style="background:#0066ff;color:#fff;padding:2px 8px;border-radius:20px;font-size:10px">0</span> <span id="dzUnread" style="background:#ff3b30;color:#fff;padding:2px 8px;border-radius:20px;font-size:9px;display:none">0 NEW</span></h3>
+            <div style="display:flex;gap:6px">
+              <button id="dzMarkRead" style="background:#111;border:1px solid #222;color:#888;padding:6px 10px;border-radius:99px;font-size:9px;cursor:pointer;font-weight:700"><i class="fa-solid fa-check-double"></i> READ ALL</button>
+              <button id="dzClearAll" style="background:#111;border:1px solid #ff1a1a33;color:#ff5555;padding:6px 10px;border-radius:99px;font-size:9px;cursor:pointer;font-weight:700"><i class="fa-solid fa-trash"></i> CLEAR</button>
+            </div>
+          </div>
+          <div id="dzChatList" style="display:flex;flex-direction:column;height:620px;overflow:hidden;background:#070707;border:1px solid #1e1e1e;border-radius:12px;">
+            <div id="dzPillsWrap" style="display:flex;flex-direction:column;gap:10px;overflow-y:auto;max-height:210px;min-height:80px;padding:10px;border-bottom:1px solid #1e1e1e;background:#0a0a0a;"><div style="color:#555;font-size:11px;padding:10px">Loading fans...</div></div>
+            <div id="dzThreadWrap" style="flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px;height:340px;"><div style="color:#555;text-align:center;padding:20px;font-size:11px">Select a fan pill above to chat privately<br><span style="font-size:9px;color:#333">Max 6 visible then scroll</span></div></div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <input id="dzReplyInput" placeholder="Select a fan pill first..." style="flex:1;padding:10px;background:#111;border:1px solid #222;color:#fff;border-radius:99px;font-size:12px;outline:none">
+            <button id="dzReplyBtn" style="padding:10px 18px;background:#0066ff;border:none;border-radius:99px;color:#fff;font-weight:800;cursor:pointer;font-size:12px"><i class="fa-solid fa-paper-plane"></i> Reply</button>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="background:#050505;border:1px solid #1e1e1e;border-radius:16px;padding:10px;overflow:hidden;position:relative;height:340px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+              <span style="font-size:10px;color:#0066ff;font-weight:800;letter-spacing:1px"><i class="fa-solid fa-earth-americas"></i> LIVE EARTH • FAN NODES</span>
+              <span style="font-size:8px;color:#00ff88;background:#00ff8822;padding:3px 8px;border-radius:99px;border:1px solid #00ff8844">● REAL GPS</span>
+            </div>
+            <div id="dzRealMap" class="dz-sat-tiles" style="width:100%;height:280px;border-radius:12px;border:1px solid #111;z-index:1"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div style="background:#0a0a0a;border:1px solid #1e1e1e;border-radius:12px;padding:10px"><div style="font-size:8px;color:#666">LIVE LOCATION</div><div id="dzLiveLoc" style="font-size:11px;color:#fff;margin-top:4px">Scanning...</div><div id="dzLiveCity" style="font-size:9px;color:#0066ff">—</div></div>
+            <div style="background:#0a0a0a;border:1px solid #1e1e1e;border-radius:12px;padding:10px"><div style="font-size:8px;color:#666">NEURAL STATS</div><div style="font-size:11px;color:#fff;margin-top:4px"><span><b id="dzStatLive" style="color:#00ff88">0</b> live</span> • <span><b id="dzStatNew" style="color:#ff3b30">0</b> new</span></div></div>
+          </div>
+        </div>
       </div>
 
       <div class="notice-composer">
-        <textarea id="noticeText" placeholder="Drop text... or paste any link (image, video, beat)" rows="3" style="width:100%;padding:10px;background:#0a0a0a;border:1px solid #333;color:#fff;border-radius:6px;resize:vertical;"></textarea>
-
+        <textarea id="noticeText" placeholder="Drop text... or paste any link" rows="3" style="width:100%;padding:10px;background:#0a0a0a;border:1px solid #222;color:#fff;border-radius:10px;resize:vertical;"></textarea>
         <div style="display:flex;gap:8px;margin:10px 0;flex-wrap:wrap;">
-          <select id="noticeType" style="padding:8px;background:#0a0a0a;border:1px solid #333;color:#fff;border-radius:4px;">
-            <option value="text">Text</option>
-            <option value="image">Image</option>
-            <option value="video">Video</option>
-          </select>
-          <input type="file" id="noticeFile" accept="image/*,video/*" style="flex:1;min-width:150px;padding:6px;background:#0a0a0a;border:1px solid #333;color:#fff;border-radius:4px;font-size:12px;">
-          <button id="promoteBtn" class="fake-btn" style="background:#8b5cf6;padding:8px 12px;white-space:nowrap;"><i class="fa-solid fa-bullhorn"></i> Promote</button>
+          <select id="noticeType" style="padding:8px;background:#0a0a0a;border:1px solid #222;color:#fff;border-radius:8px;"><option value="text">Text</option><option value="image">Image</option><option value="video">Video</option></select>
+          <input type="file" id="noticeFile" accept="image/*,video/*" style="flex:1;min-width:150px;padding:6px;background:#0a0a0a;border:1px solid #222;color:#fff;border-radius:8px;font-size:12px;">
+          <button id="promoteBtn" class="fake-btn" style="background:#0066ff;padding:8px 12px;white-space:nowrap;border-radius:8px;"><i class="fa-solid fa-bullhorn"></i> Promote</button>
         </div>
-
-        <div id="promotePicker" style="display:none;margin:10px 0;max-height:220px;overflow-y:auto;border:1px solid #333;border-radius:6px;background:#050505;padding:8px;">
-          <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
-            <input type="text" id="beatSearch" placeholder="Search beats..." style="flex:1;padding:6px;background:#111;border:1px solid #333;color:#fff;border-radius:4px;font-size:12px;">
-            <span style="font-size:11px;color:#666;margin-left:8px;" id="selectedCount">0/4</span>
-          </div>
+        <div id="promotePicker" style="display:none;margin:10px 0;max-height:220px;overflow-y:auto;border:1px solid #222;border-radius:10px;background:#050505;padding:8px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px;"><input type="text" id="beatSearch" placeholder="Search beats..." style="flex:1;padding:6px;background:#111;border:1px solid #222;color:#fff;border-radius:8px;font-size:12px;"><span style="font-size:11px;color:#666;margin-left:8px;" id="selectedCount">0/4</span></div>
           <div id="beatList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;"></div>
         </div>
-
-        <div id="noticePreview" style="display:none;margin:10px 0;">
-          <img id="noticeImgPreview" style="max-width:200px;max-height:150px;border-radius:6px;border:1px solid #333;display:none;">
-          <video id="noticeVidPreview" style="max-width:300px;max-height:200px;border-radius:6px;border:1px solid #333;display:none;" controls></video>
-        </div>
-
+        <div id="noticePreview" style="display:none;margin:10px 0;"><img id="noticeImgPreview" style="max-width:200px;max-height:150px;border-radius:8px;border:1px solid #222;display:none;"><video id="noticeVidPreview" style="max-width:300px;max-height:200px;border-radius:8px;border:1px solid #222;display:none;" controls></video></div>
         <div id="promotePreview" style="margin:10px 0;"></div>
-
-        <div style="display:flex;align-items:center;justify-content:space-between;margin:12px 0;">
-          <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:#999;cursor:pointer;">
-            <input type="checkbox" id="noticeAutoDelete" style="accent-color:#8b5cf6;"> Auto-delete after 24h
-          </label>
-          <div style="font-size:11px;color:#666;" id="fileInfo"></div>
-        </div>
-
-        <div style="display:flex;gap:10px;">
-          <button class="fake-btn" id="noticePreviewBtn"><i class="fa-solid fa-eye"></i> Preview</button>
-          <button class="fake-btn" id="noticePostBtn" style="background:#0066ff;"><i class="fa-solid fa-paper-plane"></i> Post</button>
-        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin:12px 0;"><label style="display:flex;align-items:center;gap:6px;font-size:12px;color:#999"><input type="checkbox" id="noticeAutoDelete" style="accent-color:#0066ff;"> Auto-delete after 24h</label><div style="font-size:11px;color:#666;" id="fileInfo"></div></div>
+        <div style="display:flex;gap:10px;"><button class="fake-btn" id="noticePreviewBtn" style="background:#111;border:1px solid #222;color:#fff;border-radius:8px;padding:8px 14px"><i class="fa-solid fa-eye"></i> Preview</button><button class="fake-btn" id="noticePostBtn" style="background:#0066ff;border-radius:8px;padding:8px 14px"><i class="fa-solid fa-paper-plane"></i> Post</button></div>
         <div id="noxPreviewArea" style="margin-top:10px;"></div>
       </div>
-
-      <div style="margin-top:20px;">
-        <h3 style="font-size:13px;margin-bottom:10px;color:#8b5cf6;">Recent Posts <span id="postCount" style="color:#666;"></span></h3>
-        <div id="noticeHistoryList" style="max-height:320px;overflow-y:auto;border:1px solid #222;border-radius:6px;padding:8px;background:#050505;"></div>
-      </div>
+      <div style="margin-top:20px;"><h3 style="font-size:13px;margin-bottom:10px;color:#fff;">Recent Posts <span id="postCount" style="color:#666;"></span></h3><div id="noticeHistoryList" style="max-height:320px;overflow-y:auto;border:1px solid #1e1e1e;border-radius:12px;padding:8px;background:#0a0a0a;"></div></div>
     </div>
 
-    <!-- BEATS TABLE WITH SEARCH -->
     <div class="section" id="beatsAnalyticsSection">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;gap:12px;flex-wrap:wrap;">
-    <h2><i class="fa-solid fa-music"></i> All Beats Analytics</h2>
-    <div style="display:flex;gap:10px;align-items:center;">
-      <input type="text" id="beatsSearch" placeholder="Search beats..." style="padding:8px 12px;background:#0a0a0a;border:1px solid #333;border-radius:6px;color:#fff;width:250px;">
-      <button id="createBeatBtn" style="padding:8px 16px;background:#8b5cf6;border:none;border-radius:6px;color:#fff;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;">
-        <i class="fa-solid fa-plus"></i> Create Beat
-      </button>
-    </div>
-  </div>
-  <div class="table-wrap">
-    <table class="data-table" id="beatsTable">
-      <thead style="position:sticky;top:0;background:#1a1a1a;z-index:10;">
-        <tr><th>Beat</th><th>Plays</th><th>Downloads</th><th>Likes</th><th>Cart Adds</th><th>Revenue</th><th>Actions</th></tr>
-      </thead>
-      <tbody id="beatsTableBody"><tr><td colspan="7" class="empty-state">Loading beats...</td></tr></tbody>
-    </table>
-  </div>
-</div>
-
-<!-- EDIT MODAL (already exists) -->
-<div id="editModal" class="edit-modal"></div>
-
-<!-- CREATE MODAL - FINAL FIXED with beats/ covers/ wavs/ projects/ -->
-<div id="createModal" class="edit-modal">
-  <div class="edit-modal-box">
-    <div class="edit-modal-header">
-      <h3><i class="fa-solid fa-plus"></i> Create Beat</h3>
-      <button id="createModalClose">✕</button>
-    </div>
-    <div class="edit-modal-body">
-      <div class="edit-grid">
-        <div class="edit-field"><label>Title *</label><input id="createTitle" placeholder="HOLY RING"></div>
-        <div class="edit-field"><label>Artist</label><input id="createArtist" value="DopeTone"></div>
-        <div class="edit-field"><label>Price ($) *</label><input id="createPrice" type="number" step="0.01" value="29.99"></div>
-        <div class="edit-field"><label>BPM</label><input id="createBpm" type="number" placeholder="140"></div>
-        <div class="edit-field"><label>Key</label><input id="createKey" placeholder="Gm"></div>
-        <div class="edit-field"><label>Genre</label><select id="createGenre"><option value="">Select</option><option>Trap</option><option>Drill</option><option>Afro</option><option>R&B</option><option>Boom Bap</option><option>Plugg</option><option>Other</option></select></div>
-        <div class="edit-field"><label>Monetization</label><select id="createMode"><option value="paid">Paid</option><option value="free">FREE</option></select></div>
-        <div class="edit-field"><label>Tags</label><input id="createTags" placeholder="dark, melodic"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;gap:12px;flex-wrap:wrap;">
+        <h2><i class="fa-solid fa-music"></i> All Beats Analytics</h2>
+        <div style="display:flex;gap:10px;align-items:center;"><input type="text" id="beatsSearch" placeholder="Search beats..." style="padding:8px 12px;background:#0a0a0a;border:1px solid #333;border-radius:6px;color:#fff;width:250px;"><button id="createBeatBtn" style="padding:8px 16px;background:#8b5cf6;border:none;border-radius:6px;color:#fff;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;"><i class="fa-solid fa-plus"></i> Create Beat</button></div>
       </div>
-      <div class="edit-field"><label>Description</label><textarea id="createDesc" placeholder="About this beat..."></textarea></div>
-
-      <!-- UPLOADS: beats/ covers/ wavs/ projects/ -->
-      <div class="edit-upload-row" style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px;">
-        <div class="upload-box">
-          <label>Cover * <span style="color:#888;font-weight:400">→ covers/</span></label>
-          <input type="file" id="createCoverFile" accept="image/*">
-          <div class="upload-preview" id="createCoverPreview" style="margin-top:8px"></div>
-          <div id="createCoverName" style="font-size:10px;color:#888;margin-top:6px"></div>
-        </div>
-        <div class="upload-box">
-          <label>Preview MP3 * <span style="color:#888;font-weight:400">→ beats/</span></label>
-          <input type="file" id="createAudioFile" accept="audio/*,.mp3">
-          <div id="createAudioName" style="font-size:10px;color:#888;margin-top:6px"></div>
-          <audio id="createAudioPreview" controls style="width:100%;margin-top:8px;display:none"></audio>
-        </div>
-        <div class="upload-box">
-          <label>Full WAV <span style="color:#888;font-weight:400">→ wavs/</span></label>
-          <input type="file" id="createWavFile" accept=".wav,audio/wav">
-          <div id="createWavName" style="font-size:10px;color:#888;margin-top:6px"></div>
-        </div>
-        <div class="upload-box">
-          <label>Project ZIP <span style="color:#888;font-weight:400">→ projects/</span></label>
-          <input type="file" id="createZipFile" accept=".zip,.rar">
-          <div id="createZipName" style="font-size:10px;color:#888;margin-top:6px"></div>
-        </div>
-      </div>
-
-      <div id="createStatus" class="edit-status" style="margin-top:14px;color:#888">Ready — beats/ covers/ wavs/ projects/</div>
+      <div class="table-wrap"><table class="data-table" id="beatsTable"><thead style="position:sticky;top:0;background:#1a1a1a;z-index:10;"><tr><th>Beat</th><th>Plays</th><th>Downloads</th><th>Likes</th><th>Cart Adds</th><th>Revenue</th><th>Actions</th></tr></thead><tbody id="beatsTableBody"><tr><td colspan="7" class="empty-state">Loading beats...</td></tr></tbody></table></div>
     </div>
-    <div class="edit-modal-footer">
-      <button class="btn-ghost" id="createCancel">Cancel</button>
-      <button class="btn-primary" id="createSave">Create</button>
-    </div>
-  </div>
-</div>
-
-
+    <div id="editModal" class="edit-modal"></div>
+    <div id="createModal" class="edit-modal"><div class="edit-modal-box"><div class="edit-modal-header"><h3><i class="fa-solid fa-plus"></i> Create Beat</h3><button id="createModalClose">✕</button></div><div class="edit-modal-body"><div class="edit-grid"><div class="edit-field"><label>Title *</label><input id="createTitle" placeholder="HOLY RING"></div><div class="edit-field"><label>Artist</label><input id="createArtist" value="DopeTone"></div><div class="edit-field"><label>Price ($) *</label><input id="createPrice" type="number" step="0.01" value="29.99"></div><div class="edit-field"><label>BPM</label><input id="createBpm" type="number" placeholder="140"></div><div class="edit-field"><label>Key</label><input id="createKey" placeholder="Gm"></div><div class="edit-field"><label>Genre</label><select id="createGenre"><option value="">Select</option><option>Trap</option><option>Drill</option><option>Afro</option><option>R&B</option><option>Boom Bap</option><option>Plugg</option><option>Other</option></select></div><div class="edit-field"><label>Monetization</label><select id="createMode"><option value="paid">Paid</option><option value="free">FREE</option></select></div><div class="edit-field"><label>Tags</label><input id="createTags" placeholder="dark, melodic"></div></div><div class="edit-field"><label>Description</label><textarea id="createDesc" placeholder="About this beat..."></textarea></div><div class="edit-upload-row" style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px;"><div class="upload-box"><label>Cover * <span style="color:#888">→ covers/</span></label><input type="file" id="createCoverFile" accept="image/*"><div class="upload-preview" id="createCoverPreview" style="margin-top:8px"></div><div id="createCoverName" style="font-size:10px;color:#888;margin-top:6px"></div></div><div class="upload-box"><label>Preview MP3 * <span style="color:#888">→ beats/</span></label><input type="file" id="createAudioFile" accept="audio/*,.mp3"><div id="createAudioName" style="font-size:10px;color:#888;margin-top:6px"></div><audio id="createAudioPreview" controls style="width:100%;margin-top:8px;display:none"></audio></div><div class="upload-box"><label>Full WAV <span style="color:#888">→ wavs/</span></label><input type="file" id="createWavFile" accept=".wav,audio/wav"><div id="createWavName" style="font-size:10px;color:#888;margin-top:6px"></div></div><div class="upload-box"><label>Project ZIP <span style="color:#888">→ projects/</span></label><input type="file" id="createZipFile" accept=".zip,.rar"><div id="createZipName" style="font-size:10px;color:#888;margin-top:6px"></div></div></div><div id="createStatus" class="edit-status" style="margin-top:14px;color:#888">Ready — beats/ covers/ wavs/ projects/</div></div><div class="edit-modal-footer"><button class="btn-ghost" id="createCancel">Cancel</button><button class="btn-primary" id="createSave">Create</button></div></div></div>
   </div>
 
-  <!-- EDIT MODAL -->
-  <div class="modal" id="editModal"></div>
-
-  <!-- LIBS -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
-  
-  <!-- CC MODULES - CONNECTED -->
   <script type="module">
     import { initCharts } from './js/control-center/cc-charts.js';
     import { initPlayer } from './js/control-center/cc-player.js';
@@ -423,18 +212,9 @@
     import { initNotices } from './js/control-center/cc-notices.js';
     import './js/control-center/cc-edit-modal.js';
     import './js/control-center/cc-create-beat.js';
-
-   
     import { loadDashboardStats } from './js/control-center/cc-config.js';
-
-    // Initialize all modules
     document.addEventListener('DOMContentLoaded', async () => {
-      console.log('[CC] Initializing Control Center...');
-      
-      // Load base stats first
       await loadDashboardStats();
-      
-      // Init all modules
       initCharts();
       initPlayer();
       await loadTopTracks();
@@ -442,88 +222,13 @@
       await initEmails();
       await initTickets();
       initNotices();
-       // Only shows in dev mode
-      
-      console.log('[CC] All modules loaded ✓');
-      
-      // Wire up search bar to beats table
       document.getElementById('searchBar')?.addEventListener('input', (e) => {
         document.getElementById('beatsSearch').value = e.target.value;
         document.getElementById('beatsSearch').dispatchEvent(new Event('input'));
       });
-      
-      // Wire up edit/monetize buttons
-      document.getElementById('playerEditBtn')?.addEventListener('click', () => {
-        if (window.editCurrentTrack) window.editCurrentTrack();
-      });
-      
-      document.getElementById('monetizeBtn')?.addEventListener('click', () => {
-        if (window.cycleMonetization) window.cycleMonetization();
-      });
-    });
-    
-    // Global refresh handler
-    window.addEventListener('cc_dashboard_refresh', () => {
-      console.log('[CC] Dashboard refresh triggered');
     });
   </script>
   <script src="./email-composer.js"></script>
   <script src="./vault-email.js"></script>
-  
-<script>
-(function(){
-  const API = "https://emails-api.dopetone701.workers.dev";
-  function getAudience(){
-    return [...document.querySelectorAll('#emailTableBody tr')].map(tr=>{
-      const email=(tr.innerText.match(/[\w.-]+@[\w.-]+\.\w+/)||[])[0];
-      const name=tr.querySelector('td span')?.innerText?.split(' ')[0] || email?.split('@')[0] || 'there';
-      return email? {email, name} : null;
-    }).filter(Boolean);
-  }
-  async function getBeats(){
-    try{
-      // tries to get your beats from D1
-      const r = await fetch(API+'/api/beats/list');
-      const j = await r.json();
-      return j.beats || j.products || [];
-    }catch{ return []; }
-  }
-  async function openBox(){
-    if(document.getElementById('vault-composer')) return;
-    const aud = getAudience();
-    const beats = await getBeats();
-    const beatOptions = beats.map(b=>`<option value="${b.id}">${b.title||b.name} - ${b.bpm||''}</option>`).join('') || '<option>No beats found</option>';
-
-    const d=document.createElement('div');
-    d.id='vault-composer';
-    d.innerHTML=`<div id="vault-backdrop" style="position:fixed;inset:0;background:#000b;z-index:999999;display:flex;align-items:center;justify-content:center;padding:20px"><div id="vault-box" style="width:100%;max-width:420px;background:#121212;border:1px solid #333;border-radius:20px;padding:22px"><div style="display:flex;justify-content:space-between;margin-bottom:14px"><div><b style="color:#fff">Email ${aud.length}</b><div style="color:#00ff88;font-size:11px">● ${aud.length} filtered</div></div><button onclick="document.getElementById('vault-composer').remove()" style="background:#222;border:1px solid #333;color:#888;width:30px;height:30px;border-radius:50%">✕</button></div>
-    <label style="font-size:11px;color:#666">H2</label><input id="vh2" value="you didnt just open the vault u dived" style="width:100%;background:#1a1a1a;border:1px solid #333;color:#fff;padding:12px;border-radius:10px;margin:6px 0 10px 0;box-sizing:border-box">
-    <label style="font-size:11px;color:#666">PARAGRAPH</label><textarea id="vp" style="width:100%;height:80px;background:#1a1a1a;border:1px solid #333;color:#ccc;padding:12px;border-radius:10px;box-sizing:border-box">This is for u pick it up.</textarea>
-    <label style="font-size:11px;color:#666;display:block;margin-top:10px">SELECT BEAT (optional)</label><select id="vbeat" style="width:100%;background:#1a1a1a;border:1px solid #333;color:#fff;padding:10px;border-radius:10px;margin-top:4px"><option value="">-- No beat / Aura only --</option>${beatOptions}</select>
-    <button id="vs" style="width:100%;background:#fff;color:#000;border:none;padding:13px;border-radius:99px;font-weight:900;margin-top:14px">Send Personalized to ${aud.length} →</button><div id="vst" style="font-size:11px;color:#666;margin-top:8px;text-align:center">Click outside to close • Auto-close after send</div></div></div>`;
-    document.body.appendChild(d);
-
-    // Close on outside click
-    document.getElementById('vault-backdrop').onclick = (e)=>{ if(e.target.id==='vault-backdrop') document.getElementById('vault-composer').remove(); };
-
-    document.getElementById('vs').onclick = async()=>{
-      const h2=document.getElementById('vh2').value, p=document.getElementById('vp').value;
-      const beatId=document.getElementById('vbeat').value;
-      const selectedBeat = beats.find(b=>b.id==beatId) || null;
-      const btn=document.getElementById('vs'); btn.disabled=true; btn.textContent='Sending...';
-      try{
-        const r=await fetch(API+'/api/emails/bulk',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({emails:aud.map(a=>a.email), h2, p, beat: selectedBeat})});
-        const j=await r.json(); if(!j.success) throw new Error(j.error);
-        document.getElementById('vst').innerHTML='<span style="color:#0f8">✅ Sent '+j.count+'</span>';
-        setTimeout(()=>document.getElementById('vault-composer')?.remove(),1200);
-      }catch(e){ document.getElementById('vst').innerHTML='<span style="color:#f55">❌ '+e.message+'</span>'; btn.disabled=false; }
-    };
-  }
-  function addBtn(){ const bar=document.getElementById('proFilterBar'); if(!bar||document.getElementById('vault-email-btn')) return; const b=document.createElement('button'); b.id='vault-email-btn'; b.textContent='✉️ Email'; b.style.cssText='background:#fff;color:#000;border:none;padding:7px 16px;border-radius:99px;font-weight:800;font-size:12px;margin-left:12px;cursor:pointer'; b.onclick=openBox; bar.appendChild(b); }
-  setInterval(addBtn,1000);
-})();
-</script>
-
-
 </body>
 </html>

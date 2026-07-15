@@ -11,60 +11,61 @@ function ensureModalHTML() {
   if (modal.querySelector('.edit-modal-box')) return modal;
 
   modal.innerHTML = `
-  <div class="edit-modal-box" style="max-height:92vh;overflow-y:auto;background:#111;border:1px solid #222">
-    <div class="edit-modal-header" style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid #222">
+  <div class="edit-modal-box">
+    <div class="edit-modal-header">
       <h3><i class="fa-solid fa-pen-to-square"></i> Edit Beat — All Files</h3>
-      <button id="editModalClose" style="background:none;border:none;color:#fff;font-size:18px;cursor:pointer">✕</button>
+      <button id="editModalClose">✕</button>
     </div>
-    <div class="edit-modal-body" style="padding:16px">
-      <div class="edit-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <div class="edit-field"><label>Title *</label><input id="editTitle" style="width:100%"></div>
-        <div class="edit-field"><label>Artist</label><input id="editArtist" style="width:100%"></div>
-        <div class="edit-field"><label>Price ($) *</label><input id="editPrice" type="number" step="0.01" style="width:100%"></div>
-        <div class="edit-field"><label>Revenue ($) *</label><input id="editRevenue" type="number" step="0.01" style="width:100%"></div>
-        <div class="edit-field"><label>BPM</label><input id="editBpm" type="number" style="width:100%"></div>
-        <div class="edit-field"><label>Key</label><input id="editKey" style="width:100%"></div>
-        <div class="edit-field"><label>Genre</label><select id="editGenre" style="width:100%"><option value="">Select</option><option>Trap</option><option>Drill</option><option>Afro</option><option>R&B</option><option>Boom Bap</option><option>Plugg</option><option>Other</option></select></div>
+    <div class="edit-modal-body">
+      <div class="edit-grid">
+        <div class="edit-field"><label>Title *</label><input id="editTitle"></div>
+        <div class="edit-field"><label>Artist</label><input id="editArtist"></div>
+        <div class="edit-field"><label>Price ($) *</label><input id="editPrice" type="number" step="0.01"></div>
+        <div class="edit-field"><label>Revenue ($) *</label><input id="editRevenue" type="number" step="0.01"></div>
+        <div class="edit-field"><label>BPM</label><input id="editBpm" type="number"></div>
+        <div class="edit-field"><label>Key</label><input id="editKey"></div>
+        <div class="edit-field"><label>Genre</label><select id="editGenre"><option value="">Select</option><option>Trap</option><option>Drill</option><option>Afro</option><option>R&B</option><option>Boom Bap</option><option>Plugg</option><option>Other</option></select></div>
         <div class="edit-field"><label>Monetization *</label>
-          <select id="editMode" style="width:100%">
+          <select id="editMode">
             <option value="paid">💲 Paid Only</option>
             <option value="hybrid">🏷️ Tagged Free (Hybrid)</option>
             <option value="free">🎁 FREE</option>
           </select>
         </div>
-        <div class="edit-field" style="grid-column:1/-1"><label>Tags</label><input id="editTags" placeholder="dark, melodic" style="width:100%"></div>
+        <div class="edit-field" style="grid-column:1/-1"><label>Tags</label><input id="editTags" placeholder="dark, melodic"></div>
       </div>
-      <div class="edit-field" style="margin-top:12px"><label>Description</label><textarea id="editDesc" rows="3" style="width:100%"></textarea></div>
+      <div class="edit-field" style="margin-top:12px"><label>Description</label><textarea id="editDesc" rows="3"></textarea></div>
 
-      <div class="edit-upload-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px">
-        <div class="upload-box" style="border:1px solid #222;padding:10px;border-radius:8px">
+      <div class="edit-upload-row">
+        <div class="upload-box">
           <label>Cover → covers/</label><input type="file" id="editCoverFile" accept="image/*">
-          <div class="upload-preview" id="editCoverPreview" style="margin-top:8px"></div>
-          <div id="editCoverName" style="font-size:11px;color:#888;margin-top:6px;word-break:break-all"></div>
-          <a id="editCoverDownload" href="#" target="_blank" download style="display:none;margin-top:6px;font-size:11px;padding:6px 10px;border:1px solid #333;border-radius:6px;text-decoration:none;color:#fff;background:#222">⬇ Download Cover</a>
+          <div class="upload-preview" id="editCoverPreview"></div>
+          <div id="editCoverName" class="file-meta"></div>
+          <a id="editCoverDownload" href="#" target="_blank" download class="dl-btn">⬇ Download Cover</a>
         </div>
-        <div class="upload-box" style="border:1px solid #222;padding:10px;border-radius:8px">
+        <div class="upload-box">
           <label>Preview MP3 → beats/</label><input type="file" id="editAudioFile" accept="audio/*,.mp3">
-          <div id="editAudioName" style="font-size:11px;color:#888;margin-top:6px;word-break:break-all"></div>
-          <audio id="editAudioPreview" controls style="width:100%;margin-top:8px;display:none"></audio>
-          <a id="editAudioDownload" href="#" target="_blank" download style="display:none;margin-top:6px;font-size:11px;padding:6px 10px;border:1px solid #333;border-radius:6px;text-decoration:none;color:#fff;background:#222">⬇ Download MP3</a>
+          <div id="editAudioName" class="file-meta"></div>
+          <audio id="editAudioPreview" controls></audio>
+          <a id="editAudioDownload" href="#" target="_blank" download class="dl-btn">⬇ Download MP3</a>
         </div>
-        <div class="upload-box" style="border:1px solid #222;padding:10px;border-radius:8px">
+        <div class="upload-box">
           <label>Full WAV → wavs/</label><input type="file" id="editWavFile" accept=".wav,audio/wav">
-          <div id="editWavName" style="font-size:11px;color:#888;margin-top:6px;word-break:break-all"></div>
-          <a id="editWavDownload" href="#" target="_blank" download style="display:none;margin-top:6px;font-size:11px;padding:6px 10px;border:1px solid #333;border-radius:6px;text-decoration:none;color:#fff;background:#222">⬇ Download WAV</a>
+          <div id="editWavName" class="file-meta"></div>
+          <a id="editWavDownload" href="#" target="_blank" download class="dl-btn">⬇ Download WAV</a>
         </div>
-        <div class="upload-box" style="border:1px solid #222;padding:10px;border-radius:8px">
+        <div class="upload-box">
           <label>Project ZIP → projects/</label><input type="file" id="editZipFile" accept=".zip,.rar,.flp,.als">
-          <div id="editZipName" style="font-size:11px;color:#888;margin-top:6px;word-break:break-all"></div>
-          <a id="editZipDownload" href="#" target="_blank" download style="display:none;margin-top:6px;font-size:11px;padding:6px 10px;border:1px solid #333;border-radius:6px;text-decoration:none;color:#fff;background:#222">⬇ Download ZIP</a>
+          <div id="editZipName" class="file-meta"></div>
+          <a id="editZipDownload" href="#" target="_blank" download class="dl-btn">⬇ Download ZIP</a>
         </div>
-      <div class="edit-status" id="editStatus" style="margin-top:14px;color:#888;font-size:12px">Ready</div>
+      </div>
+      <div class="edit-status" id="editStatus">Ready</div>
     </div>
-    <div class="edit-modal-footer" style="display:flex;gap:8px;justify-content:flex-end;padding:12px 16px;border-top:1px solid #222">
-      <button class="btn-ghost" id="editCancel" style="padding:8px 14px;border:1px solid #333;border-radius:6px;background:#111;color:#fff;cursor:pointer">Cancel</button>
-      <button class="btn-danger" id="editDeleteBtn" style="padding:8px 14px;border:none;border-radius:6px;background:#ff3b3b;color:#fff;cursor:pointer">Delete Beat</button>
-      <button class="btn-primary" id="editSave" style="padding:8px 14px;border:none;border-radius:6px;background:#fff;color:#000;cursor:pointer">Save Changes</button>
+    <div class="edit-modal-footer">
+      <button class="btn-ghost" id="editCancel">Cancel</button>
+      <button class="btn-danger" id="editDeleteBtn">Delete Beat</button>
+      <button class="btn-primary" id="editSave">Save Changes</button>
     </div>
   </div>`;
   return modal;
@@ -82,7 +83,7 @@ function bindFileInput(fileId, nameId, previewId, folderLabel) {
       const prev = qs(`#${previewId}`, modal);
       if (prev) {
         if (prev.tagName === 'DIV') {
-          if (f.type.startsWith('image/')) prev.innerHTML = `<img src="${URL.createObjectURL(f)}" style="width:80px;height:80px;object-fit:cover;border-radius:8px">`;
+          if (f.type.startsWith('image/')) prev.innerHTML = `<img src="${URL.createObjectURL(f)}">`;
         } else if (prev.tagName === 'AUDIO') {
           prev.src = URL.createObjectURL(f); prev.style.display = 'block';
         }
@@ -112,27 +113,27 @@ export function openEditModal(beat) {
   const wavUrl = beat.wav_url || '';
   const zipUrl = beat.zip_url || beat.project_url || '';
 
-  qs('#editCoverPreview', modal).innerHTML = coverUrl ? `<img src="${coverUrl}" style="width:80px;height:80px;object-fit:cover;border-radius:8px">` : '<span style="color:#555">No cover</span>';
+  qs('#editCoverPreview', modal).innerHTML = coverUrl ? `<img src="${coverUrl}">` : '<span style="color:#555">No cover</span>';
   qs('#editCoverName', modal).textContent = coverUrl ? `Current: ${coverUrl.split('/').pop()}` : 'No cover';
-  const cd = qs('#editCoverDownload', modal); cd.href = coverUrl || '#'; cd.style.display = coverUrl ? 'inline-block' : 'none';
+  const cd = qs('#editCoverDownload', modal); cd.href = coverUrl || '#'; cd.style.display = coverUrl ? 'inline-flex' : 'none';
 
   const ap = qs('#editAudioPreview', modal);
   ap.src = mp3Url; ap.style.display = mp3Url ? 'block' : 'none';
   qs('#editAudioName', modal).textContent = mp3Url ? `Current: ${mp3Url.split('/').pop()}` : 'No MP3';
-  const ad = qs('#editAudioDownload', modal); ad.href = mp3Url || '#'; ad.style.display = mp3Url ? 'inline-block' : 'none';
+  const ad = qs('#editAudioDownload', modal); ad.href = mp3Url || '#'; ad.style.display = mp3Url ? 'inline-flex' : 'none';
 
   qs('#editWavName', modal).textContent = wavUrl ? `Current: ${wavUrl.split('/').pop()}` : 'No WAV — wavs/';
-  const wd = qs('#editWavDownload', modal); wd.href = wavUrl || '#'; wd.style.display = wavUrl ? 'inline-block' : 'none';
+  const wd = qs('#editWavDownload', modal); wd.href = wavUrl || '#'; wd.style.display = wavUrl ? 'inline-flex' : 'none';
 
   qs('#editZipName', modal).textContent = zipUrl ? `Current: ${zipUrl.split('/').pop()}` : 'No ZIP — projects/';
-  const zd = qs('#editZipDownload', modal); zd.href = zipUrl || '#'; zd.style.display = zipUrl ? 'inline-block' : 'none';
+  const zd = qs('#editZipDownload', modal); zd.href = zipUrl || '#'; zd.style.display = zipUrl ? 'inline-flex' : 'none';
 
   const status = qs('#editStatus', modal);
   status.textContent = `Editing ${beat.id} — ${beat.monetization_mode || 'paid'} — $${beat.revenue || 0}`;
   status.style.color = '#888';
 
   modal.classList.add('active');
-  document.body.style.overflow = 'hidden';
+  document.body.classList.add('modal-open');
 
   qs('#editModalClose', modal).onclick = closeEditModal;
   qs('#editCancel', modal).onclick = closeEditModal;
@@ -169,8 +170,10 @@ export function openEditModal(beat) {
 export function closeEditModal() {
   const modal = document.getElementById('editModal');
   if (modal) modal.classList.remove('active');
+  document.body.classList.remove('modal-open');
   document.body.style.overflow = '';
   editingBeat = null;
+  if(window.stopLiveVerify) window.stopLiveVerify();
 }
 
 async function saveEdit() {
@@ -214,12 +217,12 @@ async function saveEdit() {
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
 
-    // INSTANT UI UPDATE - NO REFRESH NEEDED
     const updated = data.beat;
     const newAll = allBeats.map(b => String(b.id) === String(editingBeat.id) ? updated : b);
     setAllBeats(newAll);
     setFilteredBeats(newAll);
     renderBeatsTable(newAll);
+    window.dispatchEvent(new CustomEvent('cc_beat_updated',{detail:updated}));
 
     status.textContent = `✅ Saved - ${updated.monetization_mode.toUpperCase()} - $${updated.revenue}`;
     status.style.color = '#00ff88';
@@ -228,12 +231,11 @@ async function saveEdit() {
       closeEditModal();
       btn.disabled = false;
       btn.textContent = origText;
-    }, 500);
+    }, 600);
 
   } catch (err) {
     clearTimeout(timeout);
-    console.error(err);
-    status.textContent = '❌ ' + (err.name === 'AbortError' ? 'Upload timed out (file too big) - try smaller file' : err.message);
+    status.textContent = '❌ ' + (err.name === 'AbortError' ? 'Upload timed out - try smaller file' : err.message);
     status.style.color = '#ff5050';
     btn.disabled = false;
     btn.textContent = origText;
@@ -266,3 +268,16 @@ async function deleteBeat(id) {
 
 window.addEventListener('cc_edit_beat', (e) => { const b = allBeats.find(x => String(x.id) === String(e.detail)); if (b) openEditModal(b); });
 window.ccEditBeat = (id) => { const b = allBeats.find(x => String(x.id) === String(id)); if (b) openEditModal(b); };
+window.loadBeatIntoModal = (id) => { const b = allBeats.find(x => String(x.id) === String(id)); if(b) openEditModal(b); };
+// expose direct functions for table edit btn
+window.openEditModalDirect = openEditModal;
+window.loadBeatIntoModal = (id)=>{
+  const b = allBeats.find(x=> String(x.id)===String(id));
+  if(b) openEditModal(b);
+};
+window.playBeatDirect = (id)=>{
+  const b = allBeats.find(x=> String(x.id)===String(id));
+  if(b){
+    window.dispatchEvent(new CustomEvent('cc_play_track',{detail:b}));
+  }
+};

@@ -87,3 +87,10 @@
  .f-cover-wrap{height:100px}
  .f-play{width:44px !important; height:44px !important}
 }
+#featuredTrack{
+  touch-action: pan-y pinch-zoom;
+  overscroll-behavior: contain;
+}
+.featured-card{
+  touch-action: pan-y;
+}

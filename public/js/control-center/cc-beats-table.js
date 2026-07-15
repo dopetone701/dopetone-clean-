@@ -99,34 +99,33 @@ export function renderBeatsTable(beats) {
 
 function escapeHtml(s){ return (s||'').toString().replace(/[&<>"']/g, c=> ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
-// Globals
-window.ccTogglePlay = (id)=> togglePlay(id);
-window.ccEditBeat = (id)=> window.dispatchEvent(new CustomEvent('cc_edit_beat', {detail:id}));
+// FIXED GLOBALS
+window.ccTogglePlay = (id)=> {
+  // instant play - from table
+  import('./cc-player.js').then(m=> m.playBeat(id));
+  // fallback direct
+  if(window.playBeatDirect) window.playBeatDirect(id);
+};
 
-window.ccDeleteBeat = async (id)=>{
-  if(!confirm(`Delete beat ${id} permanently?\n\nDeletes:\n- beats/ preview\n- covers/ image\n- wavs/ wav\n- projects/ zip\n- D1 row\n\nCannot be undone.`)) return;
-  const tbody = document.getElementById('beatsTableBody');
-  const row = tbody?.querySelector(`tr[data-beat-id="${id}"]`);
-  if (row) row.style.opacity = '0.5';
-
-  try{
-    const res = await fetch(`${BEATS_API}/beats/${id}`, { method: 'DELETE' });
-    const text = await res.text();
-    if(!res.ok) throw new Error(text || `HTTP ${res.status}`);
-
-    // Local state update
-    const updated = allBeats.filter(b=> String(b.id) != String(id));
-    setAllBeats(updated);
-    setFilteredBeats(updated);
-    renderBeatsTable(updated);
-    window.dispatchEvent(new CustomEvent('cc_stats_updated'));
-    console.log('[CC Delete] OK', id);
-  }catch(err){
-    console.error('[CC Delete] Failed', err);
-    alert(`Delete failed: ${err.message}\n\nBEATS_API: ${BEATS_API}/beats/${id}\n\nIf CORS error, deploy the new worker to that domain.`);
-    if (row) row.style.opacity = '1';
+// make edit work even if allBeats empty
+window.ccEditBeat = (id)=> {
+  console.log('[EDIT CLICK]', id, 'allBeats len', allBeats.length);
+  const beat = allBeats.find(b=> String(b.id)===String(id));
+  if(!beat){ alert('Beat not loaded yet, wait 1 sec'); return; }
+  window.dispatchEvent(new CustomEvent('cc_edit_beat', {detail:id}));
+  if(window.loadBeatIntoModal) {
+    window.loadBeatIntoModal(id);
+  } else {
+    // direct open if edit-modal exposes openEditModal
+    const modal = document.getElementById('editModal');
+    if(modal){
+      modal.classList.add('active');
+      document.body.classList.add('modal-open');
+    }
+    if(window.openEditModalDirect) window.openEditModalDirect(beat);
   }
 };
+
 
 export async function refreshBeatsTable(){ await loadBeats(); }
 

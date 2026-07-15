@@ -136,15 +136,34 @@ export function renderFeatured(){
   });
   document.addEventListener("playerPause",()=>{ if(window.__CURRENT_LIST__!=="featured")return; isPlaying=false; syncUI(); });
 
-  // touch swipe
-  let sx=0, st=0;
-  root.addEventListener('touchstart',e=>{ sx=e.touches[0].clientX; st=Date.now(); },{passive:true});
+   // === TOUCH SWIPE - LOCK VERTICAL SCROLL ===
+  let sx=0, sy=0, st=0, isSwiping=false;
+  root.addEventListener('touchstart',e=>{
+    sx=e.touches[0].clientX;
+    sy=e.touches[0].clientY;
+    st=Date.now();
+    isSwiping=false;
+  },{passive:true});
+
+  root.addEventListener('touchmove',e=>{
+    if(!sx) return;
+    const dx=e.touches[0].clientX-sx;
+    const dy=e.touches[0].clientY-sy;
+    // if horizontal swipe > vertical, lock page scroll
+    if(Math.abs(dx) > Math.abs(dy) && Math.abs(dx)>10){
+      isSwiping=true;
+      e.preventDefault();
+    }
+  },{passive:false});
+
   root.addEventListener('touchend',e=>{
     const dx=e.changedTouches[0].clientX-sx;
-    if(Math.abs(dx)>40 && Date.now()-st<600){
+    if(isSwiping && Math.abs(dx)>40 && Date.now()-st<600){
       animateTo(dx<0? (Math.round(current)+1)%beats.length : (Math.round(current)-1+beats.length)%beats.length);
     }
+    sx=0; sy=0; isSwiping=false;
   },{passive:true});
+
 
   function enableMouseLight(){
     cards.forEach(card=>{
