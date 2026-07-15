@@ -1,21 +1,61 @@
 // ===============================
-// TRENDING SECTION (FILTER WIRED SAFE + MOST PLAYED + SCROLL SAFE)
+// TRENDING SECTION - BULLETPROOF DOWNLOAD + D1 LIVE + MOST PLAYED + SCROLL SAFE
 // ===============================
 import { globalFilter } from './global-filter.js';
+
+const getMode = b => {
+  const m = (b.monetization_mode||b.monetizationMode||'').toLowerCase();
+  if(['free','hybrid','paid'].includes(m)) return m;
+  if(b.is_free==1) return 'free';
+  return 'paid';
+};
+
+function pushToD1(beatId, action='cart'){
+  try{
+    const cart = JSON.parse(localStorage.getItem("dopetone_cart")||"[]");
+    const total = cart.length;
+    localStorage.setItem('dopetone_cart_count', String(total));
+    window.dispatchEvent(new CustomEvent('cc_cart_updated', {detail:{beat_id:beatId, count: total, action}}));
+    window.dispatchEvent(new CustomEvent('cc_player_cart_sync', {detail:{total, beat_id:beatId, action}}));
+    if(action==='download' || action==='free'){
+      window.dispatchEvent(new CustomEvent('cc_downloaded', {detail:{beat_id:beatId, action}}));
+      const dlEl = document.getElementById('totalDownloads');
+      if(dlEl) dlEl.textContent = String((parseInt(dlEl.textContent||'0')||0)+1);
+    }
+    const cartEl = document.getElementById('cartItems');
+    if(cartEl && action==='cart') cartEl.textContent = String(Math.max(parseInt(cartEl.textContent||'0')||0, total));
+  }catch{}
+}
+
+async function bulletDownload(beat){
+  const url = beat.mp3_url || beat.audio || beat.audio_url;
+  if(!url) return;
+  try{
+    pushToD1(beat.id, 'download');
+    const res = await fetch(url, {mode:'cors'});
+    const blob = await res.blob();
+    const blobUrl = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = `${(beat.title||'DopeTone').replace(/[^a-z0-9]/gi,'_')}_FREE.mp3`;
+    a.style.display='none';
+    document.body.appendChild(a); a.click();
+    setTimeout(()=>{ URL.revokeObjectURL(blobUrl); a.remove(); }, 2000);
+  }catch{
+    const a=document.createElement('a'); a.href=url; a.download=`${beat.title}.mp3`; a.target='_blank'; document.body.appendChild(a); a.click(); a.remove();
+  }
+}
 
 export function renderTrending() {
   const container = document.getElementById("trendingGrid")
   if (!container ||!window.store?.beats?.length) return
 
-  // TOP 10 BY PLAYS - uses same beats but sorted
   let all = [...window.store.beats]
-  // sort by real plays if you have it, else fallback to trending filter
   all.sort((a,b)=>{
     const pa = a.play_count?? a.plays?? a.total_plays?? 0
     const pb = b.play_count?? b.plays?? b.total_plays?? 0
     return pb - pa
   })
-  // if no play counts, use your normal trending filter then take top 10
   let beats = all[0]?.play_count!= null || all[0]?.plays!= null? all.slice(0,10) : globalFilter.filterBeats(all, 'trending').slice(0,10)
 
   container.innerHTML = ""
@@ -67,7 +107,7 @@ export function renderTrending() {
       <button class="trending-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
       <div class="trending-info">
         <div class="trending-title">${beat.title}</div>
-        <div class="trending-genre">${beat.genre || "Unknown"}</div>
+        <div class="trending-genre">${beat.genre || "Unknown"} ${getMode(beat)==='free'? '<span style="background:#0d3bff;color:#fff;padding:1px 5px;border-radius:99px;font-size:8px;margin-left:4px">FREE</span>':''}</div>
       </div>
     `
     attachProTap(card, beat, index)
@@ -80,7 +120,7 @@ export function renderTrending() {
     card.dataset.index = index
     card.querySelector("img").src = beat.cover_url || beat.image || 'images/studio.jpg'
     card.querySelector(".trending-title").textContent = beat.title
-    card.querySelector(".trending-genre").textContent = beat.genre || "Unknown"
+    card.querySelector(".trending-genre").innerHTML = `${beat.genre || "Unknown"} ${getMode(beat)==='free'? '<span style="background:#0d3bff;color:#fff;padding:1px 5px;border-radius:99px;font-size:8px;margin-left:4px">FREE</span>':''}`
     card.querySelector(".trending-play").innerHTML = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>`
     attachProTap(card, beat, index)
     attachNavigation(card, beat)
@@ -104,16 +144,44 @@ export function renderTrending() {
 
   function attachNavigation(card, beat) {
     function addToCart() {
-      let cart = JSON.parse(localStorage.getItem("dopetone_cart")) || []
-      const cartBeat = { id: beat.id, title: beat.title, cover: beat.cover_url, cover_url: beat.cover_url, genre: beat.genre, bpm: beat.bpm, audio: beat.mp3_url || beat.audio, mp3_url: beat.mp3_url, mood: beat.mood, key: beat.key, type: beat.type }
-      if(!cart.find(item => item.id == beat.id)){ cart.push(cartBeat); localStorage.setItem("dopetone_cart", JSON.stringify(cart)) }
+      let cart = JSON.parse(localStorage.getItem("dopetone_cart") || "[]")
+      if(!cart.find(item => String(item.id) == String(beat.id))){
+        cart.push({ id: beat.id, title: beat.title, cover: beat.cover_url, cover_url: beat.cover_url, genre: beat.genre, bpm: beat.bpm, audio: beat.mp3_url || beat.audio, mp3_url: beat.mp3_url, mood: beat.mood, key: beat.key, type: beat.type })
+        localStorage.setItem("dopetone_cart", JSON.stringify(cart))
+        pushToD1(beat.id, 'cart');
+      }
     }
-    card.ondblclick = (e) => { if (e.target.closest(".trending-play")) return; addToCart(); window.location.href = `licence-page.html?id=${beat.id}` }
+
+    const handleTap = (e) => {
+      if (e.target.closest(".trending-play")) return;
+
+      // FREE = instant bullet download without leaving page
+      if(getMode(beat)==='free'){
+        e.preventDefault();
+        bulletDownload(beat);
+        let cart = JSON.parse(localStorage.getItem("dopetone_cart")||"[]");
+        if(!cart.find(x=> String(x.id)==String(beat.id))){
+          cart.push({id:beat.id, title:beat.title, cover:beat.cover_url, mp3_url:beat.mp3_url, _free:true});
+          localStorage.setItem("dopetone_cart", JSON.stringify(cart));
+          pushToD1(beat.id, 'free');
+        }
+        return;
+      }
+
+      // PAID
+      addToCart();
+      window.location.href = `licence-page.html?id=${beat.id}`;
+    };
+
+    card.ondblclick = handleTap;
     let lastTap=0
     card.addEventListener("touchend", (e) => {
       if (e.target.closest(".trending-play")) return
       const now = Date.now()
-      if(now-lastTap<350){ e.preventDefault(); addToCart(); window.location.href=`licence-page.html?id=${beat.id}` }
+      if(now-lastTap<350){
+        e.preventDefault();
+        handleTap(e);
+      }
       lastTap=now
     }, { passive:false })
   }
