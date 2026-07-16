@@ -146,7 +146,8 @@ export async function renderWave(limit = null) {
 
   // 🔥 FIX - FORCE ALL ON BEATS.HTML, CLEAR STUCK 10 FILTER + REFECTH LIVE
   const path = window.location.pathname;
-  const isBeatsPage = path.includes("beats.html");
+const isBeatsPage = path.includes("beats.html") || path.includes("/beats")
+
   const isIndexPage =!isBeatsPage;
 
   // If we are on beats.html and store only has 10, fetch ALL from worker
@@ -204,7 +205,8 @@ export async function renderWave(limit = null) {
       });
     });
   }
-  if (!path.includes("beats.html")) {
+  if (!isBeatsPage) {
+
     const exploreRow = document.createElement("div");
     exploreRow.className = "wave-row explore-row";
     exploreRow.innerHTML = `<div class="wave-left"><div class="wave-cover-wrap"><img src="images/logo.png" /></div></div><div class="wave-info"><div class="wave-title">Explore More Beats</div><div class="wave-meta">Unlock full arsenal →</div></div><div class="wave-bar explore-bar"><div class="explore-line"></div></div><div class="wave-actions"><a href="beats.html" class="explore-btn">Explore</a></div>`;
