@@ -376,6 +376,10 @@
     <script type="module" src="js/playlists/playlist-engine.js"></script>
     <script type="module" src="js/playlists/playlist-render.js"></script>
     <script type="module" src="js/playlists/playlist-modal.js"></script>
+    <script type="module" src="js/playlists/dt-vault-storage.js"></script>
+<script type="module" src="js/playlists/dt-vault-modal.js"></script>
+<script type="module" src="js/playlists/dt-vault-render.js"></script>
+
 
     <!-- ================= UTILS ================= -->
     <script>
@@ -508,6 +512,14 @@
         document.documentElement.classList.add('loaded');
       });
     </script>
+
+    <div id="homepagePlaylists"></div>
+<script type="module">
+  import { renderVault } from "./js/playlists/dt-vault-render.js";
+  
+  renderVault();
+</script>
+
 
 
 

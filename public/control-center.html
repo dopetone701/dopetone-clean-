@@ -230,5 +230,72 @@
   </script>
   <script src="./email-composer.js"></script>
   <script src="./vault-email.js"></script>
+
+
+
+  <!-- FLOATING BEAT SEARCH BTN - V6 -->
+<style>
+#dtFloatBtn{position:fixed;bottom:20px;right:20px;width:56px;height:56px;background:#0066ff;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px;cursor:pointer;z-index:99999;box-shadow:0 0 20px #0066ff88;border:none}
+#dtFloatPanel{position:fixed;bottom:90px;right:20px;width:320px;max-height:420px;background:#0a0a0a;border:1px solid #1e1e1e;border-radius:16px;padding:12px;z-index:99999;display:none;box-shadow:0 10px 40px #000}
+#dtFloatPanel.show{display:block}
+.dtFbInp{width:100%;display:flex;gap:6px;margin-bottom:10px}
+.dtFbInp input{flex:1;background:#111;border:1px solid #222;color:#fff;border-radius:20px;padding:8px 12px;font-size:11px;outline:none}
+.dtFbInp button{background:#0066ff;color:#fff;border:none;border-radius:20px;padding:8px 12px;font-size:11px;font-weight:700;cursor:pointer}
+#dtFbList{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px}
+#dtFbSel{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.dtFbCard{min-width:70px;background:#151515;border:1px solid #222;border-radius:10px;padding:4px;cursor:pointer;text-align:center;flex-shrink:0}
+.dtFbCard img{width:60px;height:60px;border-radius:8px;object-fit:cover}
+.dtFbCard div{color:#fff;font-size:8px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+</style>
+
+<button id="dtFloatBtn">🔍</button>
+<div id="dtFloatPanel">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+    <b style="color:#fff;font-size:11px">Quick Beat Reply</b>
+    <span id="dtFbClose" style="color:#666;cursor:pointer;font-size:18px">✕</span>
+  </div>
+  <div class="dtFbInp">
+    <input id="dtFbQ" placeholder="trap, edm, recent...">
+    <button id="dtFbSearch">SEARCH</button>
+  </div>
+  <div id="dtFbList"><span style="color:#444;font-size:10px">Search beats...</span></div>
+  <div id="dtFbSel"></div>
+  <button id="dtFbSend" style="width:100%;margin-top:10px;background:#0066ff;color:#fff;border:none;padding:10px;border-radius:20px;font-size:11px;font-weight:800;cursor:pointer">Attach to Reply + Teach AI 🧠</button>
+</div>
+
+<script>
+const API="https://ai-api.dopetone701.workers.dev"; let fbSel=[];
+document.getElementById('dtFloatBtn').onclick=()=>{ document.getElementById('dtFloatPanel').classList.toggle('show'); };
+document.getElementById('dtFbClose').onclick=()=>{ document.getElementById('dtFloatPanel').classList.remove('show'); };
+async function fbSearch(q){
+  let el=document.getElementById('dtFbList'); el.innerHTML='<span style="color:#0066ff;font-size:10px">Searching...</span>';
+  let url=q=='recent'?`${API}/api/recent?limit=6`:`${API}/api/recommend?q=${encodeURIComponent(q)}&limit=6`;
+  let r=await fetch(url); let d=await r.json(); let b=d.top3||d.beats||[];
+  if(!b.length){ el.innerHTML='<span style="color:#555;font-size:10px">No beats</span>'; return; }
+  el.innerHTML=b.map(x=>`<div class="dtFbCard" onclick="fbAdd('${x.id}','${(x.title||'').replace(/'/g,'')}','${x.genre||''}')"><img src="${x.cover_url}"><div>${x.title}</div></div>`).join('');
+}
+function fbAdd(id,t,g){ if(fbSel.find(s=>s.id==id))return; if(fbSel.length>=3){alert('Max 3');return;} fbSel.push({id,title:t,genre:g}); fbUpd(); }
+function fbUpd(){ document.getElementById('dtFbSel').innerHTML=fbSel.map(x=>`<span style="background:#0066ff;color:#fff;padding:4px 8px;border-radius:20px;font-size:10px">${x.title} <b onclick="fbSel=fbSel.filter(s=>s.id!='${x.id}');fbUpd()" style="cursor:pointer">x</b></span>`).join(''); }
+document.getElementById('dtFbSearch').onclick=()=>{ let q=document.getElementById('dtFbQ').value.trim(); if(q) fbSearch(q); };
+document.getElementById('dtFbQ').onkeydown=e=>{ if(e.key=='Enter'){ fbSearch(e.target.value.trim()); } };
+document.getElementById('dtFbSend').onclick=()=>{
+  // Put beats into your reply input
+  let inp=document.getElementById('dzReplyInput');
+  if(inp && fbSel.length){
+    let names=fbSel.map(b=>b.title).join(', ');
+    if(!inp.value) inp.value=`Here top ${fbSel.length} match - ${names} 🔥`;
+    else inp.value+=` [${names}]`;
+    inp.focus();
+  }
+  // Teach AI
+  let thread=document.getElementById('dzThreadWrap')?.innerText.slice(-120)||'fan query';
+  fetch(`${API}/api/learn`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_text:thread, genre:fbSel[0]?.genre||'', beats:fbSel})});
+  fetch(`${API}/api/correction`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_text:thread, genre:fbSel[0]?.genre||'', response:inp?.value||'', beats:fbSel})});
+  fbSel=[]; fbUpd(); document.getElementById('dtFloatPanel').classList.remove('show');
+  alert('✓ Attached + AI learned!');
+};
+window.fbAdd=fbAdd;
+</script>
+
 </body>
 </html>
