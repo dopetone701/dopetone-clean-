@@ -321,3 +321,24 @@
     overflow-x: hidden !important;
   }
 }
+/* 🔥 DOCK SEARCH UNDER NAV - NOT ON TOP */
+#navbarMount, .navbar, nav{
+  position:sticky!important; top:0!important; z-index:100000!important;
+}
+.view-toggle{
+  position:sticky!important; 
+  top:64px!important; /* navbar height - docks right under it */
+  z-index:9999!important; /* lower than navbar */
+  background:rgba(5,7,13,0.95)!important; 
+  backdrop-filter:blur(12px)!important;
+  padding:10px!important;
+  border-bottom:1px solid rgba(0,240,255,0.1)!important;
+}
+.arsenal-search{ position:relative!important; z-index:10000!important; }
+.search-dropdown{
+  position:absolute!important; top:110%!important; left:0!important; right:0!important;
+  z-index:10001!important;
+  background:rgba(15,23,42,0.98)!important;
+  border-radius:16px!important;
+  box-shadow:0 20px 60px rgba(0,0,0,0.8)!important;
+}
