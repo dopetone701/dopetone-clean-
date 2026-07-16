@@ -143,10 +143,21 @@ export function renderWave(limit = null) {
   if (!container) return;
   waveCache.forEach(w => { try{w.destroy()}catch{} }); waveCache.clear();
   if (observer) { observer.disconnect(); observer = null; }
-  const sourceBeats = window.filteredPlaylistBeats || globalFilter.filterBeats(window.store.beats, 'all') || [];
+
+  // 🔥 FIX - FORCE ALL ON BEATS.HTML, CLEAR STUCK 10 FILTER
   const path = window.location.pathname;
   const isBeatsPage = path.includes("beats.html");
   const isIndexPage =!isBeatsPage;
+  if(isBeatsPage){
+    // if user came from index with 10 limit, wipe it
+    if(window.filteredPlaylistBeats && window.filteredPlaylistBeats.length <= 10 && (window.store?.beats?.length || 0) > 10){
+      // keep it only if it's a real search/filter, else clear to show all
+      const q = (document.getElementById('beatSearch')?.value || '').trim();
+      if(!q) window.filteredPlaylistBeats = null;
+    }
+  }
+
+  const sourceBeats = window.filteredPlaylistBeats || globalFilter.filterBeats(window.store.beats, 'all') || [];
 
   let beats;
   if (Array.isArray(limit)) beats = limit;
