@@ -1,0 +1,81 @@
+/* vault fix - forces width */
+#homepagePlaylists { width:100%; display:block; }
+#homepagePlaylists .arsenal-section.vault-section { width:100%; max-width:100%; margin:0 0 20px 0; }
+#homepagePlaylists .arsenal-inner { width:100%; max-width:100%; }
+#homepagePlaylists .wave-list { width:100%; display:flex; flex-direction:column; }
+#homepagePlaylists .wave-row { width:100%; display:flex !important; }
+#homepagePlaylists .wave-info { flex:0 0 145px !important; }
+#homepagePlaylists .wave-bar {
+  flex:1 1 auto !important;
+  width: auto !important;
+  min-width: 120px !important;
+  max-width: none !important;
+  display: block !important;
+  opacity:1 !important;
+}
+#homepagePlaylists .wave-bar canvas { width:100% !important; }
+#homepagePlaylists .wave-actions { flex:0 0 auto !important; }
+/* === FIX COVER BLUR CENTER - COPY FROM FEATURED F-PLAY === */
+.vault-wave-row .wave-left{
+  flex:0 0 42px !important;
+  display:flex !important; align-items:center !important; justify-content:center !important;
+}
+.vault-wave-row .wave-cover-wrap{
+  position:relative !important;
+  width:42px !important; height:42px !important;
+  min-width:42px !important; min-height:42px !important;
+  border-radius:6px !important; overflow:hidden !important;
+  background:#0e1220 !important;
+  display:flex !important; align-items:center !important; justify-content:center !important;
+}
+.vault-wave-row .wave-cover-wrap img{
+  position:absolute !important; inset:0 !important;
+  width:100% !important; height:100% !important;
+  object-fit:cover !important; object-position:center !important;
+  display:block !important;
+}
+
+/* THIS IS THE FIX - CENTERED LIKE .f-play */
+.vault-wave-row .wave-play{
+  position:absolute !important;
+  top:50% !important; left:50% !important;
+  transform:translate(-50%,-50%) !important;
+  width:42px !important; height:42px !important;
+  border-radius:6px !important;
+  border:1px solid rgba(255,255,255,0.12) !important;
+  background:rgba(0,0,0,0.55) !important;
+  backdrop-filter:blur(6px) !important;
+  -webkit-backdrop-filter:blur(6px) !important;
+  color:#fff !important;
+  display:flex !important; align-items:center !important; justify-content:center !important;
+  z-index:2 !important;
+  opacity:0 !important; transition:0.2s ease !important;
+}
+.vault-wave-row:hover .wave-play,
+.vault-wave-row.active .wave-play{ opacity:1 !important; }
+.vault-wave-row .wave-play svg{ width:16px !important; height:16px !important; fill:#fff !important; display:block !important; }
+/* === STRETCH WAVES LEFT CLOSE TO TEXTS - SURGICAL === */
+.vault-wave-row{ gap:6px !important; }
+
+.vault-wave-row .wave-info{
+  flex:0 0 95px !important;
+  min-width:95px !important;
+  max-width:95px !important;
+  margin-right:0 !important;
+  padding-right:0 !important;
+}
+
+.vault-wave-row .wave-bar{
+  margin-left:0 !important;
+  margin-right:0 !important;
+  flex:1 1 auto !important;
+  min-width:0 !important;
+}
+
+@media(max-width:768px){
+  .vault-wave-row .wave-info{
+    flex:0 0 85px !important;
+    min-width:85px !important;
+    max-width:85px !important;
+  }
+}

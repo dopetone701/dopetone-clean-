@@ -122,13 +122,29 @@ function showChatSmooth(){
   const w=document.getElementById('dtChatWrap'); if(!w) return;
   w.style.maxHeight='520px'; w.style.opacity='1'; w.style.transform='translateY(0)'; w.style.pointerEvents='auto';
   chatVisible=true; chatActiveUntil=Date.now()+60000;
-  setTimeout(()=>{ w.scrollIntoView({behavior:'smooth', block:'center'}); scrollToLatest(); }, 100);
+  setTimeout(()=>{ 
+  const list = document.getElementById('dtChatList');
+  const wrap = document.getElementById('dtChatWrap');
+  const feed = document.getElementById('noticeBoardFeed');
+  // 1. slide post up inside notice only
+  if(feed && wrap){
+    feed.scrollTo({top: feed.scrollHeight, behavior:'smooth'});
+  }
+  // 2. WhatsApp scroll inside chat only
+  if(list){
+    list.scrollTo({top:list.scrollHeight, behavior:'smooth'});
+  }
+}, 100);
+
 }
 function hideChatSmooth(){
   const w=document.getElementById('dtChatWrap'); if(!w||!chatVisible) return;
   w.style.maxHeight='0px'; w.style.opacity='0'; w.style.transform='translateY(-20px)'; w.style.pointerEvents='none'; chatVisible=false;
-  const posts=document.getElementById('dtDropsWrap'); if(posts) posts.scrollIntoView({behavior:'smooth', block:'start'});
+  const posts=document.getElementById('dtDropsWrap'); 
+if(posts) posts.scrollTo({top:0, behavior:'smooth'});
 }
+
+
 function scrollToLatest(){ const l=document.getElementById('dtChatList'); if(l) l.scrollTo({top:l.scrollHeight, behavior:'smooth'}); }
 function showTyping(s=true){ const el=document.getElementById('dtTypingIndicator'); const h=document.getElementById('dtTypingHead'); if(el) el.style.display=s?'block':'none'; if(h) h.style.display=s?'block':'none'; if(s) scrollToLatest(); }
 
