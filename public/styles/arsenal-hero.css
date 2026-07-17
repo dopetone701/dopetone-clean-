@@ -23,7 +23,7 @@
   left: 0 !important;
   top: 0 !important;
   transform: none !important;
-  background: url("/public/images/beats-wav-bg.png") center / cover no-repeat !important;
+  background: url("/images/beats-wav-bg.png") center / cover no-repeat !important;
   opacity: 0.5 !important;
   z-index: 0 !important;
   -webkit-mask-image: radial-gradient(ellipse at center, black 45%, transparent 88%) !important;
@@ -185,4 +185,10 @@ button:has(svg):has(+ button) {
   visibility: visible !important;
   opacity: 1 !important;
   height: auto !important;
+}
+@media (max-width: 768px) {
+  .arsenal-hero h1 {
+    white-space: nowrap !important;
+    font-size: clamp(20px, 6.5vw, 32px) !important;
+  }
 }

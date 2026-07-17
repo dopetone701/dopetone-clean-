@@ -29,7 +29,7 @@
   width: 80%;
   height: 100%;
 
-  background: url("/public/images/beats-wav-bg.png") center / contain no-repeat;
+  background: url("/images/beats-wav-bg.png") center / contain no-repeat;
 
   opacity: 0.15;
   filter: blur(0.5px);
