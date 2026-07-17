@@ -342,3 +342,46 @@
   border-radius:16px!important;
   box-shadow:0 20px 60px rgba(0,0,0,0.8)!important;
 }
+/* KILL THE GAP */
+#waveSentinel{
+  height: 1px !important;
+  min-height: 1px !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+#beatsGrid, .beats-grid, main{
+  min-height: auto !important;
+  padding-bottom: 20px !important;
+  margin-bottom: 0 !important;
+}
+
+body{
+  padding-bottom: 90px !important; /* only for player */
+  min-height: auto !important;
+}
+/* KILL ALL SCROLLBARS PERMANENTLY - KEEP SCROLL */
+html, body {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+html::-webkit-scrollbar, body::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+#beatsList, #beatsGrid, .beats-container, .wave-list, #waveSentinel {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+#beatsList::-webkit-scrollbar, 
+#beatsGrid::-webkit-scrollbar, 
+.beats-container::-webkit-scrollbar,
+.wave-list::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+}

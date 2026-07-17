@@ -315,3 +315,61 @@ function initSearch() {
 }
 
 window.renderGridView = renderGridView;
+
+
+
+//THE FILTER BAR LOGIC
+
+// LINK PILLS TO EXISTING SEARCH
+document.querySelectorAll('.pill').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.pill').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    
+    const genre = btn.dataset.filter || btn.innerText;
+    const searchInput = document.getElementById('beatSearch');
+    
+    if(genre.toLowerCase() === 'all'){
+      searchInput.value = '';
+    } else {
+      searchInput.value = genre;
+    }
+    searchInput.dispatchEvent(new Event('input')); // triggers your existing filter
+  });
+});
+
+
+
+// AUTO FADE DROPDOWN AFTER 3 SECS
+let dropdownTimer;
+
+function showDropdown(){
+  const dd = document.getElementById('searchDropdown');
+  dd.classList.remove('fade-out');
+  clearTimeout(dropdownTimer);
+  dropdownTimer = setTimeout(()=>{
+    dd.classList.add('fade-out');
+  }, 3000); // 3 secs
+}
+
+// hook into your existing input listener
+const beatSearch = document.getElementById('beatSearch');
+const searchDropdown = document.getElementById('searchDropdown');
+
+if(beatSearch){
+  beatSearch.addEventListener('input', ()=>{
+    if(beatSearch.value.length > 0){
+      searchDropdown.style.display = 'block';
+      showDropdown();
+    }
+  });
+  
+  // show again on hover/focus
+  searchDropdown.addEventListener('mouseenter', ()=>{
+    searchDropdown.classList.remove('fade-out');
+    clearTimeout(dropdownTimer);
+  });
+  searchDropdown.addEventListener('mouseleave', ()=>{
+    showDropdown();
+  });
+}

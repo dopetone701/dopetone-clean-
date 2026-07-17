@@ -28,6 +28,7 @@
 <link rel="stylesheet" href="styles/player-overlay.css">
 <link rel="stylesheet" href="styles/full-screen.css">
 <link rel="stylesheet" href="styles/playlists.css">
+<link rel="stylesheet" href="styles/dopetone-footer.css">
 
 <!-- CROPPER -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.css" />
@@ -100,7 +101,33 @@ body {
   .grid-card img { height: 110px; }
   body{ padding-bottom:180px!important; }
 }
+
+/* REMOVE WIDE EMPTY SPACE AFTER BEATS */
+#waveSentinel {
+  height: 1px !important;
+  min-height: 1px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  opacity: 0 !important;
+}
+
+.beats-container, #beatsList, .beats-wrapper, main {
+  min-height: auto !important;
+  height: auto !important;
+  padding-bottom: 20px !important;
+  margin-bottom: 0 !important;
+}
+
+/* footer sticks right after beats */
+footer, .footer {
+  margin-top: 0 !important;
+}
+
 </style>
+
+
+
 </head>
 
 <body>
@@ -121,11 +148,24 @@ body {
 </div>
 </section>
 
-<!-- ================= VIEW TOGGLE + SEARCH ================= -->
-<div class="view-toggle">
-  <button id="listBtn" class="active">List</button>
-  <button id="gridBtn">Grid</button>
-  <div class="arsenal-search">
+<!-- ================= VIEW TOGGLE + SEARCH + PILLS - FIXED ================= -->
+<div class="view-toggle" style="display:flex; flex-wrap:nowrap; align-items:center; gap:10px; overflow-x:auto; white-space:nowrap; scrollbar-width:none; width:100%; -webkit-overflow-scrolling:touch;">
+  <button id="listBtn" class="active" style="flex:0 0 auto;">List</button>
+  <button id="gridBtn" style="flex:0 0 auto;">Grid</button>
+ 
+  <div class="arsenal-pills" style="display:flex; flex-wrap:nowrap; gap:6px; flex:0 0 auto;">
+    <button class="pill active" data-filter="all" style="flex:0 0 auto;">All</button>
+    <button class="pill" data-filter="trap" style="flex:0 0 auto;">Trap</button>
+    <button class="pill" data-filter="edm" style="flex:0 0 auto;">EDM</button>
+    <button class="pill" data-filter="afro" style="flex:0 0 auto;">Afro</button>
+    <button class="pill" data-filter="rnb" style="flex:0 0 auto;">R&B</button>
+    <button class="pill" data-filter="pop" style="flex:0 0 auto;">Pop</button>
+    <button class="pill" data-filter="drill" style="flex:0 0 auto;">Drill</button>
+    <button class="pill" data-filter="dancehall" style="flex:0 0 auto;">Dancehall</button>
+    <button class="pill" data-filter="hiphop" style="flex:0 0 auto;">Hip Hop</button>
+  </div>
+
+  <div class="arsenal-search" style="flex:0 0 180px; min-width:180px; margin-left:10px;">
     <input
       type="search"
       name="beat_search_qt7x9f"
@@ -139,10 +179,20 @@ body {
       data-1p-ignore="true"
       data-bwignore="true"
       data-form-type="other"
+      style="width:100%;"
     >
     <div class="search-dropdown" id="searchDropdown"></div>
   </div>
 </div>
+
+<style>
+.view-toggle::-webkit-scrollbar { display:none !important; }
+@media (max-width: 768px) {
+  .arsenal-search { flex: 0 0 200px !important; min-width: 200px !important; }
+}
+</style>
+
+
 
 <!-- ================= LIST VIEW ================= -->
 <section id="arsenalSection">
@@ -158,13 +208,7 @@ body {
   <div id="gridSentinel"></div>
 </section>
 
-<!-- ================= CREATE SYSTEM ================= -->
-<button id="createBtn" class="create-btn" style="display:none;">+</button>
-<div id="createPanel" class="create-panel" style="display:none;">
-<a href="create-beat.html"><button>Upload Beats</button></a>
-<a href="create-pack.html"><button>Sample Packs</button></a>
-<a href="create-sample.html"><button>Upload Sample</button></a>
-</div>
+
 
 <!-- ================= GLOBAL PLAYER ================= -->
 <div id="globalPlayerUI" class="global-player">
@@ -263,6 +307,113 @@ document.getElementById("createPanel").style.display = "block"
 <script type="module" src="js/playlists/playlist-engine.js"></script>
 <script type="module" src="js/playlists/playlist-render.js"></script>
 <script type="module" src="js/playlists/playlist-modal.js"></script>
+
+
+
+
+
+<!-- ================= FOOTER ================= -->
+<footer class="dt-footer">
+  <div class="dt-footer-glow"></div>
+  <div class="dt-footer-main">
+    <div class="dt-footer-left">
+      <h2>DOPE TONE</h2>
+      <p>Premium beats • Future sound • Industry vibes</p>
+      <div class="footer-socials">
+        <a href="https://instagram.com/dopetone701" target="_blank" class="footer-social ig" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+        <a href="https://www.youtube.com/channel/UCKddIkawOD4w_79Hc4zDw7Q" target="_blank" class="footer-social yt" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+        <a href="https://www.tiktok.com/@dopetonevault?_r=1&_t=ZS-97w8x9oFU19" target="_blank" class="footer-social tk" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+      </div>
+    </div>
+    <div class="dt-footer-nav">
+      <div class="col"><span>Explore</span><a href="beats.html">Beats</a><a href="index.html">Samples</a><a href="beats.html?filter=trending">Trending</a></div>
+      <div class="col"><span>Support</span><a href="#" onclick="openTicket();return false;">Help</a><a href="#" onclick="openTicket();return false;">Ticket</a><a href="licensing.html">License</a></div>
+      <div class="col"><span>Legal</span><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="faq.html">FAQ</a></div>
+      <div class="col"><span>Vault</span><a href="about.html">About</a><a href="mailto:creators@dopetonevault.com">Contact</a><a href="https://instagram.com/dopetone701">IG</a></div>
+    </div>
+    <div class="dt-footer-right">
+      <span>Stay in vault</span>
+      <div class="vault-join"><input id="vault-email" placeholder="Email"><button onclick="joinVault()">→</button></div>
+      <div class="pay-row">
+        <div style="background:#fff;color:#1A1F71;font-weight:900;font-size:10px;padding:5px 8px;border-radius:5px;min-width:32px;text-align:center">VISA</div>
+        <div class="pay"><img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard"></div>
+        <div class="pay pay-pp"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></div>
+        <div class="pay"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b0/Apple_Pay_logo.svg" alt="Apple Pay"></div>
+      </div>
+    </div>
+  </div>
+  <div class="dt-footer-bottom">
+    <small>© 2026 DOPE TONE VAULT</small>
+    <small class="dna">SOUND • FUTURE • CULTURE</small>
+    <small>Dubai • Worldwide</small>
+  </div>
+</footer>
+
+<script>
+const footer = document.querySelector('.dt-footer');
+const player = document.querySelector('#global-player, #playerMount,.dt-player,.player, [class*=player]');
+
+if(footer && player){
+  const obs = new IntersectionObserver(([e]) => {
+    player.style.display = e.isIntersecting? 'none' : '';
+  }, {threshold: 0.1});
+  obs.observe(footer);
+}
+</script>
+
+
+  
+<style>
+/* NUCLEAR FIX FOR SEARCH SCROLL */
+.view-toggle[style] {
+  overflow-x: auto!important;
+  overflow-y: hidden!important;
+  max-width: 100vw!important;
+  width: 100%!important;
+  display: flex!important;
+  flex-wrap: nowrap!important;
+  -webkit-overflow-scrolling: touch!important;
+}
+.view-toggle[style]::-webkit-scrollbar { display: none!important; }
+
+.arsenal-pills[style] {
+  flex: 0 0 auto!important;
+  overflow: visible!important;
+}
+
+.arsenal-search[style] {
+  margin-left: 12px!important;
+  flex: 0 0 200px!important;
+  min-width: 200px!important;
+  max-width: 200px!important;
+  display: block!important;
+  position: relative!important;
+}
+
+/* Make sure parent not cutting it */
+body,.container,.beats-page,.arsenal-bar {
+  overflow-x: visible!important;
+  max-width: 100vw!important;
+}
+</style>
+
+<script>
+// Force scroll to work
+document.addEventListener('DOMContentLoaded', () => {
+  const bar = document.querySelector('.view-toggle');
+  if(bar) {
+    bar.style.overflowX = 'auto';
+    // allow mouse wheel to horizontal scroll
+    bar.addEventListener('wheel', (e) => {
+      if(Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+        bar.scrollLeft += e.deltaY;
+        e.preventDefault();
+      }
+    }, {passive:false});
+  }
+});
+</script>
+
 
 </body>
 </html>
