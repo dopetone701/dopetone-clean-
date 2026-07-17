@@ -373,3 +373,29 @@ if(beatSearch){
     showDropdown();
   });
 }
+// sticky shadow hint
+const filterBar = document.querySelector('.view-toggle');
+window.addEventListener('scroll', () => {
+  if(window.scrollY > 80) filterBar?.classList.add('is-stuck');
+  else filterBar?.classList.remove('is-stuck');
+});
+
+
+
+const bar = document.querySelector('.view-toggle');
+const navH = document.querySelector('nav').offsetHeight;
+const startTop = bar.getBoundingClientRect().top + window.scrollY;
+
+window.addEventListener('scroll', () => {
+  if (window.scrollY >= startTop - navH) {
+    bar.style.position = 'fixed';
+    bar.style.top = navH + 'px';
+    bar.style.left = '0';
+    bar.style.right = '0';
+    bar.style.zIndex = '1002';
+    bar.style.width = '100%';
+  } else {
+    bar.style.position = 'sticky';
+    bar.style.top = navH + 'px';
+  }
+});

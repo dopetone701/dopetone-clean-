@@ -412,6 +412,25 @@ document.addEventListener('DOMContentLoaded', () => {
     }, {passive:false});
   }
 });
+
+</script>
+
+
+<script>
+// PERMANENT FIX FOR SENTINEL GAP
+const killSentinel = () => {
+  const s = document.getElementById('gridSentinel');
+  if (s) {
+    s.style.setProperty('height', '1px', 'important');
+    s.style.setProperty('min-height', '1px', 'important');
+    s.style.margin = '0';
+    s.style.padding = '0';
+  }
+};
+killSentinel();
+// keep killing it if JS tries to bring it back
+new MutationObserver(killSentinel).observe(document.body, { attributes: true, childList: true, subtree: true });
+setInterval(killSentinel, 500);
 </script>
 
 
