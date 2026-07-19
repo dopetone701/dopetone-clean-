@@ -194,3 +194,99 @@ form.addEventListener("submit", async (e) => {
   }
 });
 </script>
+
+
+
+<!-- ================= DOPE TONE - CLEAN FINAL FAB - PASTE BEFORE </body> ================= -->
+<style>
+  #cf-fab-container{position:fixed!important;bottom:90px!important;right:20px!important;z-index:99999999!important;display:block!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;font-family:Inter,system-ui,sans-serif}
+  #cf-fab-btn{width:66px!important;height:66px!important;border-radius:50%!important;background:#f97316!important;color:#fff!important;border:3px solid #fff!important;box-shadow:0 0 0 6px rgba(249,115,22,.3),0 16px 40px #000!important;cursor:pointer!important;display:flex!important;align-items:center!important;justify-content:center!important}
+  #cf-fab-btn:hover{transform:scale(1.08)!important}
+  #cf-fab-queue{position:fixed!important;bottom:170px!important;right:20px!important;width:360px!important;max-width:92vw!important;z-index:99999999!important;display:flex!important;flex-direction:column!important;gap:10px!important}
+  .cf-queue-card{background:#111!important;border:1px solid #333!important;border-radius:16px!important;padding:14px!important;color:#fff!important;box-shadow:0 12px 30px rgba(0,0,0,.7)!important}
+  .cf-filename{font-size:13px!important;font-weight:700!important;max-width:210px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+  .cf-filesize{font-size:11px!important;color:#888!important;margin-top:2px!important}
+  .cf-progress-track{height:6px!important;background:#222!important;border-radius:99px!important;overflow:hidden!important;margin:10px 0!important}
+  .cf-progress-fill{height:100%!important;background:linear-gradient(90deg,#f97316,#fb923c)!important;width:0%!important;display:block!important;transition:width .2s linear!important}
+  .cf-card-foot{display:flex!important;justify-content:space-between!important;font-size:11px!important;color:#aaa!important}
+  .cf-action-btn{background:rgba(255,255,255,.1)!important;border:0!important;color:#fff!important;padding:6px 12px!important;border-radius:20px!important;cursor:pointer!important;font-size:11px!important}
+  #cf-drop{position:fixed!important;inset:0!important;background:rgba(0,0,0,.9)!important;z-index:99999998!important;display:none!important;align-items:center!important;justify-content:center!important;border:4px dashed #f97316!important}
+  #cf-drop.on{display:flex!important}
+</style>
+
+<div id="cf-fab-container">
+  <div id="cf-fab-queue"></div>
+  <button id="cf-fab-btn" title="Upload to R2">⬆️</button>
+  <input type="file" id="cf-file-input" multiple hidden>
+</div>
+<div id="cf-drop"><div style="text-align:center"><div style="font-size:40px;font-weight:900;color:#fff">DROP FILES HERE</div><div style="color:#f97316;margin-top:8px;font-weight:700">HEAVY FILES WILL BE COMBINED IN R2</div></div></div>
+
+<script>
+(function(){
+  const WORKER_URL = 'https://creation-system-api.dopetone701.workers.dev';
+  const CHUNK_SIZE = 5*1024*1024;
+  const PARALLEL = 3;
+  const queue = document.getElementById('cf-fab-queue');
+  const btn = document.getElementById('cf-fab-btn');
+  const input = document.getElementById('cf-file-input');
+  const drop = document.getElementById('cf-drop');
+  btn.addEventListener('click', () => input.click());
+  input.addEventListener('change', e => handleFiles(e.target.files));
+  window.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('on'); });
+  window.addEventListener('dragleave', e => { if(!e.relatedTarget) drop.classList.remove('on'); });
+  window.addEventListener('drop', e => { e.preventDefault(); drop.classList.remove('on'); if(e.dataTransfer.files.length) handleFiles(e.dataTransfer.files); });
+  function handleFiles(files){
+    for(const file of files){
+      const id = Math.random().toString(36).slice(2,8);
+      const card = document.createElement('div');
+      card.className='cf-queue-card'; card.id='card-'+id;
+      card.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:start"><div><div class="cf-filename">${file.name}</div><div class="cf-filesize">${(file.size/1024/1024).toFixed(2)} MB</div></div><button class="cf-action-btn" onclick="document.getElementById('card-${id}').remove()">✕</button></div><div class="cf-progress-track"><div class="cf-progress-fill" id="fill-${id}"></div></div><div class="cf-card-foot"><span id="status-${id}">Starting...</span><span id="speed-${id}"></span></div><div id="link-${id}" style="display:none;margin-top:10px"><input id="input-${id}" style="width:100%;background:#000;border:1px solid #333;color:#4ade80;padding:8px;border-radius:6px;font-size:11px" readonly><button class="cf-action-btn" style="width:100%;margin-top:6px;background:#f97316!important;font-weight:700" onclick="navigator.clipboard.writeText(document.getElementById('input-${id}').value);this.textContent='Copied!'">COPY R2 URL</button></div>`;
+      queue.appendChild(card);
+      uploadFile(file,id);
+    }
+  }
+  async function uploadFile(file,id){
+    const fill = document.getElementById('fill-'+id);
+    const status = document.getElementById('status-'+id);
+    const speed = document.getElementById('speed-'+id);
+    const key = `beats/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g,'_')}`;
+    try{
+      if(file.size < 90*1024*1024){
+        status.textContent = 'Uploading (single, no chunks)...';
+        const res = await fetch(`${WORKER_URL}/upload-single?key=${encodeURIComponent(key)}`, {method:'PUT',headers:{'Content-Type':file.type||'application/octet-stream'},body:file}).then(r=>r.json());
+        if(res.error) throw new Error(res.error);
+        fill.style.width='100%'; status.textContent='Done ✓ Saved as Standard';
+        document.getElementById('link-'+id).style.display='block';
+        document.getElementById('input-'+id).value=res.url;
+        return;
+      }
+      const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+      status.textContent=`Creating multipart (${totalChunks} chunks)...`;
+      const init = await fetch(`${WORKER_URL}/create-multipart`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key,contentType:file.type})}).then(r=>r.json());
+      if(init.error) throw new Error(init.error);
+      const uploadId=init.uploadId; let uploaded=0; const parts=new Array(totalChunks); const partQueue=Array.from({length:totalChunks},(_,i)=>i+1); let lastT=Date.now(),lastB=0;
+      async function uploadWorker(){
+        while(partQueue.length){
+          const pNum=partQueue.shift(); if(!pNum) break;
+          const start=(pNum-1)*CHUNK_SIZE,end=Math.min(start+CHUNK_SIZE,file.size);
+          const {url}=await fetch(`${WORKER_URL}/get-part-url`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key,uploadId,partNumber:pNum})}).then(r=>r.json());
+          const put=await fetch(url,{method:'PUT',body:file.slice(start,end)});
+          if(!put.ok) throw new Error(`Chunk ${pNum} failed ${put.status}`);
+          const etag=put.headers.get('etag'); if(!etag) throw new Error('No etag '+pNum);
+          parts[pNum-1]={partNumber:pNum,etag:etag}; uploaded+=(end-start);
+          fill.style.width=(uploaded/file.size*100)+'%'; status.textContent=`${(uploaded/file.size*100).toFixed(1)}% • ${uploaded/1024/1024|0}/${file.size/1024/1024|0} MB`;
+          const now=Date.now(); if(now-lastT>500){speed.textContent=((uploaded-lastB)/((now-lastT)/1000)/1024/1024).toFixed(2)+' MB/s'; lastT=now; lastB=uploaded;}
+        }
+      }
+      await Promise.all(Array.from({length:PARALLEL},()=>uploadWorker()));
+      if(parts.some(p=>!p)) throw new Error('Missing parts');
+      status.textContent='Combining chunks in R2...';
+      const done=await fetch(`${WORKER_URL}/complete-multipart`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key,uploadId,parts})}).then(r=>r.json());
+      if(done.error) throw new Error('Combine failed: '+done.error);
+      status.textContent='Done ✓ Combined in R2 as Standard'; fill.style.width='100%'; speed.textContent='';
+      document.getElementById('link-'+id).style.display='block'; document.getElementById('input-'+id).value=done.url;
+    }catch(e){console.error(e); status.textContent='Error: '+e.message; fill.style.background='#ef4444';}
+  }
+})();
+</script>
+<!-- ================= END FAB ================= -->
