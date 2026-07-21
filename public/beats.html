@@ -363,57 +363,41 @@ if(footer && player){
 
 
   
-<style>
-/* NUCLEAR FIX FOR SEARCH SCROLL */
-.view-toggle[style] {
-  overflow-x: auto!important;
-  overflow-y: hidden!important;
-  max-width: 100vw!important;
-  width: 100%!important;
-  display: flex!important;
-  flex-wrap: nowrap!important;
-  -webkit-overflow-scrolling: touch!important;
-}
-.view-toggle[style]::-webkit-scrollbar { display: none!important; }
 
-.arsenal-pills[style] {
-  flex: 0 0 auto!important;
-  overflow: visible!important;
-}
 
-.arsenal-search[style] {
-  margin-left: 12px!important;
-  flex: 0 0 200px!important;
-  min-width: 200px!important;
-  max-width: 200px!important;
-  display: block!important;
-  position: relative!important;
-}
-
-/* Make sure parent not cutting it */
-body,.container,.beats-page,.arsenal-bar {
-  overflow-x: visible!important;
-  max-width: 100vw!important;
-}
-</style>
 
 <script>
-// Force scroll to work
+// MAGNET - .view-toggle sticks to #navbarMount
 document.addEventListener('DOMContentLoaded', () => {
   const bar = document.querySelector('.view-toggle');
-  if(bar) {
-    bar.style.overflowX = 'auto';
-    // allow mouse wheel to horizontal scroll
-    bar.addEventListener('wheel', (e) => {
-      if(Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
-        bar.scrollLeft += e.deltaY;
-        e.preventDefault();
-      }
-    }, {passive:false});
-  }
-});
+  const hero = document.querySelector('.arsenal-hero');
+  const navMount = document.getElementById('navbarMount');
+  
+  if (!bar || !hero) return;
 
+  // wrap bar to prevent jump
+  const wrapper = document.createElement('div');
+  wrapper.className = 'view-toggle-wrapper';
+  bar.parentNode.insertBefore(wrapper, bar);
+  wrapper.appendChild(bar);
+
+  function getNavHeight() {
+    return navMount ? navMount.offsetHeight : 60;
+  }
+
+  window.addEventListener('scroll', () => {
+    const navH = getNavHeight();
+    const heroBottom = hero.offsetTop + hero.offsetHeight;
+    
+    if (window.scrollY >= heroBottom - navH) {
+      bar.classList.add('magnet-fixed');
+    } else {
+      bar.classList.remove('magnet-fixed');
+    }
+  }, { passive: true });
+});
 </script>
+
 
 
 <script>
@@ -432,6 +416,8 @@ killSentinel();
 new MutationObserver(killSentinel).observe(document.body, { attributes: true, childList: true, subtree: true });
 setInterval(killSentinel, 500);
 </script>
+
+
 
 
 </body>
