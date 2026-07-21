@@ -498,3 +498,12 @@ body.licence-page #waveList .wave-row:not(.explore-row){ display: none !importan
     border-radius:14px !important;
   }
 }
+/* KILL DROPDOWN FOREVER */
+#searchDropdown, .search-dropdown {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  height: 0 !important;
+  overflow: hidden !important;
+}
