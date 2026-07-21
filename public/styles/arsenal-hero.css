@@ -1,194 +1,208 @@
+/* ===============================
+   ARSENAL HERO - FINAL PREMIUM FULL WIDTH
+   Dark Red Glass + Dark Blue Edges + Metal Text
+   No space between nav and hero
+================================ */
 
+/* KILL NAV GAP */
+nav, .navbar, header {
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
 
-/* HERO - GLASS + TEXT INSIDE */
 .arsenal-hero {
   position: relative !important;
   overflow: hidden !important;
-  margin: 12px !important;
-  width: calc(100% - 24px) !important;
-  border-radius: 20px !important;
-  padding: 38px 20px !important;
   
-  /* Glass - not too opec */
-  background: rgba(0, 0, 0, 0.38) !important;
-  backdrop-filter: blur(18px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(18px) saturate(180%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.14) !important;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.257), 0 12px 30px rgba(0,0,0,0.35) !important;
+  /* FULL WIDTH - NO SPACE */
+  margin: 0 !important;
+  width: 100% !important;
+  border-radius: 0 0 20px 20px !important;
+  padding: 52px 24px !important;
+  
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  
+  /* Dark Red Glass */
+  background: linear-gradient(180deg, rgba(70, 0, 22, 0.92) 0%, rgba(30, 0, 12, 0.96) 100%) !important;
+  backdrop-filter: blur(16px) saturate(130%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(130%) !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(255, 40, 80, 0.18) !important;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.5) !important;
 }
 
+/* WAVE - PERFECT CENTERED FULL WIDTH */
 .arsenal-hero::before {
+  content: "" !important;
+  position: absolute !important;
+  left: 50% !important;
+  top: 50% !important;
   width: 100% !important;
   height: 100% !important;
-  left: 0 !important;
-  top: 0 !important;
-  transform: none !important;
-  background: url("/images/beats-wav-bg.png") center / cover no-repeat !important;
-  opacity: 0.5 !important;
+  transform: translate(-50%, -50%) !important;
+  background: url("../images/beats-wav-bg.png") center center / 100% 100% no-repeat !important;
+  opacity: 0.32 !important;
   z-index: 0 !important;
-  -webkit-mask-image: radial-gradient(ellipse at center, black 45%, transparent 88%) !important;
-  mask-image: radial-gradient(ellipse at center, black 45%, transparent 88%) !important;
+  pointer-events: none !important;
 }
 
+/* DARK BLUE EDGE DARKEN - HIGHLIGHT TEXT */
 .arsenal-hero::after {
   content: "" !important;
   position: absolute !important;
   inset: 0 !important;
-  background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.7) 100%) !important;
+  background: radial-gradient(ellipse at center, transparent 45%, rgba(10, 18, 48, 0.92) 100%) !important;
   z-index: 1 !important;
-  border-radius: 20px !important;
+  border-radius: 0 0 20px 20px !important;
+  pointer-events: none !important;
 }
 
-/* TEXT - FAMILY + ENERGETIC + INSIDE GLASS */
+/* TEXT - METAL DNA */
 .arsenal-hero h1 {
   position: relative !important;
   z-index: 5 !important;
+  display: block !important;
+  text-align: center !important;
+  width: 100% !important;
+  margin: 0 !important;
+  font-size: clamp(30px, 5vw, 46px) !important;
   font-weight: 900 !important;
-  font-size: clamp(28px, 5vw, 46px) !important;
-  letter-spacing: -0.03em !important;
-  color: #fff !important;
-  text-shadow: 
-    0 2px 12px rgba(0,0,0,0.8),
-    0 0 20px rgba(5, 15, 15, 0.25) !important;
-  line-height: 1.1 !important;
+  letter-spacing: 1px !important;
+  line-height: 1.05 !important;
+  
+  background-image:
+    linear-gradient(90deg, #4da6ff, #ffffff, #ff4d94),
+    url("../images/metal.jpg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-blend-mode: overlay !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  
+  filter: drop-shadow(0 2px 2px rgba(0,0,0,0.8)) drop-shadow(0 8px 24px rgba(0,0,0,0.9)) !important;
 }
 
 .arsenal-hero p {
   position: relative !important;
   z-index: 5 !important;
-  margin-top: 8px !important;
-  font-weight: 500 !important;
-  font-size: clamp(13px, 1.6vw, 16px) !important;
-  color: rgba(255,255,255,0.88) !important;
-  text-shadow: 0 1px 8px rgba(0,0,0,0.8) !important;
-  letter-spacing: 0.02em !important;
-  background: rgba(255,255,255,0.08) !important;
-  display: inline-block !important;
-  padding: 6px 14px !important;
-  border-radius: 100px !important;
-  border: 1px solid rgba(255,255,255,0.14) !important;
-  backdrop-filter: blur(8px) !important;
-}
-/* ALL BEATS ARSENAL - DARK BIG SHADOW + BLUE OUTLINE */
-.arsenal-hero h1 {
-  color: #ffffff !important;
-  font-weight: 900 !important;
-  -webkit-text-stroke: 1px rgba(5, 10, 12, 0.9) !important;
-  
-  text-shadow: 
-    0 0 3px rgba(125, 211, 255, 0.9),
-    0 0 12px rgba(56, 189, 248, 0.6),
-    0 6px 18px rgba(0, 0, 0, 0.95),
-    0 12px 32px rgba(0, 0, 0, 0.9),
-    0 20px 50px rgba(0, 0, 0, 0.85) !important;
-}
-/* GLASS WITH FIRE RED OUTLINE */
-.arsenal-hero {
-  background: rgba(1, 3, 9, 0.38) !important;
-  backdrop-filter: blur(18px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(18px) saturate(180%) !important;
-  border: 1.8px solid #1e29ff !important;
-  box-shadow: 
-    0 0 0 2px rgba(255, 30, 30, 0.18),
-    0 0 18px rgba(255, 30, 30, 0.65),
-    0 0 36px rgba(255, 30, 30, 0.4),
-    inset 0 1px 0 rgba(255,255,255,0.15),
-    inset 0 0 20px rgba(255, 30, 30, 0.12) !important;
-  border-radius: 20px !important;
-}
-
-/* Remove red from toggle if you added it */
-.genre-filter, .filter-bar, .genre-tabs {
-  border: none !important;
-  box-shadow: none !important;
-}
-/* VIEW TOGGLE - STAR BLUE OUTLINE */
-.view-toggle,
-.layout-toggle,
-.view-switch,
-[class*="view-toggle"],
-[class*="ViewToggle"],
-button:has(svg):has(+ button) {
-  border: 1.5px solid #38bdf8 !important;
-  box-shadow: 
-    0 0 0 2px rgba(56, 189, 248, 0.18),
-    0 0 14px rgba(56, 189, 248, 0.7),
-    0 0 28px rgba(56, 189, 248, 0.35),
-    inset 0 0 10px rgba(56, 189, 248, 0.15) !important;
-  border-radius: 10px !important;
-}
-
-/* If it's two buttons (grid/list), hit both */
-.view-toggle button,
-.layout-toggle button {
-  border: 1.2px solid #38bdf8 !important;
-  box-shadow: 0 0 12px rgba(56, 189, 248, 0.6) !important;
-}
-
-/* active state = filled star blue */
-.view-toggle button.active,
-.view-toggle .active,
-.layout-toggle .active {
-  background: rgba(56, 189, 248, 0.18) !important;
-  border-color: #7dd3ff !important;
-  box-shadow: 0 0 18px rgba(56, 189, 248, 0.8) !important;
-}
-/* VIEWTOGGLE SEARCH BAR - FREE THE DROPDOWN */
-.view-toggle,
-.layout-toggle,
-[class*="view-toggle"] {
-  overflow: visible !important;
-}
-
-/* the search inside viewtoggle */
-.view-toggle input,
-.view-toggle div:has(input),
-.layout-toggle div:has(input),
-[class*="view-toggle"] div:has(input) {
-  overflow: visible !important;
-  position: relative !important;
-}
-
-/* The perfect match dropdown */
-.view-toggle [class*="dropdown"],
-.view-toggle [class*="results"],
-.view-toggle [class*="suggestion"],
-.view-toggle ul,
-.view-toggle div > div:has(div) {
-  position: absolute !important;
-  top: calc(100% + 10px) !important;
-  left: 0 !important;
+  text-align: center !important;
   width: 100% !important;
-  min-width: 280px !important;
-  height: auto !important;
-  max-height: 380px !important;
-  overflow-y: auto !important;
-  z-index: 999999 !important;
-  
-  background: rgba(10, 18, 42, 0.98) !important;
-  backdrop-filter: blur(20px) !important;
-  border: 1px solid rgba(125,211,255,0.35) !important;
-  border-radius: 14px !important;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.7) !important;
-  padding: 8px !important;
-  
-  /* kill the squish */
-  transform: none !important;
-  clip: auto !important;
-  clip-path: none !important;
+  max-width: 90% !important;
+  margin: 12px auto 0 !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  letter-spacing: 1.5px !important;
+  text-transform: uppercase !important;
+  white-space: normal !important;
+  word-wrap: break-word !important;
+  line-height: 1.4 !important;
+  background: linear-gradient(90deg, #8fd3ff, #c084fc, #6ee7ff) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-size: 200% auto !important;
+  animation: shimmer 6s linear infinite !important;
+  border: none !important;
+  padding: 0 !important;
 }
 
-/* If your perfect match has this class */
-.perfect-match,
-[class*="perfect"] {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  height: auto !important;
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
 }
+
+/* ===============================
+   FILTER BAR - CLEAN + SMALL RED BLUE
+================================ */
+.arsenal-bar,
+.filter-bar {
+  background: rgba(18, 22, 42, 0.85) !important;
+  border: 1px solid rgba(255,255,255,0.07) !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+  margin: 12px 16px 0 !important;
+  width: calc(100% - 32px) !important;
+  padding: 8px 10px !important;
+  position: relative !important;
+  overflow: visible !important;
+}
+
+.arsenal-bar::after,
+.filter-bar::after {
+  content: "" !important;
+  position: absolute !important;
+  bottom: -1px !important;
+  left: 15% !important;
+  width: 70% !important;
+  height: 1px !important;
+  background: linear-gradient(90deg, transparent, #4da6ff 30%, #ff4d94 70%, transparent) !important;
+  opacity: 0.35 !important;
+}
+
+.arsenal-pills button,
+.filter-bar button {
+  background: rgba(255,255,255,0.05) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  box-shadow: none !important;
+  border-radius: 100px !important;
+  color: rgba(255,255,255,0.6) !important;
+  font-weight: 500 !important;
+  font-size: 12px !important;
+  padding: 6px 13px !important;
+  transition: all 0.2s ease !important;
+}
+
+.arsenal-pills button:hover {
+  background: rgba(77, 166, 255, 0.12) !important;
+  border-color: rgba(77, 166, 255, 0.3) !important;
+  color: #8fd3ff !important;
+}
+
+.arsenal-pills button.active,
+.filter-bar button.active {
+  background: #fff !important;
+  color: #0a0f28 !important;
+  border-color: #fff !important;
+  box-shadow: 0 0 12px rgba(77, 166, 255, 0.35), 0 0 20px rgba(255, 77, 148, 0.15) !important;
+  font-weight: 700 !important;
+}
+
+.arsenal-search input {
+  background: rgba(0,0,0,0.3) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  border-radius: 100px !important;
+}
+
+/* MOBILE - NO OVERLAP */
 @media (max-width: 768px) {
+  .arsenal-hero {
+    padding: 32px 16px !important;
+    border-radius: 0 0 16px 16px !important;
+    min-height: 130px !important;
+  }
+  .arsenal-hero::before {
+    background: url("../images/beats-wav-bg.png") center center / cover no-repeat !important;
+  }
+  .arsenal-hero::after {
+    border-radius: 0 0 16px 16px !important;
+  }
   .arsenal-hero h1 {
-    white-space: nowrap !important;
-    font-size: clamp(20px, 6.5vw, 32px) !important;
+    font-size: clamp(24px, 7vw, 30px) !important;
+  }
+  .arsenal-hero p {
+    font-size: 10.5px !important;
+    letter-spacing: 1px !important;
+    max-width: 95% !important;
+  }
+  .arsenal-bar,
+  .filter-bar {
+    margin: 10px 10px 0 !important;
+    width: calc(100% - 20px) !important;
   }
 }
+
+
+
