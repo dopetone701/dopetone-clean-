@@ -1,404 +1,117 @@
 /* ===============================
-   HERO BASE (CLEAN)
+   PLAYLISTS TOOLBAR - FIXED LIKE ALL BEATS
 ================================ */
-
-.arsenal-hero {
-  position: relative;
-  overflow: hidden;
-  text-align: center;
-
-  margin: 0;
-  padding: 50px 20px 50px;
-
-  width: 100%;
-  margin-top: 70px;
-}
-
-/* ===============================
-   WAVE IMAGE
-================================ */
-
-.arsenal-hero::before {
-  content: "";
-  position: absolute;
-
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-
-  width: 100%;
-  height: 280px;
-
-  background:
-  url("../images/beats-wav-bg.png")
-  center/contain no-repeat;
-
-  opacity: 0.1;
-  filter: blur(1px);
-
-  -webkit-mask-image: linear-gradient(
-    to right,
-    transparent 0%,
-    black 15%,
-    black 85%,
-    transparent 100%
-  );
-
-  mask-image: linear-gradient(
-    to right,
-    transparent 0%,
-    black 15%,
-    black 85%,
-    transparent 100%
-  );
-
-  pointer-events: none;
-  z-index: 1;
-}
-
-/* ===============================
-   RED CINEMATIC GLOW
-================================ */
-
-.arsenal-hero::after {
-  content: "";
-  position: absolute;
-
-  bottom: 0;
-  left: 50%;
-
-  transform: translateX(-50%);
-
-  width: 700%;
-  height: 300px;
-
-  background: radial-gradient(
-    ellipse at center,
-    rgba(103, 0, 24, 0.35),
-    transparent 70%
-  );
-
-  -webkit-mask-image: linear-gradient(
-    to right,
-    transparent 0%,
-    black 20%,
-    black 80%,
-    transparent 100%
-  );
-
-  mask-image: linear-gradient(
-    to right,
-    transparent 0%,
-    black 20%,
-    black 80%,
-    transparent 100%
-  );
-
-  pointer-events: none;
-  z-index: 1;
-}
-
-/* ===============================
-   CONTENT
-================================ */
-
-.arsenal-hero * {
-  position: relative;
-  z-index: 2;
-}
-
-/* ===============================
-   CENTER SYSTEM
-================================ */
-
-.arsenal-hero-inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-/* ===============================
-   TITLE
-================================ */
-
-.arsenal-title {
-
-  font-family:
-  "Orbitron",
-  sans-serif;
-
-  font-size: 34px;
-  font-weight: 700;
-
-  color: #ffffff;
-
-  letter-spacing: 1px;
-  line-height: 1.2;
-
-  text-shadow:
-    0 0 10px rgba(0,255,200,0.25),
-    0 0 40px rgba(0,255,200,0.15);
-
-  position: relative;
-}
-
-/* glow line */
-.arsenal-title::after {
-
-  content: "";
-
-  position: absolute;
-
-  bottom: -8px;
-  left: 50%;
-
-  transform: translateX(-50%);
-
-  width: 60%;
-  height: 2px;
-
-  background: linear-gradient(
-    90deg,
-    transparent,
-    #986060,
-    transparent
-  );
-
-  opacity: 0.8;
-}
-
-/* ===============================
-   SUBTEXT
-================================ */
-
-.arsenal-sub {
-
-  margin-top: 18px;
-
-  font-size: 14px;
-
-  color:
-  rgba(255,255,255,0.7);
-
-  max-width: 520px;
-
-  line-height: 1.6;
-
-  opacity: 0.9;
-}
-
-/* ===============================
-   MOBILE
-================================ */
-
-@media (max-width: 768px) {
-
-  .arsenal-hero {
-    padding: 60px 15px 40px;
-    margin-top: 50px;
-  }
-
-  .arsenal-hero-inner {
-    padding-top: 20px;
-  }
-
-  .arsenal-title {
-    font-size: 24px;
-  }
-
-  .arsenal-sub {
-    font-size: 13px;
-    max-width: 280px;
-  }
-
-  .arsenal-hero::before {
-    height: 200px;
-  }
-
-  .arsenal-hero::after {
-    height: 180px;
-  }
-
-}
-html,
-body{
-    margin:0;
-    padding:0;
-}
-body{
-    overflow-x:hidden;
-}
-
-
-
-
-
-
-
-
-
-
-/* ===============================
-   GRID / LIST TOGGLE (FIXED)
-================================ */
-
 .view-toggle {
-  display: flex;
-  gap: 8px;
-
-  margin: 20px 0 10px;
-  padding: 4px;
-
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 10px;
-
-  width: fit-content;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  flex-wrap: nowrap !important;
+  width: calc(100% - 32px) !important;
+  margin: 12px 16px 0 !important;
+  padding: 8px 10px !important;
+  background: rgba(18, 22, 42, 0.85) !important;
+  border: 1px solid rgba(255,255,255,0.07) !important;
+  border-radius: 12px !important;
+  overflow: visible !important;
 }
 
-/* buttons */
-.view-toggle button {
-  border: none;
-  padding: 6px 14px;
-  border-radius: 8px;
-
-  font-size: 13px;
-  cursor: pointer;
-
-  background: transparent;
-  color: rgba(255,255,255,0.6);
-
-  transition: all 0.25s ease;
+.toggle-fixed {
+  display: flex !important;
+  gap: 6px !important;
+  flex-shrink: 0 !important;
 }
 
-/* hover */
-.view-toggle button:hover {
-  color: #fff;
+.toggle-fixed button {
+  border-radius: 100px !important;
+  padding: 6px 13px !important;
+  font-size: 12px !important;
 }
 
-/* ACTIVE STATE 🔥 */
-.view-toggle button.active {
-  background: linear-gradient(135deg, #00eaff, #ff3c6f);
-  color: #fff;
-  box-shadow: 0 0 10px rgba(255, 60, 100, 0.4);
+.playlist-capsules {
+  display: flex !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  gap: 8px !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  white-space: nowrap !important;
+  scrollbar-width: none !important;
+  -webkit-overflow-scrolling: touch !important;
+  cursor: grab !important;
+  user-select: none !important;
 }
-/* ===============================
-   SEARCH - OBEYS YOUR TOGGLE RULES
-   =============================== */
-.view-toggle .arsenal-search {
-  position: relative;
-  margin-left: auto;
+.playlist-capsules::-webkit-scrollbar { display:none !important; }
+.playlist-capsules.dragging { cursor: grabbing !important; }
+
+.playlist-capsule {
+  flex: 0 0 auto !important;
+  height: 32px !important;
+  padding: 0 14px !important;
+  border-radius: 100px !important;
+  background: rgba(255,255,255,0.05) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  color: rgba(255,255,255,0.6) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: all .2s !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+.playlist-capsule:hover {
+  background: rgba(77,166,255,0.12) !important;
+  border-color: rgba(77,166,255,0.3) !important;
+  color: #8fd3ff !important;
+}
+.playlist-capsule.active {
+  background: #fff !important;
+  color: #0a0f28 !important;
+  border-color: #fff !important;
+  font-weight: 700 !important;
+  box-shadow: 0 0 12px rgba(77,166,255,0.35) !important;
 }
 
-.view-toggle #beatSearch {
-  border: none;
-  padding: 6px 14px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-family: 'Poppins', sans-serif;
-  cursor: text;
-  background: transparent;
-  color: rgba(255,255,255,0.6);
-  transition: all 0.25s ease;
-  width: 220px;
-  outline: none;
+.playlist-controls-wrap {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  flex-shrink: 0 !important;
+  margin-left: auto !important;
 }
 
-.view-toggle #beatSearch::placeholder {
-  color: rgba(255,255,255,0.4);
+.playlist-mini-add {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 50% !important;
+  background: rgba(255,255,255,0.06) !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  color: #fff !important;
 }
 
-.view-toggle #beatSearch:hover {
-  color: #fff;
+.arsenal-search {
+  flex: 0 0 180px !important;
 }
 
-.view-toggle #beatSearch:focus {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.view-toggle .search-dropdown {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  width: 320px;
-  background: #0a0e1a;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-  max-height: 300px;
-  overflow-y: auto;
-  z-index: 1000;
-  display: none;
-  margin-top: 8px;
-}
-
-.view-toggle .search-dropdown.active {
-  display: block;
-}
-/* ===== SCOFIELD: MENU PANEL WINS Z-INDEX WAR ===== */
-@media (max-width: 768px) {
-
-  /* SCOFIELD: Force menu + overlay to top */
-  .mobile-panel {
-    z-index: 99999 !important;
+/* MOBILE */
+@media (max-width: 768px){
+  .view-toggle {
+    width: calc(100% - 20px) !important;
+    margin: 10px 10px 0 !important;
   }
-
-  .overlay {
-    z-index: 99998 !important;
+  .playlist-capsules {
+    flex: 1 1 0 !important;
   }
-
-  /* SCOFIELD: Nuke ALL toggle bars when menu opens */
-  body.menu-open .toggle-fixed,
-  body.menu-open .view-toggle,
-  body.menu-open .playlist-capsules,
-  body.menu-open .arsenal-search {
-    opacity: 0 !important;
-    visibility: hidden !important;
-    pointer-events: none !important;
-    z-index: 1 !important;
-    transition: opacity 0.2s ease !important;
+  .arsenal-search {
+    flex: 0 0 42px !important;
   }
-
-  /* SCOFIELD: Kill player too */
-  body.menu-open .global-player {
-    opacity: 0 !important;
-    visibility: hidden !important;
-    pointer-events: none !important;
-    transform: translateY(200px) !important;
-    z-index: 1 !important;
+  .arsenal-search input {
+    width: 42px !important;
   }
-
-  /* SCOFIELD: Make sure navbar stays under overlay */
-  .navbar {
-    z-index: 9997 !important;
+  .arsenal-search input:focus {
+    width: 140px !important;
+    position: absolute !important;
+    right: 0 !important;
+    z-index: 10 !important;
   }
 }
-/* === PRO SEARCH - NO ZOOM BUG === */
-.arsenal-search{
-  position:relative;
-  isolation:isolate;
-}
-
-#beatSearch{
-  font-size:16px !important; /* kills iOS auto-zoom */
-  line-height:1.2;
-  -webkit-appearance:none;
-  appearance:none;
-  -webkit-text-size-adjust:100%;
-  text-size-adjust:100%;
-}
-
-@media(max-width:768px){
-  #beatSearch{
-    font-size:16px !important;
-    letter-spacing:-0.1px;
-  }
-  /* prevent body scroll jump when focused */
-  body.search-focused{
-    position:fixed;
-    width:100%;
-    overflow:hidden;
-  }
-}
-
-

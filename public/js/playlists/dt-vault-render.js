@@ -174,10 +174,11 @@ export function renderVault(partial=false, removedId=null){
           <div class="hamburger-menu">
             <button class="h-menu-item" onclick="window.dispatchEvent(new CustomEvent('openAddTrack',{detail:{plId:'${pl.id}'}})); this.closest('.hamburger-menu').classList.remove('open')">+ Add Tracks</button>
             ${canRename? `<button class="h-menu-item" onclick="window.dispatchEvent(new CustomEvent('renamePlaylist',{detail:{plId:'${pl.id}'}})); this.closest('.hamburger-menu').classList.remove('open')">✎ Rename</button>` : ''}
-                    <button class="h-menu-item" onclick="window.location.href='playlist.html?id=${pl.id}'; this.closest('.hamburger-menu').classList.remove('open')">📋 View All Playlist</button>
+                    <button class="h-menu-item" onclick="window.location.href='playlists.html?id=${pl.id}'; this.closest('.hamburger-menu').classList.remove('open')">📋 View All Playlist</button>
+
             ${canRename? `<button class="h-menu-item" onclick="window.dispatchEvent(new CustomEvent('renamePlaylist',{detail:{plId:'${pl.id}'}})); this.closest('.hamburger-menu').classList.remove('open')">✎ Rename</button>` : ''}
-            ${canDeletePlaylist? `<button class="h-menu-item danger" onclick="if(confirm('Delete ${pl.name}?')){window.deleteVaultPlaylist('${pl.id}')}; this.closest('.hamburger-menu').classList.remove('open')">🗑 Delete Playlist</button>` : ''}
-   </div>
+            ${canDeletePlaylist? `<button class="h-menu-item danger" onclick="window.deleteVaultPlaylist('${pl.id}'); this.closest('.hamburger-menu').classList.remove('open')">🗑 Delete Playlist</button>` : ''}
+ </div>
         </div>
       </div>
       <div class="vault-wave-list">
@@ -530,3 +531,31 @@ window.addEventListener('playlistsUpdated',()=>renderVault(false));
   modal.addEventListener('click',(e)=>{ if(e.target.id==='addTracksModal') window.closeAddTracks(); });
   window.addEventListener('openAddTrack',(e)=>{ window.openAddTracks(e.detail.plId); });
 })();
+
+
+
+// ===============================
+// 🔥 CAPSULES FOR PLAYLISTS PAGE - FIXED
+// ===============================
+export function renderPlaylistCapsulesOnly(){
+  const container = document.getElementById("playlistCapsules");
+  if(!container) return;
+  
+  const playlists = getVaultPlaylists();
+  const urlParams = new URLSearchParams(window.location.search);
+  const activeId = urlParams.get("id") || "dt_liked_playlist";
+
+  // Filter: only show liked + custom (no downloaded duplicates)
+  const visible = playlists.filter(p => p.beats && p.beats.length >= 0);
+
+  container.innerHTML = visible.map(pl => {
+    const isLiked = pl.isLiked;
+    const name = isLiked ? "Liked" : pl.name;
+    const isActive = pl.id === activeId || (isLiked && activeId === "liked_playlist");
+    return `<button class="playlist-capsule ${isActive ? 'active' : ''}" data-id="${pl.id}">${name} <span style="opacity:.5;font-size:10px">${pl.beats.length}</span></button>`;
+  }).join('');
+
+  // click handling is done in playlists-page.js initPlaylistCapsules()
+  console.log("✅ capsules rendered:", visible.length);
+}
+window.renderPlaylistCapsulesOnly = renderPlaylistCapsulesOnly;

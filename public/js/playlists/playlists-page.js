@@ -1,11 +1,17 @@
 // ===============================
-// 🎵 PLAYLISTS PAGE FINAL - CLOUDFLARE ONLY + MONETIZATION
+// 🎵 PLAYLISTS PAGE FINAL - CLOUDFLARE ONLY + MONETIZATION + PRO DOWNLOAD
+// GRID = FEATURED EXACT CLONE - FIXED
 // ===============================
 import { renderPlaylistCapsulesOnly } from "./dt-vault-render.js"
 import { renderWave } from "../sections/wave.js"
 import { renderPlaylistSimilarTracks } from "./playlist-similar.js"
 
-// === MONETIZATION HELPER ===
+// === MONETIZATION + PRO DOWNLOAD (FEATURED CLONE) ===
+const STATS_API = "https://dopetone-stats.dopetone701.workers.dev";
+const activeDownloads = new Set();
+const PLAY_SVG_FEAT = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.14v14l11-7-11-7z"/></svg>`;
+const PAUSE_SVG_FEAT = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
+
 const getMode = (b) => {
   if (!b) return 'paid';
   let m = (b.monetization_mode || b.monetizationMode || '').toLowerCase().trim();
@@ -18,24 +24,94 @@ const getMode = (b) => {
 const getPriceHTML = (b) => {
   const mode = getMode(b);
   const price = b.price || 29.99;
-  if (mode === 'free') return `<span class="beat-price" style="color:#3b82f6;font-weight:800">FREE</span>`;
-  return `<span class="beat-old-price">$49</span><span class="beat-price">$${price}</span>`;
+  if (mode === 'free') return `<span class="free-dna">FREE</span>`;
+  return `<span class="old">$49</span><span class="new">$${price}</span>`;
 };
 const getBuyLabel = (b) => getMode(b)==='free'?'Free Download':'Add To Cart';
-const handleBuy = (beat) => {
-  if (getMode(beat)==='free') {
-    const a=document.createElement('a'); a.href=beat.mp3_url||beat.audio; a.download=`${beat.title}.mp3`; a.click(); return true;
-  }
-  return false;
-};
 
-// Inject pointer
-(function injectPlaylistPointer(){
-  if(document.getElementById('playlist-pointer-fix')) return;
-  const s=document.createElement('style'); s.id='playlist-pointer-fix';
-  s.textContent=`.beat-price-row,.beat-old-price,.beat-price,.beat-buy-btn{cursor:pointer!important}.beat-buy-btn:hover{filter:brightness(1.2)}`;
+async function trackDownload(beat){
+  try{
+    const dlEl = document.getElementById('totalDownloads');
+    if(dlEl) dlEl.textContent = String((parseInt(dlEl.textContent||'0')||0)+1);
+    window.dispatchEvent(new CustomEvent('cc_downloaded', {detail:{beat_id:beat.id, title:beat.title}}));
+    window.dispatchEvent(new CustomEvent('cc_track_download', {detail:{beatId:beat.id}}));
+    fetch(`${STATS_API}/api/stats/track/${beat.id}/download`, {method:'POST', keepalive:true}).catch(()=>{});
+    fetch(`${STATS_API}/api/stats/global/download`, {method:'POST', keepalive:true, body: JSON.stringify({beat_id: beat.id})}).catch(()=>{});
+  }catch{}
+}
+
+async function proDownload(beat, btn){
+  if(activeDownloads.has(String(beat.id))) return;
+  activeDownloads.add(String(beat.id));
+  const origText = btn ? btn.innerHTML : 'Free Download';
+  const origBg = btn ? btn.style.background : '';
+  try{
+    if(btn){
+      btn.disabled = true;
+      btn.innerHTML = `<span style="display:flex;align-items:center;gap:6px;justify-content:center"><span style="width:14px;height:14px;border:2px solid #000;border-top-color:transparent;border-radius:50%;display:inline-block;animation:spin .6s linear infinite"></span> Preparing...</span>`;
+    }
+    await trackDownload(beat);
+    try{
+      const cart = JSON.parse(localStorage.getItem("dopetone_cart")||"[]");
+      localStorage.setItem('dopetone_cart_count', String(cart.length));
+      window.dispatchEvent(new CustomEvent('cc_cart_updated', {detail:{beat_id:beat.id, count: cart.length, action:'download'}}));
+    }catch{}
+
+    const url = beat.mp3_url || beat.audio_url || beat.audio;
+    if(!url) throw new Error('No audio url');
+    const res = await fetch(url, {mode:'cors', cache:'no-store'});
+    if(!res.ok) throw new Error('Fetch failed');
+    if(btn) btn.innerHTML = `<span style="display:flex;align-items:center;gap:6px;justify-content:center"><span style="width:14px;height:14px;border:2px solid #000;border-top-color:transparent;border-radius:50%;display:inline-block;animation:spin .6s linear infinite"></span> Downloading...</span>`;
+    const blob = await res.blob();
+    const blobUrl = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = `${(beat.title||'beat').replace(/[^a-z0-9]/gi,'_')}_DopeTone_FREE.mp3`;
+    a.style.display='none';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(()=>{ URL.revokeObjectURL(blobUrl); a.remove(); }, 2000);
+    if(btn){
+      btn.innerHTML = `✓ Downloaded`;
+      btn.style.background = '#10b981';
+      btn.style.color = '#fff';
+      setTimeout(()=>{
+        btn.innerHTML = origText;
+        btn.style.background = origBg;
+        btn.style.color = '';
+        btn.disabled = false;
+        activeDownloads.delete(String(beat.id));
+      }, 2500);
+    } else {
+      activeDownloads.delete(String(beat.id));
+    }
+  }catch(err){
+    console.error('[PRO DOWNLOAD FAIL]', err);
+    try{
+      const a=document.createElement('a');
+      a.href=beat.mp3_url||beat.audio_url||beat.audio;
+      a.download=`${beat.title}.mp3`;
+      a.target='_blank'; a.rel='noopener';
+      document.body.appendChild(a); a.click(); a.remove();
+      if(btn){
+        btn.innerHTML = `✓ Downloaded`;
+        setTimeout(()=>{ btn.innerHTML=origText; btn.disabled=false; activeDownloads.delete(String(beat.id)); },2000);
+      }
+    }catch{
+      if(btn){
+        btn.innerHTML = `Failed - Retry`;
+        btn.disabled=false;
+        activeDownloads.delete(String(beat.id));
+      }
+    }
+  }
+}
+
+if(!document.getElementById('dt-spin-style')){
+  const s=document.createElement('style'); s.id='dt-spin-style';
+  s.textContent='@keyframes spin{to{transform:rotate(360deg)}}';
   document.head.appendChild(s);
-})();
+}
 
 function normalizeBeat(beat) {
   if (!beat) return null;
@@ -65,14 +141,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         addBtn.addEventListener("click", (e) => {
             e.stopPropagation();
             if(window.openPlaylistModal) window.openPlaylistModal();
-            else console.error("openPlaylistModal not found");
         });
     }
     initToggle();
     initPlaylistSearch();
     initPlaylistCapsules();
-
-    // 🔥 LIVE SYNC FROM CC
     window.addEventListener('cc_monetize_changed', (e)=>{
       const {beatId,mode}=e.detail||{}; if(!beatId) return;
       const all = window.store?.beats?.find(x=>String(x.id)===String(beatId));
@@ -101,36 +174,23 @@ function getLikedPlaylist(){
     return (liked?.beats || []).map(normalizeBeat);
 }
 function initPlaylistCapsules(){
-    const container = document.getElementById("playlistCapsules"); if(!container) return;
+    const container = document.getElementById("playlistCapsules");
+    if(!container) return;
+    renderPlaylistCapsulesOnly();
     const urlParams = new URLSearchParams(window.location.search);
-    const targetPlaylistId = urlParams.get("id") || "liked_playlist";
+    const targetPlaylistId = urlParams.get("id") || "dt_liked_playlist";
     loadPlaylistById(targetPlaylistId);
     setTimeout(() => {
         const capsules = document.querySelectorAll(".playlist-capsule");
         capsules.forEach(btn => {
-            const btnText = btn.textContent.trim().toLowerCase();
-            const isLiked = btnText === "liked" && targetPlaylistId === "liked_playlist";
-            const isDownloads = btnText === "downloads" && targetPlaylistId === "downloads_playlist";
-            const playlist = window.getPlaylists()?.find(p => p.name.toLowerCase() === btnText);
-            const isMatch = playlist?.id === targetPlaylistId;
-            if(isLiked || isDownloads || isMatch) btn.classList.add("active"); else btn.classList.remove("active");
-        });
-        capsules.forEach(btn => {
             btn.addEventListener("click", () => {
-                capsules.forEach(b => b.classList.remove("active")); btn.classList.add("active");
-                const btnText = btn.textContent.trim().toLowerCase();
-                if(btnText === "liked"){ window.filteredPlaylistBeats = getLikedPlaylist(); window.__CURRENT_PLAYLIST_ID__ = "liked_playlist"; updateURL("liked_playlist"); }
-                else if(btnText === "downloads"){ window.filteredPlaylistBeats = getDownloadsPlaylist(); window.__CURRENT_PLAYLIST_ID__ = "downloads_playlist"; updateURL("downloads_playlist"); }
-                else {
-                    const playlists = window.getPlaylists() || [];
-                    const playlist = playlists.find(p => p.name === btn.textContent.trim()); if(!playlist) return;
-                    window.filteredPlaylistBeats = (playlist.beats || []).map(normalizeBeat);
-                    window.__CURRENT_PLAYLIST_ID__ = playlist.id; updateURL(playlist.id);
-                }
-                renderActiveView();
+                document.querySelectorAll(".playlist-capsule").forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                loadPlaylistById(btn.dataset.id);
+                updateURL(btn.dataset.id);
             });
         });
-    },50);
+    },100);
 }
 function loadPlaylistById(playlistId){
     if(playlistId === "liked_playlist"){ window.filteredPlaylistBeats = getLikedPlaylist(); window.__CURRENT_PLAYLIST_ID__ = "liked_playlist"; }
@@ -140,18 +200,14 @@ function loadPlaylistById(playlistId){
 }
 function renderActiveView(){
     const listBtn = document.getElementById("listBtn"); const listSection = document.getElementById("arsenalSection"); const gridSection = document.getElementById("gridSection");
-    if(listBtn?.classList.contains("active")){ listSection.style.display = "block"; gridSection.style.display = "none"; renderWave(); }
+    if(listBtn?.classList.contains("active")){ listSection.style.display = "block"; gridSection.style.display = "none"; if(typeof renderWave==='function') renderWave(); }
     else { listSection.style.display = "none"; gridSection.style.display = "block"; renderGridView(); }
 }
-const urlParams = new URLSearchParams(window.location.search); const beatId = urlParams.get('id');
-const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-if(beatId){ loadBeat(beatId); renderSimilarTracks(beatId); }
-if(cart.length === 0){ renderSimilarTracks(); }
 function updateURL(playlistId){ const url = new URL(window.location); url.searchParams.set("id", playlistId); window.history.pushState({}, "", url); }
 function initToggle(){
     const listBtn = document.getElementById("listBtn"); const gridBtn = document.getElementById("gridBtn"); const listSection = document.getElementById("arsenalSection"); const gridSection = document.getElementById("gridSection");
     if(!listBtn ||!gridBtn) return;
-    listBtn.addEventListener("click", () => { listSection.style.display = "block"; gridSection.style.display = "none"; listBtn.classList.add("active"); gridBtn.classList.remove("active"); renderWave(); });
+    listBtn.addEventListener("click", () => { listSection.style.display = "block"; gridSection.style.display = "none"; listBtn.classList.add("active"); gridBtn.classList.remove("active"); if(typeof renderWave==='function') renderWave(); });
     gridBtn.addEventListener("click", () => { listSection.style.display = "none"; gridSection.style.display = "block"; gridBtn.classList.add("active"); listBtn.classList.remove("active"); renderGridView(); });
 }
 function initPlaylistSearch(){
@@ -202,46 +258,60 @@ window.filterBeatsToSight = function(beats) {
 };
 
 // ===============================
-// 🔳 GRID VIEW - PREMIUM + MONETIZATION
+// 🔳 GRID VIEW = FEATURED EXACT
 // ===============================
 function renderGridView(){
     const container = document.getElementById("gridContainer"); if(!container) return;
-    const beats = window.filteredPlaylistBeats || []; container.className = "beats-grid"; container.innerHTML = "";
-    if(!beats.length){ container.innerHTML = `<div class="empty-playlist">No beats found</div>`; return; }
+    const beats = window.filteredPlaylistBeats || [];
+    container.innerHTML = "";
+    if(!beats.length){ container.innerHTML = `<div class="empty-playlist" style="grid-column:1/-1;text-align:center;padding:40px;color:#666">No beats found</div>`; return; }
     beats.forEach((beat,index) => {
         const mode=getMode(beat);
-        const card = document.createElement("div"); card.className = "beat-card latest-beat-card"; card.dataset.beatId = beat.id; card.dataset.mode=mode;
+        const card = document.createElement("div");
+        card.className = "beat-card";
+        card.dataset.beatId = beat.id;
         card.innerHTML = `
         <div class="beat-cover-wrap">
-            <img src="${beat.cover_url || beat.cover || "images/logo.png"}" class="beat-cover">
-            <button class="beat-play-btn" data-index="${index}">▶</button>
-            ${mode==='free'?'<span style="position:absolute;top:8px;left:8px;background:#3b82f6;color:#fff;font-size:10px;font-weight:800;padding:3px 6px;border-radius:4px">FREE</span>':''}
+            <img src="${beat.cover_url || beat.cover || "images/logo.png"}" class="beat-cover" loading="lazy" alt="${beat.title}">
+            <button class="beat-play-btn" data-index="${index}"><span class="f-icon">${PLAY_SVG_FEAT}</span></button>
+            ${mode==='free'?'<span style="position:absolute;top:8px;left:8px;background:linear-gradient(90deg,#4da6ff,#fff,#ff4d94);color:#000;font-size:10px;font-weight:800;padding:3px 6px;border-radius:4px;z-index:2">FREE</span>':''}
         </div>
-        <div class="beat-info"><div class="beat-title">${beat.title || beat.name || "Untitled"}</div><div class="beat-meta">#${beat.genre || "Trap"} ${beat._playlistTag? `<span style="color:rgba(0,234,255,0.6);font-size:10px;margin-left:6px;font-style:italic;">${beat._playlistTag}</span>` : ''}</div></div>
-        <div class="beat-price-row" data-mode="${mode}">${getPriceHTML(beat)}</div>
-        <button class="beat-buy-btn">${getBuyLabel(beat)}</button>
+        <div class="beat-content">
+            <div class="beat-title">${beat.title || beat.name || "Untitled"}</div>
+            <div class="beat-meta">#${beat.genre || "Trap"} • ${beat.bpm || "--"} BPM</div>
+            <div class="beat-price-row">${getPriceHTML(beat)}</div>
+            <button class="beat-buy-btn ${mode==='free'?'is-free':''}">${getBuyLabel(beat)}</button>
+        </div>
         `;
-        card.querySelector(".beat-play-btn").onclick = (e) => { e.stopPropagation(); if(window.globalPlayer) window.globalPlayer.play(index, beats, beat._isGlobal? "global_search" : "playlist_grid"); };
+        card.addEventListener("mousemove", e=>{
+          const r=card.getBoundingClientRect();
+          card.style.setProperty("--x", `${(e.clientX-r.left)/r.width*100}%`);
+          card.style.setProperty("--y", `${(e.clientY-r.top)/r.height*100}%`);
+        });
+        card.querySelector(".beat-play-btn").onclick = (e) => { e.stopPropagation(); if(window.globalPlayer) window.globalPlayer.play(index, beats, "playlist_grid"); };
         const addBtn = card.querySelector(".beat-buy-btn");
-        let cart = JSON.parse(localStorage.getItem("dopetone_cart")) || []; const exists = cart.find(item => item.id == beat.id);
+        let cart = JSON.parse(localStorage.getItem("dopetone_cart")) || []; const exists = cart.find(item => String(item.id) == String(beat.id));
         if(exists && mode!=='free'){ addBtn.textContent = "Remove"; addBtn.classList.add("added"); }
-        else if(mode==='free'){ addBtn.textContent="Free Download"; }
 
         const buyAction = async (e) => {
-            e.stopPropagation();
-            if(handleBuy(beat)) return;
-            const btn = e.currentTarget.closest('.beat-card')?.querySelector('.beat-buy-btn') || addBtn;
-            let cart = JSON.parse(localStorage.getItem("dopetone_cart")) || [];
-            const exists = cart.find(item => item.id == beat.id);
-            if(exists){ cart = cart.filter(item => item.id!= beat.id); localStorage.setItem("dopetone_cart", JSON.stringify(cart)); btn.textContent = "Add To Cart"; btn.classList.remove("added"); }
-            else {
-                const newBeat = normalizeBeat(beat); cart.push(newBeat); localStorage.setItem("dopetone_cart", JSON.stringify(cart)); btn.textContent = "Added ✓"; btn.classList.add("added");
-                const hasActiveTrack = window.currentBeat || window.activeCartBeat;
-                if(!hasActiveTrack && typeof window.switchActiveBeat === "function") await window.switchActiveBeat(newBeat); else window.renderCartBeatRow?.();
-            }
-            window.renderCartBeatRow?.(); window.updateCartCount?.(); window.checkEmptyState?.();
+          e.stopPropagation();
+          const btn = e.currentTarget.closest('.beat-card')?.querySelector('.beat-buy-btn') || addBtn;
+          const m = getMode(beat);
+          if(m==='free'){ await proDownload(beat, btn); return; }
+          let cart = JSON.parse(localStorage.getItem("dopetone_cart")) || [];
+          const ex = cart.find(item => String(item.id) == String(beat.id));
+          if(ex){
+            cart = cart.filter(item => String(item.id)!= String(beat.id));
+            localStorage.setItem("dopetone_cart", JSON.stringify(cart));
+            btn.textContent = "Add To Cart"; btn.classList.remove("added");
+          } else {
+            const newBeat = normalizeBeat(beat);
+            cart.push(newBeat);
+            localStorage.setItem("dopetone_cart", JSON.stringify(cart));
+            btn.textContent = "Added ✓"; btn.classList.add("added");
+          }
+          window.renderCartBeatRow?.(); window.updateCartCount?.(); window.checkEmptyState?.();
         };
-
         card.querySelector(".beat-buy-btn").onclick = buyAction;
         card.querySelector(".beat-price-row").onclick = buyAction;
         container.appendChild(card);
@@ -250,31 +320,34 @@ function renderGridView(){
 }
 
 function syncGridPlayButtons(){
-    const allBtns = document.querySelectorAll(".beat-play-btn");
-    allBtns.forEach(btn => { btn.textContent = "▶"; btn.classList.remove("active"); });
+    document.querySelectorAll("#gridContainer .beat-play-btn .f-icon").forEach(el => { el.innerHTML = PLAY_SVG_FEAT; });
+    document.querySelectorAll("#gridContainer .beat-card").forEach(c=>c.classList.remove("is-active"));
     const currentBeat = window.__CURRENT_BEAT__; const isPlaying = window.globalPlayer?.isPlaying(); if(!currentBeat ||!isPlaying) return;
-    const activeCard = document.querySelector(`.beat-card[data-beat-id="${currentBeat.id}"]`);
-    if(activeCard){ const btn = activeCard.querySelector(".beat-play-btn"); if(btn){ btn.textContent = "⏸"; btn.classList.add("active"); } }
+    const activeCard = document.querySelector(`#gridContainer .beat-card[data-beat-id="${currentBeat.id}"]`);
+    if(activeCard){
+        const icon = activeCard.querySelector(".f-icon");
+        if(icon) icon.innerHTML = PAUSE_SVG_FEAT;
+        activeCard.classList.add("is-active");
+    }
 }
-
 document.addEventListener("playerPlay", () => syncGridPlayButtons());
-document.addEventListener("playerPause", () => { document.querySelectorAll(".beat-play-btn").forEach(btn => { btn.textContent = "▶"; btn.classList.remove("active"); }); });
+document.addEventListener("playerPause", () => {
+    document.querySelectorAll("#gridContainer .beat-play-btn .f-icon").forEach(el => { el.innerHTML = PLAY_SVG_FEAT; });
+    document.querySelectorAll("#gridContainer .beat-card").forEach(c=>c.classList.remove("is-active"));
+});
 document.addEventListener("trackChange", () => syncGridPlayButtons());
 document.addEventListener("DOMContentLoaded", () => { setTimeout(syncGridPlayButtons, 300); });
 
-// Drag scroll
+// drag scroll
 const capsules = document.querySelector(".playlist-capsules");
 if(capsules){
     let isDown = false, startX = 0, scrollLeft = 0;
     capsules.addEventListener("mousedown", e => { isDown = true; capsules.classList.add("dragging"); startX = e.pageX; scrollLeft = capsules.scrollLeft; });
     window.addEventListener("mouseup", () => { isDown = false; capsules.classList.remove("dragging"); });
     capsules.addEventListener("mousemove", e => { if(!isDown) return; e.preventDefault(); capsules.scrollLeft = scrollLeft - (e.pageX - startX) * 1.4; });
-    let touchStartX = 0, touchScrollLeft = 0;
-    capsules.addEventListener("touchstart", e => { touchStartX = e.touches[0].clientX; touchScrollLeft = capsules.scrollLeft; }, { passive:true });
-    capsules.addEventListener("touchmove", e => { capsules.scrollLeft = touchScrollLeft - (e.touches[0].clientX - touchStartX) * 1.3; }, { passive:true });
 }
 
-// Like system
+// like system + more panel (fixed handleBuy -> proDownload)
 document.addEventListener("DOMContentLoaded", () => {
     function getLikedBeats(){ return JSON.parse(localStorage.getItem("liked_beats")) || []; }
     function saveLikedBeats(data){ localStorage.setItem("liked_beats", JSON.stringify(data)); }
@@ -295,15 +368,14 @@ document.addEventListener("DOMContentLoaded", () => {
         if(exists){ liked=liked.filter(id=>String(id)!==String(beat.id)); updateLikedPlaylist(beat,false); } else { liked.push(String(beat.id)); updateLikedPlaylist(beat,true); }
         saveLikedBeats(liked);
         const countEl=document.getElementById("likeCount"); if(countEl){ let cur=Number(countEl.textContent||0); countEl.textContent=exists?Math.max(0,cur-1):cur+1; const cached=JSON.parse(localStorage.getItem("dopetone_like_counts"))||{}; cached[beat.id]=Number(countEl.textContent); localStorage.setItem("dopetone_like_counts",JSON.stringify(cached)); }
-        refreshLikeUI(); window.dispatchEvent(new Event("playlistsUpdated")); window.dispatchEvent(new Event("playlistVisualUpdate"));
+        refreshLikeUI(); window.dispatchEvent(new Event("playlistsUpdated"));
     }
     document.getElementById("loveTrackBtn")?.addEventListener("click",toggleBeatLike);
     document.getElementById("mpLike")?.addEventListener("click",toggleBeatLike);
-    document.addEventListener("trackChange", refreshLikeUI); document.addEventListener("playerPlay", refreshLikeUI); window.addEventListener("storage", refreshLikeUI); setTimeout(refreshLikeUI,100);
-    window.refreshLikeUI=refreshLikeUI; window.refreshMobileHeart=refreshMobileHeart; window.toggleBeatLike=toggleBeatLike;
+    document.addEventListener("trackChange", refreshLikeUI); document.addEventListener("playerPlay", refreshLikeUI); setTimeout(refreshLikeUI,100);
+    window.refreshLikeUI=refreshLikeUI; window.toggleBeatLike=toggleBeatLike;
 });
 
-// More panel
 document.addEventListener("click", async (e) => {
   const moreBtn = e.target.closest("#mpMore, #gpMore"); if(!moreBtn) return; e.stopPropagation();
   const beat = window.__CURRENT_BEAT__; if (!beat) return; const nb=normalizeBeat(beat);
@@ -330,10 +402,18 @@ document.addEventListener("click", async (e) => {
       const action = btn.dataset.action;
       if(action==="playlist" && window.openPlaylistModal) window.openPlaylistModal(nb);
       if(action==="add_playlist" && window.openAddToPlaylistModal) window.openAddToPlaylistModal(nb);
-      if(action==="dopetone_cart"){ if(handleBuy(nb)){} else { let cart=JSON.parse(localStorage.getItem("dopetone_cart"))||[]; if(!cart.find(i=>i.id===nb.id)){cart.push(nb); localStorage.setItem("dopetone_cart",JSON.stringify(cart));} window.renderCartBeatRow?.(); window.checkEmptyState?.(); window.updateCartCount?.(); showCartToast(nb.title||nb.name); } }
-      if(action==="download"){ const link=document.createElement("a"); link.href=nb.mp3_url||nb.audio; link.download=(nb.title||nb.name)+".mp3"; document.body.appendChild(link); link.click(); link.remove(); }
+      if(action==="dopetone_cart" || action==="download" || action==="buy"){
+        if(mode==='free'){ await proDownload(nb, btn); }
+        else {
+          if(action==="dopetone_cart"){
+            let cart=JSON.parse(localStorage.getItem("dopetone_cart"))||[]; if(!cart.find(i=>String(i.id)===String(nb.id))){cart.push(nb); localStorage.setItem("dopetone_cart",JSON.stringify(cart));}
+            window.renderCartBeatRow?.(); window.updateCartCount?.(); showCartToast(nb.title||nb.name);
+          } else {
+            window.location.href=`licence-page.html?id=${nb.id}`;
+          }
+        }
+      }
       if(action==="share" && navigator.share) await navigator.share({title:nb.title||nb.name,url:location.href});
-      if(action==="buy"){ if(mode==='free') handleBuy(nb); else window.location.href=`licence-page.html?id=${nb.id}`; }
       panel.classList.remove("active"); setTimeout(()=>panel.remove(),250);
     };
   });

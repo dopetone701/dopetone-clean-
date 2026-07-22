@@ -254,16 +254,17 @@
   box-shadow: 0 0 20px #00f0ff;
 }
 /* ===============================
-   🚀 EXPLORE ROW - FIXED CENTERED
+   🚀 EXPLORE ROW - FIXED
 =============================== */
-
 .explore-row {
   cursor: pointer;
   transition: 0.3s;
-  padding: 20px 0;
+  padding: 12px 0;
   display: flex;
   justify-content: center;
   align-items: center;
+  min-height: unset;
+  height: auto;
 }
 
 .explore-bar {
@@ -272,7 +273,8 @@
   justify-content: center;
   position: relative;
   width: 100%;
-  height: 40px;
+  height: auto; /* was 40px - causing tall look */
+  min-height: 36px;
 }
 
 .explore-line {
@@ -282,7 +284,6 @@
   right: 0;
   height: 1px;
   background: linear-gradient(90deg, transparent, #00f0ff, #7c3aed, #ff4d4d, transparent);
-  border-radius: 10px;
   opacity: 0.6;
   transform: translateY(-50%);
   z-index: 1;
@@ -291,30 +292,55 @@
 .explore-btn {
   position: relative;
   z-index: 2;
-  padding: 10px 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto; /* stop flex:1 stretch */
+  align-self: center;
+  height: 34px; /* fixed height */
+  line-height: 1;
+  padding: 0 20px;
   border-radius: 99px;
   background: linear-gradient(135deg, #0f172a, #1e293b);
   border: 1px solid rgba(0,240,255,0.3);
   color: #00f0ff;
-  text-decoration: none;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.5px;
-  transition: 0.3s;
+  white-space: nowrap;
   backdrop-filter: blur(10px);
   box-shadow: 0 0 20px rgba(0,240,255,0.15);
 }
 
-.explore-btn:hover {
-  transform: scale(1.08);
-  background: linear-gradient(135deg, #00f0ff, #7c3aed);
-  color: #000;
-  border-color: transparent;
-  box-shadow: 0 0 30px rgba(0,240,255,0.4);
+/* ===============================
+   FIX: PLAYLIST PAGE LOGO + EXPLORE CARD
+=============================== */
+.beat-card.explore-row,
+.explore-row.beat-card {
+  padding: 10px 12px;
+  gap: 12px;
 }
 
-.explore-row:hover .explore-line {
-  opacity: 1;
-  height: 2px;
-  box-shadow: 0 0 10px rgba(0,240,255,0.5);
+.beat-card.explore-row .card-media,
+.explore-row .card-media {
+  flex: 0 0 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.beat-card.explore-row .card-media img,
+.explore-row .card-media img {
+  width: 52px;
+  height: 52px;
+  object-fit: contain; /* was cover - kills logo */
+  padding: 6px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 8px;
+}
+
+.beat-card.explore-row .card-content {
+  padding: 0;
+  flex: 1;
+  min-width: 0;
 }

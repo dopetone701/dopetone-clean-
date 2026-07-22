@@ -1,1492 +1,463 @@
 /* ===============================
-   HERO BASE (CLEAN)
+   ARSENAL HERO - FINAL PREMIUM FULL WIDTH
+   Dark Red Glass + Dark Blue Edges + Metal Text
 ================================ */
-
-
+nav, .navbar, header {
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
 .arsenal-hero {
-  position: relative;
-  overflow: hidden;
-  text-align: center;
-
-
-  margin: 0;
-  padding: 50px 20px 50px;
-
-
-  width: 100%;
-  margin-top: 70px;
+  position: relative !important;
+  overflow: hidden !important;
+  margin: 0 !important;
+  width: 100% !important;
+  border-radius: 0 0 20px 20px !important;
+  padding: 52px 24px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  background: linear-gradient(180deg, rgba(70, 0, 22, 0.92) 0%, rgba(30, 0, 12, 0.96) 100%) !important;
+  backdrop-filter: blur(16px) saturate(130%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(130%) !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(255, 40, 80, 0.18) !important;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.5) !important;
 }
-
-
-/* ===============================
-   WAVE IMAGE
-================================ */
-
-
 .arsenal-hero::before {
-  content: "";
-  position: absolute;
-
-
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-
-
-  width: 100%;
-  height: 280px;
-
-
-  background:
-  url("/images/beats-wav-bg.png")
-  center/contain no-repeat;
-
-
-  opacity: 0.1;
-  filter: blur(1px);
-
-
-  -webkit-mask-image: linear-gradient(
-    to right,
-    transparent 0%,
-    black 15%,
-    black 85%,
-    transparent 100%
-  );
-
-
-  mask-image: linear-gradient(
-    to right,
-    transparent 0%,
-    black 15%,
-    black 85%,
-    transparent 100%
-  );
-
-
-  pointer-events: none;
-  z-index: 1;
+  content: "" !important;
+  position: absolute !important;
+  left: 50% !important;
+  top: 50% !important;
+  width: 100% !important;
+  height: 100% !important;
+  transform: translate(-50%, -50%) !important;
+  background: url("../images/beats-wav-bg.png") center center / 100% auto no-repeat !important;
+  opacity: 0.55 !important;
+  z-index: 0 !important;
+  pointer-events: none !important;
 }
-
-
-/* ===============================
-   RED CINEMATIC GLOW
-================================ */
-
-
 .arsenal-hero::after {
-  content: "";
-  position: absolute;
-
-
-  bottom: 0;
-  left: 50%;
-
-
-  transform: translateX(-50%);
-
-
-  width: 700%;
-  height: 300px;
-
-
-  background: radial-gradient(
-    ellipse at center,
-    rgba(103, 0, 24, 0.35),
-    transparent 70%
-  );
-
-
-  -webkit-mask-image: linear-gradient(
-    to right,
-    transparent 0%,
-    black 20%,
-    black 80%,
-    transparent 100%
-  );
-
-
-  mask-image: linear-gradient(
-    to right,
-    transparent 0%,
-    black 20%,
-    black 80%,
-    transparent 100%
-  );
-
-
-  pointer-events: none;
-  z-index: 1;
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  background: radial-gradient(ellipse at center, transparent 45%, rgba(10, 18, 48, 0.92) 100%) !important;
+  z-index: 1 !important;
+  border-radius: 0 0 20px 20px !important;
+  pointer-events: none !important;
+}
+.arsenal-hero h1 {
+  position: relative !important;
+  z-index: 5 !important;
+  display: block !important;
+  text-align: center !important;
+  width: 100% !important;
+  margin: 0 !important;
+  font-size: clamp(30px, 5vw, 46px) !important;
+  font-weight: 900 !important;
+  letter-spacing: 1px !important;
+  line-height: 1.05 !important;
+  background-image: linear-gradient(90deg, #4da6ff, #ffffff, #ff4d94), url("../images/metal.jpg") !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-blend-mode: overlay !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  filter: drop-shadow(0 2px 2px rgba(0,0,0,0.8)) drop-shadow(0 8px 24px rgba(0,0,0,0.9)) !important;
+}
+.arsenal-hero p {
+  position: relative !important;
+  z-index: 5 !important;
+  text-align: center !important;
+  width: 100% !important;
+  max-width: 90% !important;
+  margin: 12px auto 0 !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  letter-spacing: 1.5px !important;
+  text-transform: uppercase !important;
+  white-space: normal !important;
+  line-height: 1.4 !important;
+  background: linear-gradient(90deg, #8fd3ff, #c084fc, #6ee7ff) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-size: 200% auto !important;
+  animation: shimmer 6s linear infinite !important;
+  border: none !important;
+  padding: 0 !important;
+}
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
 }
 
-
 /* ===============================
-   CONTENT
+   TOOLBAR GAP - FIXED TIGHT
 ================================ */
-
-
-.arsenal-hero * {
-  position: relative;
-  z-index: 2;
+#recentPlayedWrap {
+  position: relative !important;
+  z-index: 2 !important;
+  margin: 0 !important;
+  padding: 12px 14px 6px !important;
+  display: block !important;
+}
+#rpTrackMount {
+  margin: 0 !important;
+  padding-bottom: 4px !important;
+}
+.playlist-toolbar {
+  position: relative !important;
+  z-index: 10 !important;
+  width: 100% !important;
+  margin-top: 4px !important;
+  padding: 6px 14px !important;
+  box-sizing: border-box !important;
+  clear: both !important;
+  display: block !important;
 }
 
-
-/* ===============================
-   CENTER SYSTEM
-================================ */
-
-
-.arsenal-hero-inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
+/* FILTER BAR */
+.arsenal-bar, .filter-bar {
+  background: rgba(18, 22, 42, 0.85) !important;
+  border: 1px solid rgba(255,255,255,0.07) !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+  margin: 12px 16px 0 !important;
+  width: calc(100% - 32px) !important;
+  padding: 8px 10px !important;
+  position: relative !important;
+  overflow: visible !important;
 }
-
-
-/* ===============================
-   TITLE
-================================ */
-
-
-.arsenal-title {
-
-
-  font-family:
-  "Orbitron",
-  sans-serif;
-
-
-  font-size: 34px;
-  font-weight: 700;
-
-
-  color: #ffffff;
-
-
-  letter-spacing: 1px;
-  line-height: 1.2;
-
-
-  text-shadow:
-    0 0 10px rgba(0,255,200,0.25),
-    0 0 40px rgba(0,255,200,0.15);
-
-
-  position: relative;
+.view-toggle {
+  background: rgba(18, 22, 42, 0.85) !important;
+  border: 1px solid rgba(255,255,255,0.07) !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+  width: 100% !important;
+  padding: 6px 10px !important;
+  position: relative !important;
+  overflow: visible !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  flex-wrap: nowrap !important;
+  margin: 0 !important;
 }
-
-
-/* glow line */
-.arsenal-title::after {
-
-
-  content: "";
-
-
-  position: absolute;
-
-
-  bottom: -8px;
-  left: 50%;
-
-
-  transform: translateX(-50%);
-
-
-  width: 60%;
-  height: 2px;
-
-
-  background: linear-gradient(
-    90deg,
-    transparent,
-    #00ffc8,
-    transparent
-  );
-
-
-  opacity: 0.8;
+.arsenal-bar::after, .filter-bar::after, .view-toggle::after {
+  content: "" !important;
+  position: absolute !important;
+  bottom: -1px !important;
+  left: 15% !important;
+  width: 70% !important;
+  height: 1px !important;
+  background: linear-gradient(90deg, transparent, #4da6ff 30%, #ff4d94 70%, transparent) !important;
+  opacity: 0.35 !important;
 }
-
-
-/* ===============================
-   SUBTEXT
-================================ */
-
-
-.arsenal-sub {
-
-
-  margin-top: 18px;
-
-
-  font-size: 14px;
-
-
-  color:
-  rgba(255,255,255,0.7);
-
-
-  max-width: 520px;
-
-
-  line-height: 1.6;
-
-
-  opacity: 0.9;
+.arsenal-pills button, .filter-bar button, .view-toggle button {
+  background: rgba(255,255,255,0.05) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  box-shadow: none !important;
+  border-radius: 100px !important;
+  color: rgba(255,255,255,0.6) !important;
+  font-weight: 500 !important;
+  font-size: 12px !important;
+  padding: 6px 13px !important;
+  transition: all 0.2s ease !important;
 }
-
-
-/* ========================================
-📱 FULL MOBILE PLAYLIST TOOLBAR
-======================================== */
-
-
-/* ========================================
-📱 MOBILE PLAYLIST TOOLBAR
-======================================== */
-
-
-@media(max-width:768px){
-
-
-    .playlist-toolbar{
-        width:100%;
-        overflow-x:auto;
-overflow-y:hidden;
-
-
-        padding:0 14px;
-        margin-top:10px;
-    }
-
-
-    .view-toggle{
-    display:flex;
-    align-items:center;
-    gap:12px;
-
-    overflow-x:auto;
-    overflow-y:visible;
-    -webkit-overflow-scrolling:touch;
-
-    white-space:nowrap;
-
-    scrollbar-width:none;
-
-    -webkit-overflow-scrolling:touch;
+.arsenal-pills button:hover {
+  background: rgba(77, 166, 255, 0.12) !important;
+  border-color: rgba(77, 166, 255, 0.3) !important;
+  color: #8fd3ff !important;
 }
-
-
-    .view-toggle::-webkit-scrollbar{
-        display:none;
-    }
-
-
-    #listBtn,
-    #gridBtn,
-    .playlist-capsules,
-    #playlistMiniAdd{
-
-
-        flex-shrink:0;
-    }
-
-
-    .playlist-capsules{
-
-
-        display:flex;
-        align-items:center;
-        gap:12px;
-    }
-
-
-    .playlist-capsules button{
-        flex-shrink:0;
-    }
+.arsenal-pills button.active, .filter-bar button.active, .view-toggle button.active {
+  background: #fff !important;
+  color: #0a0f28 !important;
+  border-color: #fff !important;
+  box-shadow: 0 0 12px rgba(77, 166, 255, 0.35), 0 0 20px rgba(255, 77, 148, 0.15) !important;
+  font-weight: 700 !important;
 }
-
-
-
-
-    /* =========================
-       ADD BUTTON
-    ========================= */
-
-
-    #playlistMiniAdd{
-
-
-        flex-shrink:0;
-    }
-
-
-
-
-/* ========================================
-🔥 PLAYLIST GRID = SAME AS SIMILAR TRACKS
-======================================== */
-
-
-#gridContainer{
-
-
-    display:flex;
-    flex-wrap:wrap;
-    gap:22px;
-
-
-    padding:24px;
-
-
-    align-items:flex-start;
+.arsenal-search input {
+  background: rgba(0,0,0,0.3) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  border-radius: 100px !important;
 }
-
-
-/* ========================================
-🔥 CARD
-======================================== */
-
-
-#gridContainer .beat-card{
-
-
-    position:relative;
-
-
-    width:260px;
-    min-width:260px;
-
-
-    background:
-    rgba(255,255,255,.04);
-
-
-    border:
-    1px solid rgba(255,255,255,.08);
-
-
-    border-radius:22px;
-
-
-    padding:12px;
-
-
-    overflow-x:auto;
-overflow-y:hidden;
-
-
-    backdrop-filter:blur(12px);
-
-
-    box-shadow:
-    0 10px 30px rgba(0,0,0,.35);
-
-
-    transition:.25s;
+.arsenal-pills {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  flex-wrap: nowrap !important;
+  white-space: nowrap !important;
 }
-
-
-#gridContainer .beat-card:hover{
-
-
-    transform:translateY(-6px);
-
-
-    border-color:
-    rgba(0,255,255,.35);
-}
-
-
-/* ========================================
-🖼 IMAGE
-======================================== */
-
-
-#gridContainer .beat-cover-wrap{
-
-
-    position:relative;
-
-
-    width:100%;
-    height:150px;
-
-
-    overflow:hidden;
-
-
-    border-radius:18px;
-}
-
-
-#gridContainer .beat-cover{
-
-
-    width:100%;
-    height:100%;
-
-
-    object-fit:cover;
-
-
-    display:block;
-}
-
-
-/* ========================================
-▶ PLAY BUTTON
-======================================== */
-
-
-#gridContainer .beat-play-btn{
-
-
-    position:absolute;
-
-
-    inset:0;
-
-
-    margin:auto;
-
-
-    width:58px;
-    height:58px;
-
-
-    border:none;
-    border-radius:50%;
-
-
-    background:
-    rgba(0,0,0,.65);
-
-
-    backdrop-filter:blur(12px);
-
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-
-    color:white;
-
-
-    font-size:18px;
-
-
-    cursor:pointer;
-
-
-    z-index:20;
-
-
-    opacity:0;
-
-
-    transition:.25s;
-}
-
-
-#gridContainer .beat-cover-wrap:hover
-.beat-play-btn{
-
-
-    opacity:1;
-}
-
-
-/* ========================================
-🎵 TITLE
-======================================== */
-
-
-#gridContainer .beat-title{
-
-
-    margin-top:12px;
-
-
-    font-size:15px;
-    font-weight:700;
-
-
-    color:white;
-
-
-    text-transform:uppercase;
-}
-
-
-/* ========================================
-🏷 TAG
-======================================== */
-
-
-#gridContainer .beat-meta{
-
-
-    margin-top:4px;
-
-
-    color:#8cf;
-
-
-    font-size:13px;
-
-
-    text-transform:uppercase;
-}
-
-
-/* ========================================
-💰 PRICE
-======================================== */
-
-
-#gridContainer .beat-price-row{
-
-
-    display:flex;
-
-
-    gap:10px;
-
-
-    margin-top:10px;
-}
-
-
-#gridContainer .beat-old-price{
-
-
-    color:#999;
-
-
-    text-decoration:line-through;
-}
-
-
-#gridContainer .beat-price{
-
-
-    color:#6fffb0;
-
-
-    font-weight:700;
-}
-
-
-/* ========================================
-🛒 BUTTON
-======================================== */
-
-
-#gridContainer .beat-buy-btn{
-
-
-    width:100%;
-
-
-    margin-top:12px;
-
-
-    border:none;
-
-
-    height:42px;
-
-
-    border-radius:14px;
-
-
-    background:
-    linear-gradient(
-        90deg,
-        #00e5ff,
-        #6f7dff,
-        #ff4fd8
-    );
-
-
-    color:white;
-
-
-    font-weight:700;
-
-
-    cursor:pointer;
-
-
-    transition:.25s;
-}
-
-
-#gridContainer .beat-buy-btn:hover{
-
-
-    transform:translateY(-2px);
-
-
-    opacity:.92;
-}
-
-
-/* ========================================
-📱 MOBILE
-======================================== */
-
-
-@media(max-width:768px){
-
-
-    #gridContainer{
-
-
-        justify-content:center;
-
-
-        gap:14px;
-
-
-        padding:14px;
-    }
-
-
-    #gridContainer .beat-card{
-
-
-        width:220px;
-        min-width:220px;
-    }
-}
-/* ========================================
-📱 MOBILE GRID = ALL BEATS STYLE
-======================================== */
-
-
-@media(max-width:768px){
-
-
-    #gridContainer{
-
-
-        display:grid !important;
-
-
-        grid-template-columns:
-        repeat(3,minmax(0,1fr));
-
-
-        gap:12px;
-
-
-        padding:12px;
-
-
-        align-items:start;
-    }
-
-
-    /* =========================
-       CARD
-    ========================== */
-
-
-    #gridContainer .beat-card{
-
-
-        width:100% !important;
-        min-width:0 !important;
-
-
-        border-radius:18px;
-
-
-        padding:8px;
-
-
-        background:
-        rgba(255,255,255,.04);
-
-
-        border:
-        1px solid rgba(255,255,255,.08);
-
-
-        backdrop-filter:blur(12px);
-
-
-        box-shadow:
-        0 10px 24px rgba(0,0,0,.28);
-
-
-        overflow:hidden;
-    }
-
-
-    /* =========================
-       IMAGE
-    ========================== */
-
-
-    #gridContainer .beat-cover-wrap{
-
-
-        width:100%;
-        height:110px;
-
-
-        border-radius:14px;
-
-
-        overflow:hidden;
-    }
-
-
-    #gridContainer .beat-cover{
-
-
-        width:100%;
-        height:100%;
-
-
-        object-fit:cover;
-    }
-
-
-    /* =========================
-       PLAY BTN
-    ========================== */
-
-
-    #gridContainer .beat-play-btn{
-
-
-        width:42px;
-        height:42px;
-
-
-        font-size:14px;
-
-
-        opacity:1;
-
-
-        background:
-        rgba(0,0,0,.45);
-
-
-        backdrop-filter:blur(10px);
-    }
-
-
-    /* =========================
-       TITLE
-    ========================== */
-
-
-    #gridContainer .beat-title{
-
-
-        margin-top:10px;
-
-
-        font-size:11px;
-
-
-        line-height:1.3;
-
-
-        font-weight:700;
-
-
-        color:white;
-
-
-        text-transform:uppercase;
-    }
-
-
-    /* =========================
-       META
-    ========================== */
-
-
-    #gridContainer .beat-meta{
-
-
-        margin-top:4px;
-
-
-        font-size:10px;
-
-
-        color:#8cf;
-
-
-        text-transform:uppercase;
-    }
-
-
-    /* =========================
-       PRICE
-    ========================== */
-
-
-    #gridContainer .beat-price-row{
-
-
-        margin-top:8px;
-
-
-        gap:6px;
-
-
-        font-size:11px;
-    }
-
-
-    #gridContainer .beat-old-price{
-
-
-        color:#777;
-
-
-        text-decoration:line-through;
-    }
-
-
-    #gridContainer .beat-price{
-
-
-        color:#6fffb0;
-
-
-        font-weight:700;
-    }
-
-
-    /* =========================
-       BUTTON
-    ========================== */
-
-
-    #gridContainer .beat-buy-btn{
-
-
-        width:100%;
-
-
-        height:34px;
-
-
-        margin-top:8px;
-
-
-        border:none;
-
-
-        border-radius:12px;
-
-
-        font-size:11px;
-
-
-        font-weight:700;
-
-
-        background:
-        linear-gradient(
-            90deg,
-            #00e5ff,
-            #6f7dff,
-            #ff4fd8
-        );
-
-
-        color:white;
-    }
-}
-/* ========================================
-🌍 GLOBAL PERFECT SIDE BALANCE FIX
-======================================== */
-
-
-html,
-body{
-
-
-    overflow-x:hidden;
-}
-
-
-/* ========================================
-GLOBAL CONTAINERS
-======================================== */
-
-
-.container,
-.section,
-.wave-section,
-.playlist-section,
-.latest-section,
-.beats-section,
-#waveList,
-.wave-list,
-.playlist-wave-list,
-#gridContainer{
-
-
-    width:100%;
-
-
-    box-sizing:border-box;
-
-
-    padding-left:14px !important;
-    padding-right:14px !important;
-}
-
-
-/* ========================================
-ROWS
-======================================== */
-
-
-.wave-row,
-.beat-row,
-.latest-row{
-
-
-    width:100% !important;
-
-
-    margin-left:0 !important;
-    margin-right:0 !important;
-}
-
-
-/* ========================================
-CARDS
-======================================== */
-
-
-.wave-card,
-.beat-card,
-.latest-card{
-
-
-    box-sizing:border-box;
-}
-
-
-/* ========================================
-📱 MOBILE
-======================================== */
-
-
-@media(max-width:768px){
-
-
-    .container,
-    .section,
-    .wave-section,
-    .playlist-section,
-    .latest-section,
-    .beats-section,
-    #waveList,
-    .wave-list,
-    .playlist-wave-list,
-    #gridContainer{
-
-
-        padding-left:14px !important;
-        padding-right:14px !important;
-    }
-
-
-}
-/* ===============================
-   🔥 PLAYER MORE SLIDEOUT PANEL
-=============================== */
-#playerMorePanel {
-  position: fixed;
-  top: 0;
-  right: -320px;
-  width: 320px;
-  height: 100vh;
-  background: rgba(10, 10, 15, 0.98);
-  backdrop-filter: blur(40px);
-  border-left: 1px solid rgba(255,255,255,0.08);
-  z-index: 99999;
-  transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  display: flex;
-  flex-direction: column;
-}
-
-
-#playerMorePanel.active {
-  right: 0;
-}
-
-
-/* HEADER */
-.more-panel-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 20px;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-}
-
-
-.more-panel-header img {
-  width: 48px;
-  height: 48px;
-  border-radius: 8px;
-  object-fit: cover;
-}
-
-
-.more-panel-info {
-  flex: 1;
-  min-width: 0;
-}
-
-
-.more-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: #fff;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-
-.more-artist {
-  font-size: 12px;
-  color: rgba(255,255,255,0.5);
-  margin-top: 2px;
-}
-
-
-.more-close {
-  background: rgba(255,255,255,0.06);
-  border: none;
-  color: rgba(255,255,255,0.7);
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 16px;
-  transition: 0.2s;
-}
-
-
-.more-close:hover {
-  background: rgba(255,255,255,0.1);
-  color: #fff;
-}
-
-
-/* ACTIONS */
-.more-panel-actions {
-  flex: 1;
-  padding: 12px;
-  overflow-y: auto;
-}
-
-
-.more-item {
-  width: 100%;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.06);
-  color: rgba(255,255,255,0.8);
-  padding: 14px 16px;
-  border-radius: 12px;
-  margin-bottom: 8px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.2s ease;
-}
-
-
-.more-item span {
-  font-size: 18px;
-}
-
-
-.more-item:hover {
-  background: rgba(0, 240, 255, 0.08);
-  border-color: rgba(0, 240, 255, 0.2);
-  color: #fff;
-  transform: translateX(-4px);
-}
-
-
-.more-item.buy {
-  background: linear-gradient(135deg, #00f0ff, #7c3aed);
-  border: none;
-  color: #000;
-  font-weight: 600;
-}
-
-
-.more-item.buy:hover {
-  transform: translateX(-4px) scale(1.02);
-  box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
-}
-
-
-.more-item.delete {
-  background: rgba(255, 77, 77, 0.08);
-  border-color: rgba(255, 77, 77, 0.2);
-  color: #ff4d4d;
-}
-
-
-.more-item.delete:hover {
-  background: rgba(255, 77, 77, 0.15);
-}
-
+.arsenal-pills::-webkit-scrollbar { display: none !important; }
+.search-dropdown { scrollbar-width: none !important; }
+.search-dropdown::-webkit-scrollbar { display: none !important; }
+.fade-out { opacity: 0 !important; transition: opacity 0.4s ease !important; pointer-events: none !important; }
 
 /* MOBILE */
+@media (max-width: 768px) {
+  .arsenal-hero { padding: 32px 16px !important; border-radius: 0 0 16px 16px !important; min-height: 145px !important; }
+  .arsenal-hero::before { background: url("../images/beats-wav-bg.png") center center / 140% auto no-repeat !important; opacity: 0.75 !important; }
+  .arsenal-hero::after { border-radius: 0 0 16px 16px !important; }
+  .arsenal-hero h1 { font-size: clamp(24px, 7vw, 30px) !important; }
+  .arsenal-hero p { font-size: 10.5px !important; letter-spacing: 1px !important; max-width: 95% !important; }
+  .arsenal-bar, .filter-bar { margin: 10px 10px 0 !important; width: calc(100% - 20px) !important; }
+  .playlist-toolbar { margin-top: 6px !important; padding: 0 10px !important; }
+  .view-toggle { gap: 8px !important; overflow-x: auto !important; scrollbar-width: none !important; }
+  .view-toggle::-webkit-scrollbar { display: none !important; }
+  .arsenal-search { flex: 0 0 42px !important; min-width: 42px !important; margin-left: 8px !important; }
+  #beatSearch { width: 42px !important; }
+  #beatSearch:focus { width: 140px !important; position: absolute !important; right: 0 !important; z-index: 20 !important; }
+  .search-dropdown, #searchDropdown { display: none !important; }
+}
 @media(max-width:768px){
-  #playerMorePanel {
-    width: 100%;
-    right: -100%;
-  }
+  .playlist-toolbar{ width:100%; overflow: visible; padding:0 10px !important; margin-top:6px !important; }
+  #listBtn, #gridBtn, .playlist-capsules, #playlistMiniAdd{ flex-shrink:0; }
+  .playlist-capsules{ display:flex; align-items:center; gap:12px; }
 }
+
+/* GLOBAL OVERFLOW FIX */
+html, body{ overflow-x:hidden; }
+.container, .section, .wave-section, .playlist-section, .latest-section, .beats-section, #waveList, .wave-list, .playlist-wave-list, #gridContainer{
+  width:100%; box-sizing:border-box; padding-left:14px !important; padding-right:14px !important;
+}
+.wave-row, .beat-row, .latest-row{ width:100% !important; margin-left:0 !important; margin-right:0 !important; }
+
+/* MORE PANEL */
+#playerMorePanel {
+  position: fixed; top: 0; right: -320px; width: 320px; height: 100vh;
+  background: rgba(10, 10, 15, 0.98); backdrop-filter: blur(40px);
+  border-left: 1px solid rgba(255,255,255,0.08); z-index: 99999;
+  transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column;
+}
+#playerMorePanel.active { right: 0; }
+.more-panel-header { display: flex; align-items: center; gap: 12px; padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.more-panel-header img { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; }
+.more-panel-info { flex: 1; min-width: 0; }
+.more-title { font-size: 14px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.more-artist { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 2px; }
+.more-close { background: rgba(255,255,255,0.06); border: none; color: rgba(255,255,255,0.7); width: 32px; height: 32px; border-radius: 8px; cursor: pointer; font-size: 16px; }
+.more-panel-actions { flex: 1; padding: 12px; overflow-y: auto; }
+.more-item { width: 100%; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); color: rgba(255,255,255,0.8); padding: 14px 16px; border-radius: 12px; margin-bottom: 8px; cursor: pointer; display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 500; transition: all 0.2s ease; }
+.more-item:hover { background: rgba(0, 240, 255, 0.08); border-color: rgba(0, 240, 255, 0.2); color: #fff; transform: translateX(-4px); }
+.more-item.buy { background: linear-gradient(135deg, #00f0ff, #7c3aed); border: none; color: #000; font-weight: 600; }
+.more-item.delete { background: rgba(255, 77, 77, 0.08); border-color: rgba(255, 77, 77, 0.2); color: #ff4d4d; }
+@media(max-width:768px){ #playerMorePanel { width: 100%; right: -100%; } }
+
+/* PLAYLIST CONTROLS */
+.add-playlist-btn { position: relative; background: #0A0A0F; border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); width: 32px; height: 32px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.add-playlist-btn .plus-icon { font-size: 18px; font-weight: 300; }
+.add-playlist-btn .hover-text { position: absolute; opacity: 0; font-size: 12px; font-weight: 500; white-space: nowrap; }
+.add-playlist-btn:hover { width: auto; padding: 0 14px; border-color: rgba(255,255,255,0.15); color: #FFFFFF; }
+.add-playlist-btn:hover .plus-icon { opacity: 0; }
+.add-playlist-btn:hover .hover-text { opacity: 1; position: relative; }
+.playlist-controls-wrap { display: flex !important; flex-direction: row !important; align-items: center; gap: 8px; margin-left: auto; flex-shrink: 0; }
+#playlistMiniAdd, #playlistRemoveBtn { min-width: 32px; height: 32px; border-radius: 8px; background: #0A0A0F; border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+#playlistMiniAdd { width: 32px; position: relative; overflow: hidden; }
+#playlistMiniAdd .plus-icon { font-size: 18px; font-weight: 300; }
+#playlistMiniAdd .hover-text { position: absolute; opacity: 0; font-size: 12px; font-weight: 500; white-space: nowrap; }
+#playlistMiniAdd:hover { width: auto; padding: 0 14px; border-color: rgba(255,255,255,0.15); color: #FFF; }
+#playlistMiniAdd:hover .plus-icon { opacity: 0; }
+#playlistMiniAdd:hover .hover-text { opacity: 1; position: relative; }
+#playlistRemoveBtn { font-size: 16px; font-weight: 700; }
+.playlist-remove-wrap { position: relative; flex-shrink: 0; }
+.remove-dropdown { position: absolute; top: 40px; right: 0; background: #0A0A0F; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 8px; min-width: 180px; opacity: 0; pointer-events: none; transform: translateY(-8px); transition: 0.2s ease; z-index: 9999; }
+.remove-dropdown.active { opacity: 1; pointer-events: auto; transform: translateY(0); }
+.remove-option { width: 100%; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); color: rgba(255,255,255,0.8); padding: 12px 14px; border-radius: 10px; margin-bottom: 6px; cursor: pointer; display: flex; align-items: center; gap: 10px; font-size: 13px; }
+.remove-option:hover { background: rgba(255, 77, 77, 0.12); border-color: rgba(255, 77, 77, 0.3); color: #ff4d4d; }
+@media(max-width:768px){ #playlistMiniAdd, #playlistRemoveBtn { width: 36px; height: 36px; } }
+
+/* SIMILAR TRACKS */
+#similarTrack { display: flex; gap: 20px; overflow-x: auto; overflow-y: hidden; scroll-behavior: smooth; padding: 20px 4px 40px; scrollbar-width: none; perspective: 1200px; cursor: grab; }
+#similarTrack::-webkit-scrollbar { display: none; }
+#similarTrack .featured-card { position: relative !important; top: auto !important; left: auto !important; flex: 0 0 240px; min-width: 240px; max-width: 240px; transform: none !important; margin: 0; }
+#similarTrack .featured-card:hover { transform: translateY(-6px) !important; }
+@media (max-width: 768px) { #similarTrack .featured-card { flex: 0 0 180px; min-width: 180px; max-width: 180px; } }
+
 /* ===============================
-   ➕ PREMIUM ADD PLAYLIST BTN
-=============================== */
-.add-playlist-btn {
-    position: relative;
-    background: #0A0A0F; /* premium space black */
-    border: 1px solid rgba(255,255,255,0.08);
-    color: rgba(255,255,255,0.6);
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
+   EXPLORE ROW - CENTERED + LOGO FIX
+================================ */
+#waveList .explore-row, .wave-list .explore-row, .beat-card.explore-row {
+  width: 100% !important; min-width: 100% !important; display: flex !important; justify-content: center !important; align-items: center !important;
+  padding: 18px 0 !important; margin: 8px 0 !important; background: transparent !important; border: none !important; box-shadow: none !important;
 }
-
-
-.add-playlist-btn .plus-icon {
-    font-size: 18px;
-    font-weight: 300;
-    transition: opacity 0.2s ease;
-}
-
-
-.add-playlist-btn .hover-text {
-    position: absolute;
-    opacity: 0;
-    font-size: 12px;
-    font-weight: 500;
-    white-space: nowrap;
-    transition: opacity 0.2s ease;
-}
-
-
-/* HOVER STATE */
-.add-playlist-btn:hover {
-    width: auto;
-    padding: 0 14px;
-    background: #0A0A0F; /* stay space black */
-    border: 1px solid rgba(255,255,255,0.15);
-    color: #FFFFFF; /* sable/white text */
-}
-
-
-.add-playlist-btn:hover .plus-icon {
-    opacity: 0;
-}
-
-
-.add-playlist-btn:hover .hover-text {
-    opacity: 1;
-    position: relative;
-}
-
+#waveList .explore-row .explore-bar { width: 100% !important; display: flex !important; justify-content: center !important; align-items: center !important; position: relative !important; height: 32px !important; }
+#waveList .explore-row .explore-line { position: absolute !important; left: 0 !important; right: 0 !important; top: 50% !important; }
+#waveList .explore-row .explore-btn { position: relative !important; z-index: 2 !important; margin: 0 auto !important; height: 32px !important; line-height: 32px !important; padding: 0 20px !important; flex: 0 0 auto !important; }
+.beat-card.compact.explore-row { justify-content: flex-start !important; background: rgba(18,22,42,0.85) !important; border: 1px solid rgba(255,255,255,0.07) !important; }
+.beat-card.compact.explore-row .card-media { width: 48px !important; height: 48px !important; min-width: 48px !important; background: rgba(0,240,255,0.08) !important; border-radius: 8px !important; display: grid !important; place-items: center !important; padding: 0 !important; }
+.beat-card.compact.explore-row .card-media img { width: 32px !important; height: 32px !important; object-fit: contain !important; }
 
 /* ===============================
-   📱 MOBILE
-=============================== */
-@media(max-width:768px){
-    .add-playlist-btn {
-        width: 36px;
-        height: 36px;
-    }
-   
-    .add-playlist-btn:hover {
-        padding: 0 16px;
-    }
-   
-    .add-playlist-btn .hover-text {
-        font-size: 11px;
-    }
-}
-.playlist-controls-wrap {
-  display: flex !important;
-  flex-direction: row !important;
-  align-items: center;
-  gap: 8px;
-  margin-left: auto;
-  flex-shrink: 0;
+   GRID = FEATURED EXACT - FIX BIG BTN + COVER
+================================ */
+#gridContainer{
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)) !important;
+  gap: 20px !important;
+  padding: 20px 14px !important;
+  align-items: start !important;
 }
 
-#playlistMiniAdd,
-#playlistRemoveBtn {
-  min-width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  background: #0A0A0F;
-  border: 1px solid rgba(255,255,255,0.08);
-  color: rgba(255,255,255,0.6);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  transition: all 0.3s ease;
-}
-
-#playlistMiniAdd {
-  width: 32px;
-}
-
-
-#playlistMiniAdd {
-  position: relative;
-  overflow: hidden;
-}
-
-#playlistMiniAdd .plus-icon {
-  font-size: 18px;
-  font-weight: 300;
-  transition: opacity 0.2s ease;
-}
-
-#playlistMiniAdd .hover-text {
-  position: absolute;
-  opacity: 0;
-  font-size: 12px;
-  font-weight: 500;
-  white-space: nowrap;
-}
-
-#playlistMiniAdd:hover {
-  width: auto;
-  padding: 0 14px;
-  border-color: rgba(255,255,255,0.15);
-  color: #FFF;
-}
-
-#playlistMiniAdd:hover .plus-icon {
-  opacity: 0;
-}
-
-#playlistMiniAdd:hover .hover-text {
-  opacity: 1;
-  position: relative;
-}
-
-#playlistRemoveBtn {
-  font-size: 16px;
-  font-weight: 700;
-}
-
-#playlistRemoveBtn:hover,
-#playlistRemoveBtn.active {
-  border-color: rgba(255,255,255,0.15);
-  color: #FFF;
-}
-
-.playlist-remove-wrap {
-  position: relative;
-  flex-shrink: 0;
-}
-
-.remove-dropdown {
-  position: absolute;
-  top: 40px;
-  right: 0;
-  background: #0A0A0F;
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 12px;
-  padding: 8px;
-  min-width: 180px;
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(-8px);
-  transition: 0.2s ease;
-  z-index: 9999;
-}
-
-.remove-dropdown.active {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateY(0);
-}
-
-.remove-option {
-  width: 100%;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.06);
-  color: rgba(255,255,255,0.8);
-  padding: 12px 14px;
-  border-radius: 10px;
-  margin-bottom: 6px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 13px;
-}
-
-.remove-option:last-child {
-  margin-bottom: 0;
-}
-
-.remove-option:hover {
-  background: rgba(255, 77, 77, 0.12);
-  border-color: rgba(255, 77, 77, 0.3);
-  color: #ff4d4d;
-}
-/* ===============================
-   📱 MOBILE HAMBURGER - NEXT TO BUTTON
-=============================== */
-@media(max-width:768px){
-  .playlist-remove-wrap {
-    position: relative;
-  }
-  
-  .remove-dropdown {
-    position: absolute;
-    top: 40px;
-    right: 0;
-    left: auto;
-    bottom: auto;
-    width: 180px;
-    min-width: 180px;
-    transform: translateY(-8px);
-  }
-  
-  .remove-dropdown.active {
-    transform: translateY(0);
-  }
-  
-  #playlistMiniAdd,
-  #playlistRemoveBtn {
-    width: 36px;
-    height: 36px;
-  }
-}
-/* ===============================
-   🔥 SIMILAR TRACKS - FEATURED STYLE
-   Uses your .featured-card styles
-=============================== */
-
-#similarTrack {
-  display: flex;
-  gap: 20px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  scroll-behavior: smooth;
-  padding: 20px 4px 40px;
-  scrollbar-width: none;
-  perspective: 1200px;
-}
-
-#similarTrack::-webkit-scrollbar {
-  display: none;
-}
-
-/* Override absolute positioning for scroll */
-#similarTrack .featured-card {
+#gridContainer .beat-card{
   position: relative !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  height: 380px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  background: linear-gradient(145deg, #1e2a5a, #162040) !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
+  border-radius: 18px !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+#gridContainer .beat-cover-wrap{
+  position: relative !important;
+  width: calc(100% - 16px) !important;
+  height: 175px !important;
+  min-height: 175px !important;
+  max-height: 175px !important;
+  margin: 8px !important;
+  border-radius: 14px !important;
+  overflow: hidden !important;
+  background: #000 !important;
+  flex-shrink: 0 !important;
+}
+
+#gridContainer .beat-cover{
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  display: block !important;
+}
+
+#gridContainer .beat-play-btn{
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%,-50%) !important;
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 50% !important;
+  background: rgba(0,0,0,0.65) !important;
+  border: 1px solid rgba(255,255,255,0.2) !important;
+  backdrop-filter: blur(8px) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 5 !important;
+  opacity: 0 !important;
+  transition: .2s !important;
+}
+#gridContainer .beat-card:hover .beat-play-btn{ opacity: 1 !important; }
+#gridContainer .beat-play-btn svg{ width:20px !important; height:20px !important; fill:#fff !important; }
+
+#gridContainer .beat-content{
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  align-items: center !important;
+  padding: 12px 14px 12px !important;
+  gap: 4px !important;
+  text-align: center !important;
+}
+
+#gridContainer .beat-title{ font-size:15px !important; font-weight:700 !important; color:#fff !important; margin:0 !important; line-height:1.2 !important; }
+#gridContainer .beat-meta{ font-size:11px !important; color:#8ab4ff !important; text-transform:uppercase !important; margin:0 !important; }
+#gridContainer .beat-price-row{ margin:4px 0 0 !important; display:flex !important; justify-content:center !important; gap:6px !important; }
+#gridContainer .beat-old-price{ color:rgba(255,255,255,0.4) !important; font-size:11px !important; text-decoration:line-through !important; }
+#gridContainer .beat-price{ color:#6ef !important; font-weight:700 !important; font-size:13px !important; }
+#gridContainer .free-dna{ color:#7dd3fc !important; font-weight:800 !important; font-size:12px !important; letter-spacing:1px !important; }
+
+/* BIG BTN - FIXED INSIDE BOTTOM */
+#gridContainer .beat-buy-btn{
+  width: calc(100% - 4px) !important;
+  height: 42px !important;
+  min-height: 42px !important;
+  margin-top: auto !important;
+  margin-bottom: 0 !important;
+  border-radius: 12px !important;
+  border: none !important;
+  background: linear-gradient(90deg, #00e5ff, #2dd4ff) !important;
+  color: #000 !important;
+  font-weight: 700 !important;
+  font-size: 13px !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  position: relative !important;
+  bottom: auto !important;
   top: auto !important;
   left: auto !important;
-  flex: 0 0 240px;
-  min-width: 240px;
-  max-width: 240px;
+  right: auto !important;
   transform: none !important;
-  margin: 0;
+}
+#gridContainer .beat-buy-btn.is-free{
+  background: linear-gradient(90deg, #a5b4ff, #d8b4fe) !important;
+  color: #1a1a2e !important;
 }
 
-#similarTrack .featured-card:hover {
-  transform: translateY(-6px) !important;
+@media(max-width:768px){
+  #gridContainer{ grid-template-columns: repeat(3, minmax(0,1fr)) !important; gap:10px !important; padding:12px !important; }
+  #gridContainer .beat-card{ height: 240px !important; }
+  #gridContainer .beat-cover-wrap{ height:105px !important; min-height:105px !important; max-height:105px !important; }
+  #gridContainer .beat-play-btn{ opacity:1 !important; width:40px !important; height:40px !important; }
+  #gridContainer .beat-title{ font-size:11px !important; }
+  #gridContainer .beat-meta{ font-size:9px !important; }
+  #gridContainer .beat-buy-btn{ height:32px !important; min-height:32px !important; font-size:11px !important; }
+}
+/* ===============================
+   REDUCE CARD HEIGHT + FREE BTN BLUE-RED GRADIENT
+================================ */
+#gridContainer .beat-card{
+  height: 305px !important; /* was 380px - reduced */
 }
 
-@media (max-width: 768px) {
-  #similarTrack .featured-card {
-    flex: 0 0 180px;
-    min-width: 180px;
-    max-width: 180px;
-  }
-}
-/* 🔥 DRAG CURSOR */
-#similarTrack {
-  cursor: grab;
+#gridContainer .beat-cover-wrap{
+  height: 145px !important;
+  min-height: 145px !important;
+  max-height: 145px !important;
 }
 
-#similarTrack.dragging {
-  cursor: grabbing;
-  user-select: none;
+#gridContainer .beat-content{
+  padding: 10px 12px 10px !important;
+  gap: 3px !important;
 }
 
-#similarTrack.dragging .featured-card {
-  pointer-events: none; /* prevents clicking while dragging */
+/* FREE BTN = BLUE RED GRADIENT */
+#gridContainer .beat-buy-btn.is-free,
+#gridContainer .beat-card .beat-buy-btn.is-free,
+#gridContainer .f-buy.is-free{
+  background: linear-gradient(90deg, #4da6ff 0%, #ffffff 45%, #ff4d94 100%) !important;
+  color: #000 !important;
+  font-weight: 800 !important;
+  border: none !important;
+  box-shadow: 0 0 12px rgba(77,166,255,0.35), 0 0 20px rgba(255,77,148,0.18) !important;
 }
 
-#similarTrack .featured-card {
-  cursor: pointer;
-}
-.featured-buy {
-  position: relative;
-  z-index: 20 !important;
-  pointer-events: auto !important;
-  cursor: pointer !important;
+#gridContainer .beat-buy-btn.is-free:hover{
+  transform: translateY(-1px) !important;
+  box-shadow: 0 0 18px rgba(77,166,255,0.5), 0 0 28px rgba(255,77,148,0.25) !important;
+  filter: brightness(1.1) !important;
 }
 
-.featured-buy:hover {
-  transform: scale(1.05);
+/* NORMAL BUY BTN stays blue */
+#gridContainer .beat-buy-btn:not(.is-free){
+  background: linear-gradient(90deg, #00e5ff, #2dd4ff) !important;
+  color: #000 !important;
 }
 
-.featured-buy.added {
-  background: rgba(255, 60, 100, 0.2);
-  border: 1px solid rgba(255, 60, 100, 0.4);
-  color: #ff3c6f;
-}
-
-.featured-content {
-  position: relative;
-  z-index: 10;
-  pointer-events: auto;
-}
-
-/* Make sure card doesn't block clicks */
-.featured-card {
-  pointer-events: auto;
-}
-
-.featured-card img {
-  pointer-events: none;
+@media(max-width:768px){
+  #gridContainer .beat-card{ height: 205px !important; }
+  #gridContainer .beat-cover-wrap{ height: 90px !important; min-height: 90px !important; max-height: 90px !important; }
 }
