@@ -308,15 +308,80 @@ window.unlikeInstant=(beatId)=>{
   let liked=JSON.parse(localStorage.getItem('dt_liked_v1')||'[]').filter(id=>String(id)!==String(beatId));
   localStorage.setItem('dt_liked_v1', JSON.stringify(liked));
   localStorage.setItem('dt_liked_ids', JSON.stringify(liked));
-  renderVault(true, beatId);
+
+  const row = document.querySelector(`.vault-wave-row[data-beat-id="${beatId}"]`);
+  if(row){
+    const block = row.closest('.playlist-block');
+    const w=waveCache.get(String(beatId));
+    if(w){ try{w.destroy()}catch{} waveCache.delete(String(beatId)); }
+    row.style.transition='all.25s'; row.style.opacity='0'; row.style.transform='scale(.95)';
+    setTimeout(()=>{
+      row.remove();
+      if(block){
+        const count = block.querySelectorAll('.vault-wave-row').length;
+        const titleEl = block.querySelector('.playlist-block-title');
+        if(titleEl){
+          const base = titleEl.textContent.split('•')[0].trim();
+          titleEl.textContent = `${base} • ${count} TRACKS`;
+        }
+        if(count===0){
+          block.style.opacity='0'; setTimeout(()=>block.remove(),300);
+        }
+      }
+      if(window.loadPlaylistById && window.__CURRENT_PLAYLIST_ID__){
+        window.loadPlaylistById(window.__CURRENT_PLAYLIST_ID__);
+      }
+    },250);
+  }
   window.dispatchEvent(new Event('dt_vault_updated'));
 };
+
 window.removeInstant=(plId,beatId)=>{
   let pls=JSON.parse(localStorage.getItem('dt_vault_v1')||'[]');
   const pl=pls.find(p=>p.id===plId);
-  if(pl){ pl.beats=(pl.beats||[]).filter(b=>String(b.id)!==String(beatId)); localStorage.setItem('dt_vault_v1', JSON.stringify(pls)); }
-  renderVault(true, beatId);
+  if(pl){
+    pl.beats=(pl.beats||[]).filter(b=>String(b.id)!==String(beatId));
+    localStorage.setItem('dt_vault_v1', JSON.stringify(pls));
+  }
+
+  const row = document.querySelector(`.playlist-block[data-vault="${plId}"].vault-wave-row[data-beat-id="${beatId}"]`) || document.querySelector(`.vault-wave-row[data-beat-id="${beatId}"]`);
+  if(row){
+    const block = row.closest('.playlist-block');
+    const w=waveCache.get(String(beatId));
+    if(w){ try{w.destroy()}catch{} waveCache.delete(String(beatId)); }
+    beatMap.delete(String(beatId));
+    active = active.filter(a=>String(a.id)!==String(beatId));
+
+    row.style.transition='all.25s'; row.style.opacity='0'; row.style.transform='scale(.95)';
+    setTimeout(()=>{
+      row.remove();
+      if(block){
+        const count = block.querySelectorAll('.vault-wave-row').length;
+        const titleEl = block.querySelector('.playlist-block-title');
+        if(titleEl){
+          const base = titleEl.textContent.split('•')[0].trim();
+          titleEl.textContent = `${base} • ${count} ${count===1?'TRACK':'TRACKS'}`;
+        }
+        if(count===0){
+          block.style.transition='all.3s'; block.style.opacity='0';
+          setTimeout(()=>block.remove(),300);
+        }
+      }
+      // refresh playlists.html if open
+      if(window.loadPlaylistById){
+        window.loadPlaylistById(plId);
+      }
+      if(window.renderPlaylistCapsulesOnly){
+        window.renderPlaylistCapsulesOnly();
+      }
+    },250);
+  }else{
+    // fallback if row not in mini view
+    if(window.loadPlaylistById) window.loadPlaylistById(plId);
+    else renderVault(false);
+  }
 };
+
 window.togglePlayAll=(plId)=>{
   const btn=document.querySelector(`.universal-play[data-pl="${plId}"]`);
   const beats=playlistMap.get(plId)||[];
@@ -357,7 +422,7 @@ window.addEventListener('playlistsUpdated',()=>renderVault(false));
 
 
 
-// === ADD TRACKS MODAL - PRO - CHECKBOX + SEARCH + NO RELOAD - FINAL WITH LIKED/DOWNLOAD RULES ===
+// === ADD TRACKS MODAL - FIXED FOR PLAYLISTS PAGE ===
 (function addTracksPro(){
   if(document.getElementById('addTracks-pro-css')) return;
   const css=document.createElement('style');
@@ -405,81 +470,66 @@ window.addEventListener('playlistsUpdated',()=>renderVault(false));
 
   let currentPlId=null; let selected=new Set(); let allBeatsCache=[];
 
-  function getAllBeats(){
+  // FIXED: now loads beats on playlists.html too
+  async function getAllBeats(){
     try{
       const c1=JSON.parse(localStorage.getItem('dt_beats_cache')||'[]');
       const c2=JSON.parse(localStorage.getItem('beats_cache')||'[]');
-      const c3=window.allBeats||window.beatsData||window.__beats||[];
-      const combined=[...c1,...c2,...c3];
+      const c3=JSON.parse(localStorage.getItem('dopetone_api_beats')||'[]');
+      const c4=window.allBeats||window.beatsData||window.__beats||window.__ALL_BEATS__||[];
+      let combined=[...c1,...c2,...c3,...c4];
       const map=new Map();
       combined.forEach(b=>{ if(b&&b.id) map.set(String(b.id), b); });
-      return Array.from(map.values());
+      let arr=Array.from(map.values());
+      // If still empty (playlists.html), fetch from API - FIXES YOUR BUG
+      if(arr.length < 5){
+        try{
+          const res = await fetch('https://api.dopetonevault.com/beats');
+          if(res.ok){
+            const apiBeats = await res.json();
+            apiBeats.forEach(b=>{ if(!map.has(String(b.id))) map.set(String(b.id), b); });
+            arr = Array.from(map.values());
+            localStorage.setItem('dopetone_api_beats', JSON.stringify(arr));
+          }
+        }catch(e){}
+      }
+      return arr;
     }catch{ return window.allBeats||[]; }
   }
 
-  window.openAddTracks=(plId)=>{
+  window.openAddTracks= async(plId)=>{
     currentPlId=plId; selected.clear();
-    allBeatsCache=getAllBeats();
+    allBeatsCache = await getAllBeats();
     const vault = getVaultPlaylists();
     const pl = vault.find(p=>p.id===plId);
     const isLiked = pl?.isLiked;
     const isDown = plId==='dt_downloaded' || pl?.name?.toLowerCase().includes('download');
-    
     const list=document.getElementById('atList');
     const searchWrap=document.getElementById('atSearchWrap');
     const footer=document.getElementById('atFooter');
-
-    // LIKED PLAYLIST - SHOW SMILE MESSAGE
     if(isLiked){
-      searchWrap.style.display='none';
-      footer.style.display='none';
-      list.innerHTML=`
-        <div style="padding:44px 20px; text-align:center;">
-          <div style="font-size:46px; margin-bottom:14px;">❤️</div>
-          <div style="font-family:'Orbitron'; font-size:14px; font-weight:800; color:#ff4d6d; letter-spacing:1px; margin-bottom:10px;">LIKED PLAYLIST</div>
-          <div style="font-size:15px; color:#e9ecff; line-height:1.6;">Like more tracks to add beats here 😊<br><span style="color:#888; font-size:12px;">Go to All Beats and hit the heart to add</span></div>
-          <button onclick="window.closeAddTracks(); window.location.href='beats.html'" style="margin-top:20px; height:40px; padding:0 20px; border-radius:20px; border:none; background:linear-gradient(135deg,#ff4d6d,#ff8a00); color:#fff; font-weight:700; cursor:pointer;">Browse Beats →</button>
-        </div>`;
-      modal.classList.add('open');
-      return;
+      searchWrap.style.display='none'; footer.style.display='none';
+      list.innerHTML=`<div style="padding:44px 20px; text-align:center;"><div style="font-size:46px; margin-bottom:14px;">❤️</div><div style="font-family:'Orbitron'; font-size:14px; font-weight:800; color:#ff4d6d; letter-spacing:1px; margin-bottom:10px;">LIKED PLAYLIST</div><div style="font-size:15px; color:#e9ecff; line-height:1.6;">Like more tracks to add beats here 😊<br><span style="color:#888; font-size:12px;">Go to All Beats and hit the heart to add</span></div><button onclick="window.closeAddTracks(); window.location.href='beats.html'" style="margin-top:20px; height:40px; padding:0 20px; border-radius:20px; border:none; background:linear-gradient(135deg,#ff4d6d,#ff8a00); color:#fff; font-weight:700; cursor:pointer;">Browse Beats →</button></div>`;
+      modal.classList.add('open'); return;
     }
-
-    // DOWNLOADED - CANT ADD MANUALLY
     if(isDown){
-      searchWrap.style.display='none';
-      footer.style.display='none';
-      list.innerHTML=`
-        <div style="padding:44px 20px; text-align:center;">
-          <div style="font-size:46px; margin-bottom:14px;">⬇️</div>
-          <div style="font-family:'Orbitron'; font-size:14px; font-weight:800; color:#f59e0b; letter-spacing:1px; margin-bottom:10px;">DOWNLOADED</div>
-          <div style="font-size:15px; color:#e9ecff; line-height:1.6;">You can't add manually<br><span style="color:#888; font-size:12px;">Download tracks first and they will appear here automatically</span></div>
-          <button onclick="window.closeAddTracks();" style="margin-top:20px; height:40px; padding:0 20px; border-radius:20px; border:none; background:rgba(255,255,255,0.08); color:#fff; font-weight:700; cursor:pointer;">Close</button>
-        </div>`;
-      modal.classList.add('open');
-      return;
+      searchWrap.style.display='none'; footer.style.display='none';
+      list.innerHTML=`<div style="padding:44px 20px; text-align:center;"><div style="font-size:46px; margin-bottom:14px;">⬇️</div><div style="font-family:'Orbitron'; font-size:14px; font-weight:800; color:#f59e0b; letter-spacing:1px; margin-bottom:10px;">DOWNLOADED</div><div style="font-size:15px; color:#e9ecff; line-height:1.6;">You can't add manually<br><span style="color:#888; font-size:12px;">Download tracks first and they will appear here automatically</span></div><button onclick="window.closeAddTracks();" style="margin-top:20px; height:40px; padding:0 20px; border-radius:20px; border:none; background:rgba(255,255,255,0.08); color:#fff; font-weight:700; cursor:pointer;">Close</button></div>`;
+      modal.classList.add('open'); return;
     }
-
-    // CUSTOM PLAYLIST - NORMAL FLOW
-    searchWrap.style.display='flex';
-    footer.style.display='flex';
+    searchWrap.style.display='flex'; footer.style.display='flex';
     const plBeats = (pl?.beats||[]).map(b=>String(b.id));
     const available = allBeatsCache.filter(b=>!plBeats.includes(String(b.id)));
     renderList(available);
     modal.classList.add('open');
-    document.getElementById('atSearch').value=''; 
+    document.getElementById('atSearch').value='';
     setTimeout(()=>document.getElementById('atSearch').focus(),100);
   };
 
   function renderList(beats){
     const list=document.getElementById('atList');
-    if(!beats.length){ list.innerHTML=`<div style="padding:30px;text-align:center;color:#666;font-size:13px;">No beats found<br><a href="beats.html" style="color:#00f0ff;">Go to All Beats</a></div>`; return; }
-    list.innerHTML=beats.map(b=>`
-      <div class="at-row" data-id="${b.id}" onclick="window.toggleAtRow('${b.id}')">
-        <div class="at-check">${selected.has(String(b.id))?'✓':''}</div>
-        <img class="at-cover" src="${b.cover_url||b.cover||'images/logo.png'}">
-        <div class="at-info"><div class="at-title">${b.title||b.name}</div><div class="at-meta">${b.key||'--'} • ${b.genre||'--'} • ${b.bpm||'--'}</div></div>
-      </div>
-    `).join('');
+    if(!beats.length){ list.innerHTML=`<div style="padding:30px;text-align:center;color:#666;font-size:13px;">No beats left to add<br><span style="font-size:11px">All beats already in playlist</span></div>`; return; }
+    list.innerHTML=beats.map(b=>`<div class="at-row" data-id="${b.id}" onclick="window.toggleAtRow('${b.id}')"><div class="at-check">${selected.has(String(b.id))?'✓':''}</div><img class="at-cover" src="${b.cover_url||b.cover||'images/logo.png'}"><div class="at-info"><div class="at-title">${b.title||b.name}</div><div class="at-meta">${b.key||'--'} • ${b.genre||'--'} • ${b.bpm||'--'}</div></div></div>`).join('');
     updateBtn();
   }
 
@@ -517,45 +567,58 @@ window.addEventListener('playlistsUpdated',()=>renderVault(false));
     let vault=JSON.parse(localStorage.getItem('dt_vault_v1')||'[]');
     const pl=vault.find(p=>p.id===currentPlId);
     if(pl){
-      beatsToAdd.forEach(b=>{
-        if(!pl.beats.some(x=>String(x.id)===String(b.id))) pl.beats.push(b);
-      });
+      beatsToAdd.forEach(b=>{ if(!pl.beats.some(x=>String(x.id)===String(b.id))) pl.beats.push(b); });
       localStorage.setItem('dt_vault_v1', JSON.stringify(vault));
       window.closeAddTracks();
       window.renderVault(false);
       window.dispatchEvent(new Event('dt_vault_updated'));
+      window.dispatchEvent(new Event('playlistsUpdated'));
+      if(window.loadPlaylistById) window.loadPlaylistById(currentPlId);
     }
   };
 
   window.closeAddTracks=()=>{ modal.classList.remove('open'); selected.clear(); currentPlId=null; };
   modal.addEventListener('click',(e)=>{ if(e.target.id==='addTracksModal') window.closeAddTracks(); });
   window.addEventListener('openAddTrack',(e)=>{ window.openAddTracks(e.detail.plId); });
+
+  // === ADD TRACK BTN FIX - TOOLBAR ===
+  function getToolbarId(){
+    const p=new URLSearchParams(window.location.search);
+    let id=p.get('id')||window.__CURRENT_PLAYLIST_ID__;
+    if(id==='liked_playlist'){
+      const v=getVaultPlaylists(); const l=v.find(x=>x.isLiked); return l?l.id:null;
+    }
+    return id;
+  }
+  const bindToolbarBtns=()=>{
+    const topBtn=document.getElementById('addTrackToCurrentBtn');
+    if(topBtn && !topBtn.dataset.fixed){
+      topBtn.dataset.fixed='1';
+      topBtn.onclick=(e)=>{
+        e.stopPropagation();
+        const tid=getToolbarId();
+        if(!tid){ alert('Open a playlist first'); return; }
+        window.openAddTracks(tid);
+      };
+    }
+  };
+  document.addEventListener('DOMContentLoaded', bindToolbarBtns);
+  setInterval(bindToolbarBtns, 1000);
 })();
 
-
-
-// ===============================
-// 🔥 CAPSULES FOR PLAYLISTS PAGE - FIXED
-// ===============================
+// Keep your capsules function same
 export function renderPlaylistCapsulesOnly(){
   const container = document.getElementById("playlistCapsules");
   if(!container) return;
-  
   const playlists = getVaultPlaylists();
   const urlParams = new URLSearchParams(window.location.search);
   const activeId = urlParams.get("id") || "dt_liked_playlist";
-
-  // Filter: only show liked + custom (no downloaded duplicates)
   const visible = playlists.filter(p => p.beats && p.beats.length >= 0);
-
   container.innerHTML = visible.map(pl => {
     const isLiked = pl.isLiked;
     const name = isLiked ? "Liked" : pl.name;
     const isActive = pl.id === activeId || (isLiked && activeId === "liked_playlist");
     return `<button class="playlist-capsule ${isActive ? 'active' : ''}" data-id="${pl.id}">${name} <span style="opacity:.5;font-size:10px">${pl.beats.length}</span></button>`;
   }).join('');
-
-  // click handling is done in playlists-page.js initPlaylistCapsules()
-  console.log("✅ capsules rendered:", visible.length);
 }
 window.renderPlaylistCapsulesOnly = renderPlaylistCapsulesOnly;

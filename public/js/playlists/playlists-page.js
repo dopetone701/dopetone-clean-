@@ -422,3 +422,94 @@ function showCartToast(text){
   let toast=document.getElementById("cartToast"); if(!toast){ toast=document.createElement("div"); toast.id="cartToast"; document.body.appendChild(toast); }
   toast.textContent=text; toast.classList.add("active"); clearTimeout(toast.__timer); toast.__timer=setTimeout(()=>toast.classList.remove("active"),2200);
 }
+
+
+
+// === PRO TOOLBAR LOGIC ===
+function getActivePlaylistMeta(){
+  const id = window.__CURRENT_PLAYLIST_ID__ || 'liked_playlist';
+  const playlists = window.getPlaylists?.() || [];
+  let name = 'Liked', count = 0;
+  if(id==='liked_playlist'){ name='Liked'; count = (JSON.parse(localStorage.getItem("playlists"))||[]).find(p=>p.isLiked)?.beats?.length||0; }
+  else if(id==='downloads_playlist'){ name='Downloads'; count = getDownloadsPlaylist().length; }
+  else { const pl = playlists.find(p=>p.id===id); if(pl){ name=pl.name; count=pl.beats?.length||0; } }
+  return {id, name, count};
+}
+function refreshBurgerUI(){
+  const meta = getActivePlaylistMeta();
+  document.getElementById('burgerActiveName').textContent = meta.name;
+  document.getElementById('burgerCount').textContent = `${meta.count} tracks`;
+  document.getElementById('bAddName').textContent = meta.name;
+  document.getElementById('bRemoveName').textContent = meta.name;
+  document.getElementById('bDeleteName').textContent = meta.name;
+  const isGrid = document.getElementById('gridBtn')?.classList.contains('active');
+  document.getElementById('bViewText').textContent = isGrid ? 'View List' : 'View Grid';
+  document.getElementById('bViewIcon').textContent = isGrid ? '📋' : '🔳';
+}
+document.addEventListener('DOMContentLoaded', ()=>{
+  const burgerBtn = document.getElementById('playlistBurgerBtn');
+  const burgerDD = document.getElementById('playlistBurgerDropdown');
+  if(burgerBtn){
+    burgerBtn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      burgerDD.classList.toggle('active');
+      refreshBurgerUI();
+    });
+  }
+  document.addEventListener('click', (e)=>{
+    if(!e.target.closest('.playlist-burger-wrap')) burgerDD?.classList.remove('active');
+  });
+  // Add track to current
+  document.getElementById('addTrackToCurrentBtn')?.addEventListener('click', ()=>{
+    const meta = getActivePlaylistMeta();
+    const beat = window.__CURRENT_BEAT__;
+    if(!beat){ alert('Play a beat first'); return; }
+    if(window.openAddToPlaylistModal) window.openAddToPlaylistModal(beat);
+  });
+  document.getElementById('removeTrackFromCurrentBtn')?.addEventListener('click', ()=>{
+    const beat = window.__CURRENT_BEAT__;
+    if(!beat) return;
+    const id = window.__CURRENT_PLAYLIST_ID__;
+    let playlists = window.getPlaylists()||[];
+    const pl = playlists.find(p=>p.id===id);
+    if(pl){ pl.beats = pl.beats.filter(b=>String(b.id)!==String(beat.id)); localStorage.setItem('dopetone_playlists', JSON.stringify(playlists)); }
+    loadPlaylistById(id); window.dispatchEvent(new Event('playlistsUpdated'));
+  });
+  // burger options
+  burgerDD?.querySelectorAll('.burger-option').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const act = btn.dataset.action;
+      const meta = getActivePlaylistMeta();
+      if(act==='add_playlist' && window.openPlaylistModal) window.openPlaylistModal();
+      if(act==='add_track'){
+        const beat = window.__CURRENT_BEAT__;
+        if(!beat){ alert('Play a beat first'); return; }
+        if(window.openAddToPlaylistModal) window.openAddToPlaylistModal(beat);
+      }
+      if(act==='remove_track'){
+        const beat = window.__CURRENT_BEAT__;
+        if(!beat) return;
+        if(confirm(`Remove ${beat.title} from ${meta.name}?`)){
+          let pls = window.getPlaylists()||[];
+          const p = pls.find(x=>x.id===meta.id);
+          if(p){ p.beats = p.beats.filter(b=>String(b.id)!==String(beat.id)); localStorage.setItem('dopetone_playlists', JSON.stringify(pls)); loadPlaylistById(meta.id); }
+        }
+      }
+      if(act==='delete_playlist'){
+        if(meta.id==='liked_playlist' || meta.id==='downloads_playlist'){ alert('Cannot delete system playlist'); return; }
+        if(confirm(`Delete playlist "${meta.name}"?`)){
+          let pls = window.getPlaylists()||[];
+          pls = pls.filter(p=>p.id!==meta.id);
+          localStorage.setItem('dopetone_playlists', JSON.stringify(pls));
+          loadPlaylistById('liked_playlist'); renderPlaylistCapsulesOnly();
+        }
+      }
+      if(act==='toggle_view'){
+        const isGrid = document.getElementById('gridBtn')?.classList.contains('active');
+        document.getElementById(isGrid?'listBtn':'gridBtn')?.click();
+      }
+      burgerDD.classList.remove('active');
+    });
+  });
+  setInterval(refreshBurgerUI, 1000);
+});

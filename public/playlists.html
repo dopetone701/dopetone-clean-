@@ -201,47 +201,41 @@
             <button id="gridBtn">Grid</button>
         </div>
        
-        <!-- 🔥 SEARCH - SITS INSIDE YOUR TOGGLE -->
         <div class="arsenal-search">
-          <input
-            type="search"
-            name="beat_search_qt7x9f"
-            id="beatSearch"
-            placeholder="Search..."
-            autocomplete="off"
-            role="searchbox"
-            readonly
-            onfocus="this.removeAttribute('readonly')"
-            data-lpignore="true"
-            data-1p-ignore="true"
-            data-bwignore="true"
-            data-form-type="other"
-          >
+          <input type="search" id="beatSearch" placeholder="Search in playlists..." autocomplete="off" readonly onfocus="this.removeAttribute('readonly')">
           <div class="search-dropdown" id="searchDropdown"></div>
         </div>
        
         <div id="playlistCapsules" class="playlist-capsules"></div>
 
         <div class="playlist-controls-wrap">
-            <button id="playlistMiniAdd" class="add-playlist-btn">
-                <span class="plus-icon">+</span>
-                <span class="hover-text">Add Playlist</span>
+            <button id="addTrackToCurrentBtn" class="pro-add-track-btn" title="Add track to current playlist">
+                <span>+</span> Add Track
+            </button>
+            <button id="removeTrackFromCurrentBtn" class="pro-remove-track-btn" title="Remove selected track">
+                <span>−</span> Remove Track
             </button>
            
-            <div class="playlist-remove-wrap">
-                <button id="playlistRemoveBtn">⋮</button>
-                <div class="remove-dropdown">
-                    <button class="remove-option" data-action="playlist">
-                        <span>🗑</span> Remove Playlist
-                    </button>
-                    <button class="remove-option" data-action="track">
-                        <span>❌</span> Remove Track
-                    </button>
+            <div class="playlist-burger-wrap">
+                <button id="playlistBurgerBtn" class="playlist-burger-btn">☰</button>
+                <div id="playlistBurgerDropdown" class="burger-dropdown">
+                    <div class="burger-header"><span id="burgerActiveName">Liked</span> • <small id="burgerCount">0 tracks</small></div>
+                    <button class="burger-option" data-action="add_playlist"><span>➕</span> Add Playlist</button>
+                    <button class="burger-option" data-action="add_track"><span>🎵</span> Add Track to <b id="bAddName">Current</b></button>
+                    <button class="burger-option" data-action="remove_track"><span>❌</span> Remove Track from <b id="bRemoveName">Current</b></button>
+                    <button class="burger-option danger" data-action="delete_playlist"><span>🗑</span> Delete <b id="bDeleteName">Playlist</b></button>
+                    <div class="burger-divider"></div>
+                    <button class="burger-option" data-action="toggle_view"><span id="bViewIcon">🔳</span> <span id="bViewText">View Grid</span></button>
                 </div>
             </div>
+
+            <!-- keep old for compatibility -->
+            <button id="playlistMiniAdd" class="add-playlist-btn" style="display:none"><span class="plus-icon">+</span></button>
+            <div class="playlist-remove-wrap" style="display:none"><button id="playlistRemoveBtn">⋮</button></div>
         </div>
     </div>
 </div>
+>
 
 <!-- ================= LIST VIEW ================= -->
 <section id="arsenalSection" class="arsenal-section">

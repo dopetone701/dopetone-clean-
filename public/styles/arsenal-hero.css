@@ -30,19 +30,39 @@ nav, .navbar, header {
 }
 
 /* WAVE - PERFECT CENTERED FULL WIDTH - DESKTOP */
+.arsenal-hero{
+  position: relative !important;
+  overflow: hidden !important;
+  min-height: 220px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
 .arsenal-hero::before {
   content: "" !important;
   position: absolute !important;
-  left: 50% !important;
-  top: 50% !important;
+  inset: 0 !important;
+  left: 0 !important;
+  top: 0 !important;
   width: 100% !important;
   height: 100% !important;
-  transform: translate(-50%, -50%) !important;
-  background: url("../images/beats-wav-bg.png") center center / 100% auto no-repeat !important;
+  transform: none !important;
+  background-image: url("../images/beats-wav-bg.png") !important;
+  background-position: center center !important;
+  background-repeat: no-repeat !important;
+  background-size: 100% 100% !important; /* FIX - was 100% auto which crops vertically */
   opacity: 0.55 !important;
   z-index: 0 !important;
   pointer-events: none !important;
 }
+
+/* keep text above wave */
+.arsenal-hero > *{
+  position: relative !important;
+  z-index: 1 !important;
+}
+
 
 /* DARK BLUE EDGE DARKEN */
 .arsenal-hero::after {
@@ -183,14 +203,39 @@ nav, .navbar, header {
     border-radius: 0 0 16px 16px !important;
     min-height: 145px !important;
   }
-  .arsenal-hero::before {
-    background: url("../images/beats-wav-bg.png") center center / 140% auto no-repeat !important;
-    opacity: 0.75 !important;
-    height: 100% !important;
-    width: 100% !important;
-    display: block !important;
-    visibility: visible !important;
-  }
+  .arsenal-hero{
+  position: relative !important;
+  overflow: hidden !important;
+  min-height: 220px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.arsenal-hero::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  left: 0 !important;
+  top: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  transform: none !important;
+  background-image: url("../images/beats-wav-bg.png") !important;
+  background-position: center center !important;
+  background-repeat: no-repeat !important;
+  background-size: 100% 100% !important; /* FIX - was 100% auto which crops vertically */
+  opacity: 0.55 !important;
+  z-index: 0 !important;
+  pointer-events: none !important;
+}
+
+/* keep text above wave */
+.arsenal-hero > *{
+  position: relative !important;
+  z-index: 1 !important;
+}
+
   .arsenal-hero::after {
     border-radius: 0 0 16px 16px !important;
   }
