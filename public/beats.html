@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="styles/main.css">
 <link rel="stylesheet" href="styles/navbar.css">
 <link rel="stylesheet" href="styles/auth.css">
-<link rel="stylesheet" href="styles/playlist-modal.css">
+
 
 <!-- PAGE -->
 <link rel="stylesheet" href="styles/arsenal.css">
@@ -149,41 +149,30 @@ footer, .footer {
 </section>
 
 <!-- ================= VIEW TOGGLE + SEARCH + PILLS - FIXED ================= -->
-<div class="view-toggle" style="display:flex; align-items:center; gap:10px; width:100%; background:#0f172a; padding:10px 12px; border-bottom:1px solid rgba(255,255,255,0.06); overflow:visible;">
-  <button id="listBtn" class="active" style="flex:0 0 auto;">List</button>
-  <button id="gridBtn" style="flex:0 0 auto;">Grid</button>
- 
-  <div class="arsenal-pills" style="display:flex; flex-wrap:nowrap; gap:6px; flex:0 1 auto; overflow-x:auto; white-space:nowrap; scrollbar-width:none; -webkit-overflow-scrolling:touch;">
-    <button class="pill active" data-filter="all" style="flex:0 0 auto;">All</button>
-    <button class="pill" data-filter="trap" style="flex:0 0 auto;">Trap</button>
-    <button class="pill" data-filter="edm" style="flex:0 0 auto;">EDM</button>
-    <button class="pill" data-filter="afro" style="flex:0 0 auto;">Afro</button>
-    <button class="pill" data-filter="rnb" style="flex:0 0 auto;">R&B</button>
-    <button class="pill" data-filter="pop" style="flex:0 0 auto;">Pop</button>
-    <button class="pill" data-filter="drill" style="flex:0 0 auto;">Drill</button>
-    <button class="pill" data-filter="dancehall" style="flex:0 0 auto;">Dancehall</button>
-    <button class="pill" data-filter="hiphop" style="flex:0 0 auto;">Hip Hop</button>
+<div class="view-toggle beats-bar">
+  <div class="beats-top">
+    <div class="view-switch">
+      <button id="listBtn" class="active">List</button>
+      <button id="gridBtn">Grid</button>
+    </div>
+    <div class="arsenal-pills">
+      <button class="pill active" data-filter="all">All</button>
+      <button class="pill" data-filter="trap">Trap</button>
+      <button class="pill" data-filter="edm">EDM</button>
+      <button class="pill" data-filter="afro">Afro</button>
+      <button class="pill" data-filter="rnb">R&B</button>
+      <button class="pill" data-filter="pop">Pop</button>
+      <button class="pill" data-filter="drill">Drill</button>
+      <button class="pill" data-filter="dancehall">Dancehall</button>
+      <button class="pill" data-filter="hiphop">Hip Hop</button>
+    </div>
   </div>
-
-  <div class="arsenal-search" style="flex:0 0 220px; min-width:180px; position:relative; overflow:visible; margin-left:12px;">
-    <input
-      type="search"
-      name="beat_search_qt7x9f"
-      id="beatSearch"
-      placeholder="Search..."
-      autocomplete="off"
-      role="searchbox"
-      readonly
-      onfocus="this.removeAttribute('readonly')"
-      data-lpignore="true"
-      data-1p-ignore="true"
-      data-bwignore="true"
-      data-form-type="other"
-      style="width:100%;"
-    >
-    <div class="search-dropdown" id="searchDropdown" style="position:absolute; top:calc(100% + 12px); left:0; right:0; z-index:99999; background:rgba(15,23,42,0.98); border-radius:14px; box-shadow:0 20px 60px rgba(0,0,0,0.9);"></div>
+  <div class="arsenal-search">
+<input type="search" id="beatSearch" placeholder="Search beats..." autocomplete="off" spellcheck="false">
+    <div class="search-dropdown" id="searchDropdown"></div>
   </div>
 </div>
+
 
 
 <style>

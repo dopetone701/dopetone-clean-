@@ -44,24 +44,26 @@ let isGlobalPlaying=false;
    .playlists-wrap.is-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(100%,1fr)); gap:16px; }
     @media(min-width:900px){.playlists-wrap.is-grid{ grid-template-columns:repeat(2,1fr); } }
 
-   .playlist-block{ background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:14px; overflow:hidden; display:flex; flex-direction:column; }
-   .playlist-block-header{ display:flex; align-items:center; justify-content:space-between; padding:10px 12px; background:rgba(255,255,255,0.03); border-bottom:1px solid rgba(255,255,255,0.05); }
+   .playlist-block{ background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:14px; overflow:visible !important; display:flex; flex-direction:column; position:relative; z-index:1; }
+   .playlist-block:has(.hamburger-menu.open){ z-index:100 !important; }
+   .playlist-block-header{ display:flex; align-items:center; justify-content:space-between; padding:10px 12px; background:rgba(255,255,255,0.03); border-bottom:1px solid rgba(255,255,255,0.05); border-radius:14px 14px 0 0; }
    .playlist-block-left{ display:flex; align-items:center; gap:10px; }
    .universal-play{ width:36px; height:36px; border-radius:50%; border:none; background:linear-gradient(135deg,#0066ff,#00f0ff); color:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 0 12px rgba(0,240,255,.5); transition:.2s; flex-shrink:0; }
    .universal-play:hover{ transform:scale(1.08); }
    .universal-play.playing{ background:linear-gradient(135deg,#ff4d6d,#ff8a00); box-shadow:0 0 12px rgba(255,77,109,.5); }
    .playlist-block-title{ font-family:'Orbitron'; font-size:11px; font-weight:800; color:#a5b4ff; letter-spacing:1.2px; text-transform:uppercase; }
 
-   .playlist-hamburger{ position:relative; }
+   .playlist-hamburger{ position:relative; z-index:5; }
    .hamburger-btn{ width:32px; height:32px; border-radius:8px; border:1px solid rgba(255,255,255,0.08); background:rgba(255,255,255,0.05); color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; }
    .hamburger-btn:hover{ background:#fff; color:#000; }
-   .hamburger-menu{ position:absolute; right:0; top:38px; min-width:180px; background:#0f172a; border:1px solid #1e293b; border-radius:12px; padding:6px; z-index:50; display:none; box-shadow:0 12px 30px rgba(0,0,0,.6); }
-   .hamburger-menu.open{ display:block; }
+   .hamburger-menu{ position:absolute; right:0; top:42px; min-width:200px; background:#0f172a; border:1px solid #1e293b; border-radius:12px; padding:6px; z-index:9999; display:none; box-shadow:0 12px 40px rgba(0,0,0,.8); }
+   .hamburger-menu.open{ display:block; animation:hamPop .2s ease; }
+   @keyframes hamPop{ from{ opacity:0; transform:translateY(-6px) scale(.96); } to{ opacity:1; transform:translateY(0) scale(1); } }
    .h-menu-item{ width:100%; padding:10px 12px; border:none; background:transparent; color:#e9ecff; font-size:13px; text-align:left; border-radius:8px; cursor:pointer; display:flex; align-items:center; gap:8px; }
    .h-menu-item:hover{ background:rgba(255,255,255,0.08); }
    .h-menu-item.danger{ color:#ff4d6d; }
 
-   .vault-wave-list{ display:flex; flex-direction:column; gap:8px; padding:10px 8px; max-height:408px; overflow-y:auto!important; overflow-x:hidden; scrollbar-width:none; -ms-overflow-style:none; scroll-behavior:smooth; }
+   .vault-wave-list{ display:flex; flex-direction:column; gap:8px; padding:10px 8px; max-height:408px; overflow-y:auto!important; overflow-x:hidden; scrollbar-width:none; -ms-overflow-style:none; scroll-behavior:smooth; border-radius:0 0 14px 14px; }
    .vault-wave-list::-webkit-scrollbar{ display:none!important; width:0!important; }
 
    .vault-wave-row{ display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:8px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.06); cursor:pointer; transition:.18s; position:relative; }
@@ -72,13 +74,13 @@ let isGlobalPlaying=false;
    .wave-cover-wrap{ position:relative!important; width:42px!important; height:42px!important; min-width:42px!important; min-height:42px!important; border-radius:6px!important; overflow:hidden!important; background:#0e1220!important; display:flex!important; align-items:center!important; justify-content:center!important; }
    .wave-cover-wrap img{ position:absolute!important; inset:0!important; width:100%!important; height:100%!important; object-fit:cover!important; object-position:center!important; display:block!important; }
    .wave-play{ position:absolute!important; top:50%!important; left:50%!important; transform:translate(-50%,-50%)!important; width:42px!important; height:42px!important; border-radius:6px!important; border:1px solid rgba(255,255,255,0.12)!important; background:rgba(0,0,0,0.55)!important; backdrop-filter:blur(6px)!important; color:#fff!important; display:flex!important; align-items:center!important; justify-content:center!important; z-index:2!important; opacity:0!important; transition:.2s ease!important; cursor:pointer; }
-   .vault-wave-row:hover.wave-play,.vault-wave-row.active.wave-play{ opacity:1!important; }
+   .vault-wave-row:hover .wave-play,.vault-wave-row.active .wave-play{ opacity:1!important; }
    .wave-play svg{ width:16px!important; height:16px!important; fill:#fff!important; }
 
    .wave-info{ flex:0 0 115px; min-width:0; margin-right:4px; }
    .wave-title{ font-size:13px; font-weight:700; color:#e9ecff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
    .wave-meta{ font-size:10px; color:rgba(233,236,255,0.5); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px; }
-   .wave-bar{ flex:1; min-width:0; height:36px; display:block!important; opacity:1!important; margin-left:2px; }
+   .wave-bar{ flex:1; min-width:60px; height:36px; display:block!important; opacity:1!important; margin-left:2px; }
    .wave-bar canvas{ width:100%!important; height:36px!important; display:block!important; filter:brightness(1.15); }
    .wave-actions{ display:flex; align-items:center; gap:8px; flex-shrink:0; margin-left:auto; }
 
@@ -86,9 +88,20 @@ let isGlobalPlaying=false;
    .premium-remove:hover{ background:rgba(255,77,109,0.15); border-color:rgba(255,77,109,0.3); color:#ff4d6d; transform:scale(1.1); }
    .premium-remove.heart{ background:rgba(255,77,109,0.12); border-color:rgba(255,77,109,0.25); color:#ff4d6d; }
    .premium-remove.heart:hover{ background:#ff4d6d; color:#fff; }
+
+   /* ONLY FOOTER FADE - FIXED NO WHOLE PAGE */
+   body:has(#addTracksModal.open) footer.dt-footer,
+   body:has(.hamburger-menu.open) footer.dt-footer {
+     opacity:0.18 !important;
+     filter:blur(12px) brightness(0.7) !important;
+     pointer-events:none !important;
+     transition: all .35s ease !important;
+   }
   `;
   document.head.appendChild(s);
 })();
+
+
 
 function ensureWave(row, beat){
   if(!row || waveCache.has(String(beat.id))) return;
@@ -139,6 +152,10 @@ export function renderVault(partial=false, removedId=null){
   if(downloadedPl && downloadedPl.beats.length>0) displayList.push(downloadedPl);
   displayList=[...displayList,...custom];
 
+  // HOME PAGE LIMIT TO 2
+  const isHomepage = window.location.pathname === '/' || window.location.pathname.includes('index') || document.getElementById('homepagePlaylists');
+  if(isHomepage) displayList = displayList.slice(0,2);
+
   if(!displayList.length){
     mount.innerHTML=`<div class="your-playlists-head"><div class="drop"></div><div class="your-playlists-title">Your Playlists</div></div><div class="your-playlists-line"></div><div style="text-align:center;padding:40px;color:#666;">No playlists yet</div>`;
     return;
@@ -151,7 +168,10 @@ export function renderVault(partial=false, removedId=null){
 
   const isGrid = displayList.length>1;
   let html=`<section class="featured-section" style="padding:0; margin-bottom:14px;">
-  <div class="section-title-wrap"><h2 class="section-title">💧 Your Playlists</h2></div>
+  <div class="section-title-wrap" style="display:flex;align-items:center;justify-content:space-between;">
+    <h2 class="section-title">💧 Your Playlists</h2>
+    <button onclick="window.location.href='playlists.html'" style="height:32px;padding:0 14px;border-radius:20px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.06);color:#a5b4ff;font-family:'Orbitron';font-size:10px;font-weight:700;letter-spacing:1px;cursor:pointer;">VIEW ALL →</button>
+  </div>
 </section>`;
 
   html+=`<div class="playlists-wrap ${isGrid?'is-grid':''}">`;
@@ -510,7 +530,9 @@ window.addEventListener('playlistsUpdated',()=>renderVault(false));
     if(isLiked){
       searchWrap.style.display='none'; footer.style.display='none';
       list.innerHTML=`<div style="padding:44px 20px; text-align:center;"><div style="font-size:46px; margin-bottom:14px;">❤️</div><div style="font-family:'Orbitron'; font-size:14px; font-weight:800; color:#ff4d6d; letter-spacing:1px; margin-bottom:10px;">LIKED PLAYLIST</div><div style="font-size:15px; color:#e9ecff; line-height:1.6;">Like more tracks to add beats here 😊<br><span style="color:#888; font-size:12px;">Go to All Beats and hit the heart to add</span></div><button onclick="window.closeAddTracks(); window.location.href='beats.html'" style="margin-top:20px; height:40px; padding:0 20px; border-radius:20px; border:none; background:linear-gradient(135deg,#ff4d6d,#ff8a00); color:#fff; font-weight:700; cursor:pointer;">Browse Beats →</button></div>`;
-      modal.classList.add('open'); return;
+modal.classList.add('open'); 
+  document.body.style.overflow='hidden'; // lock scroll
+  return;
     }
     if(isDown){
       searchWrap.style.display='none'; footer.style.display='none';
@@ -577,7 +599,13 @@ window.addEventListener('playlistsUpdated',()=>renderVault(false));
     }
   };
 
-  window.closeAddTracks=()=>{ modal.classList.remove('open'); selected.clear(); currentPlId=null; };
+
+window.closeAddTracks=()=>{ 
+  modal.classList.remove('open'); 
+  document.body.style.overflow=''; 
+  selected.clear(); 
+  currentPlId=null; 
+};
   modal.addEventListener('click',(e)=>{ if(e.target.id==='addTracksModal') window.closeAddTracks(); });
   window.addEventListener('openAddTrack',(e)=>{ window.openAddTracks(e.detail.plId); });
 
