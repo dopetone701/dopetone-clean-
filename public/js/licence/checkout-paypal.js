@@ -2,7 +2,7 @@
 // Does NOT clear cart. success.html + webhook will ship to D1 then clear.
 // Fixes: safeParse, toast not alert, AbortController, single bind, no double checkout
 
-const PAYPAL_WORKER_URL = 'https://dopetone-paypal.dopetone701.workers.dev';
+const PAYPAL_WORKER_URL = 'https://pay-pal-api.dopetone701.workers.dev';
 const MAIN_API_URL = 'https://dope-tone-api.dopetone701.workers.dev';
 const API_URL = 'https://api.dopetonevault.com';
 
