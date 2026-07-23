@@ -36,14 +36,15 @@
 </div>
 
 <script>
-const STRIPE_WORKER_URL = 'https://dopetone-stripe.dopetone701.workers.dev';
+const PAYPAL_WORKER_URL = 'https://pay-pal-api.dopetone701.workers.dev';
 // === AUTO DETECT LOCAL VS LIVE ===
-const VAULT_URL = (location.hostname === '127.0.0.1' || location.hostname === 'localhost') 
-  ? './vault.html' 
+const VAULT_URL = (location.hostname === '127.0.0.1' || location.hostname === 'localhost')
+  ? './vault.html'
   : 'https://dopetonevault.com/vault.html';
 
 const params = new URLSearchParams(window.location.search);
-const sessionId = params.get('session_id');
+// PayPal sends ?token=ORDER_ID - we support all
+const sessionId = params.get('token') || params.get('paypal_order_id') || params.get('session_id') || params.get('order_id');
 const isFree = params.get('free') === '1';
 
 const titleEl = document.getElementById('title');
@@ -65,9 +66,9 @@ function clearAllLocalHistory(sid){
 }
 
 async function verifyViaWorker(sid){
-  const url = `${STRIPE_WORKER_URL}/order-status?session_id=${encodeURIComponent(sid)}`;
+  const url = `${PAYPAL_WORKER_URL}/capture-paypal-order?session_id=${encodeURIComponent(sid)}`;
   const res = await fetch(url);
-  if(!res.ok){ const t=await res.text(); throw new Error(`order-status ${res.status}: ${t.slice(0,200)}`); }
+  if(!res.ok){ const t=await res.text(); throw new Error(`PayPal ${res.status}: ${t.slice(0,200)}`); }
   return await res.json();
 }
 
@@ -77,20 +78,20 @@ async function init(){
   if(isFree){
     titleEl.textContent="Download Ready"; subEl.innerHTML="FREE beat unlocked.<br/>Check your downloads.";
     amountEl.textContent="FREE"; detailsEl.style.display='block'; detailsEl.innerHTML="Your FREE licence is ready.";
-    clearAllLocalHistory('free_'+Date.now()); statusEl.textContent="✅ Cart cleared"; 
+    clearAllLocalHistory('free_'+Date.now()); statusEl.className="ok"; statusEl.textContent="✅ Cart cleared";
     enterVaultBtn.href = VAULT_URL;
     return;
   }
   if(!sessionId){
-    statusEl.className="warn"; statusEl.textContent="No session_id in URL - if you paid, webhook already saved revenue.";
-    amountEl.textContent="⚠️ No session"; 
+    statusEl.className="warn"; statusEl.textContent="No PayPal order ID in URL - if you paid, check email.";
+    amountEl.textContent="⚠️ No order";
     enterVaultBtn.href = VAULT_URL;
     return;
   }
   if(localStorage.getItem(shippedKey(sessionId))==="1"){
     titleEl.textContent="Already Unlocked"; amountEl.textContent="✅ Saved";
-    subEl.innerHTML="This payment was already processed.<br/>Cart cleared.";
-    statusEl.textContent="✅ Webhook already saved - refresh safe, cart empty.";
+    subEl.innerHTML="This PayPal payment was already processed.<br/>Cart cleared.";
+    statusEl.className="ok"; statusEl.textContent="✅ PayPal already saved - refresh safe, cart empty.";
     enterVaultBtn.href = `${VAULT_URL}?session_id=${encodeURIComponent(sessionId)}`;
     localStorage.setItem('dopetone_last_session_id', sessionId);
     clearAllLocalHistory(sessionId); return;
@@ -100,21 +101,21 @@ async function init(){
   const preLicences = safeParse("dopetone_licences", {});
 
   try{
-    statusEl.textContent="Verifying with Stripe...";
+    statusEl.className="warn"; statusEl.textContent="Verifying with PayPal...";
     const data = await verifyViaWorker(sessionId);
-    console.log("ORDER-STATUS:", data);
+    console.log("PAYPAL-STATUS:", data);
 
     const session = data.session || data;
     const purchases = data.purchases || [];
-    const isPaid = data.status === 'paid' || session.status === 'paid' || session.payment_status === 'paid';
+    const isPaid = data.status === 'paid' || session.status === 'paid' || session.status === 'COMPLETED';
 
     if(isPaid){
       const totalCents = data.total_cents || session.total_cents || 0;
       const dollars = (totalCents/100).toFixed(2);
       const email = data.customer_email || session.customer_email || '';
 
-      titleEl.textContent="Payment Verified";
-      subEl.innerHTML="Stripe confirmed via webhook.<br/>Sounds unlocked.";
+      titleEl.textContent="PayPal Verified";
+      subEl.innerHTML="PayPal payment confirmed.<br/>Sounds unlocked.";
       amountEl.textContent = totalCents ? `$${dollars} PAID` : `PAID`;
       statusEl.className="ok";
 
@@ -141,19 +142,19 @@ async function init(){
       };
 
       clearAllLocalHistory(sessionId);
-      statusEl.textContent=`✅ Revenue secured by webhook - $${dollars} - cart cleared`;
+      statusEl.textContent=`✅ Revenue secured - $${dollars} - PayPal - cart cleared`;
       return;
     }
 
     window._retryCount++;
     if (window._retryCount > 15) {
       statusEl.className="err";
-      statusEl.textContent=`Still pending after 30s. Session: ${sessionId.slice(0,25)}...`;
+      statusEl.textContent=`Still pending after 30s. Order: ${sessionId.slice(0,25)}... - contact support`;
       enterVaultBtn.href = `${VAULT_URL}?session_id=${encodeURIComponent(sessionId)}`;
       return;
     }
     statusEl.className="warn"; amountEl.textContent="Processing...";
-    statusEl.textContent=`Payment status: ${session.status || data.status || 'pending'} - retrying (${window._retryCount}/15)...`;
+    statusEl.textContent=`PayPal status: ${session.status || data.status || 'pending'} - retrying (${window._retryCount}/15)...`;
     setTimeout(init, 2000);
 
   }catch(e){
@@ -166,7 +167,7 @@ async function init(){
       return;
     }
     statusEl.className="err";
-    statusEl.textContent=`Retrying... ${e.message} (${window._retryCount}/15)`;
+    statusEl.textContent=`Retrying PayPal... ${e.message} (${window._retryCount}/15)`;
     setTimeout(init, 2000);
   }
 }
