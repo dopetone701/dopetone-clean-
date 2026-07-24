@@ -7,7 +7,7 @@ const SEND = document.getElementById('noticeBoardSend');
 if (INPUT) { INPUT.placeholder = "Try: I need EDM 145 bpm Cm or what you have? 💬"; INPUT.style.fontSize="16px"; }
 if (SEND) SEND.style.display='flex';
 
-let activeBeat = null, activeBeatsList = [], lastChatIds = new Set(), dropsHash = '', chatVisible = true, chatActiveUntil = Date.now()+60000, lastSentContent='', lastSentTime=0, isSending=false;
+let activeBeat = null, activeBeatsList = [], lastChatIds = new Set(), dropsHash = '', chatVisible = false, chatActiveUntil = 0, lastSentContent='', lastSentTime=0, isSending=false;
 // USER-ONLY 1HR HIDE - DB SAFE
 const TTL = 60*60*1000;
 const isExpired = (t) => Date.now() - new Date(t||Date.now()).getTime() > TTL;
@@ -118,35 +118,35 @@ function buildLayout(){
    .ai-opt-btn:active{ transform:scale(.95); background:#0d3bff!important }
     #dtChatList{scrollbar-width:none!important;-ms-overflow-style:none!important} #dtChatList::-webkit-scrollbar{display:none!important}
     #dtChatList{scroll-behavior:smooth}
-   .dt-fallback-note{color:#ffcc00;background:#332b00;border:1px solid #665500;padding:6px 10px;border-radius:8px;font-size:11px;margin-top:8px}
     </style>
     <div id="dtDropsWrap" style="display:flex;flex-direction:column;gap:12px;margin-bottom:14px"></div>
-    <div id="dtChatWrap" style="margin-top:14px;background:#0a0a0a;border:1px solid #1e1e2e;border-radius:20px;overflow:hidden;max-height:520px;transition:all.6s cubic-bezier(.22,1,.36,1);transform:translateY(0);opacity:1">
+    <div id="dtChatWrap" style="margin-top:14px;background:#0a0a0a;border:1px solid #1e1e2e;border-radius:20px;overflow:hidden;max-height:0px;opacity:0;transform:translateY(-20px);pointer-events:none;transition:all.6s cubic-bezier(.22,1,.36,1)">
       <div style="padding:10px 14px;background:#0a0a0f;border-bottom:1px solid #1e1e2e;display:flex;align-items:center;gap:8px"><div style="width:7px;height:7px;background:#0d3bff;border-radius:50%;box-shadow:0 0 8px #0d3bff"></div><span style="color:#fff;font-size:10px;font-weight:800">LIVE CHAT • Dope Tone Creators • v5 PRO</span><span id="dtTypingHead" style="margin-left:auto;font-size:9px;color:#0d3bff;display:none">typing...</span></div>
       <div id="dtChatList" style="height:340px;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;background-image:url('images/chat-bg.png');background-size:cover;background-position:center;background-color:#000"></div>
       <div id="dtTypingIndicator" style="display:none;padding:0 14px 10px;background:rgba(0,0,0,.75)"><div style="display:flex;gap:8px;align-items:center"><div style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#0d3bff,#ff1a2e);display:flex;align-items:center;justify-content:center;color:#fff;font-size:7px;font-weight:800">CR</div><div style="background:#15152a;border:1px solid #0d3bff33;padding:10px 14px;border-radius:18px">●●</div></div></div>
     </div>
     <div id="dtRecommendWrap" style="margin-top:12px;display:none"></div>`;
 }
+
+loadProAI();
+
+
 function showChatSmooth(){
   const w=document.getElementById('dtChatWrap'); if(!w) return;
+  if(w.classList.contains('dt-fs-active')){
+    chatVisible=true; chatActiveUntil=Date.now()+60000; return;
+  }
   w.style.maxHeight='520px'; w.style.opacity='1'; w.style.transform='translateY(0)'; w.style.pointerEvents='auto';
   chatVisible=true; chatActiveUntil=Date.now()+60000;
-  setTimeout(()=>{ 
-  const list = document.getElementById('dtChatList');
-  const wrap = document.getElementById('dtChatWrap');
-  const feed = document.getElementById('noticeBoardFeed');
-  // 1. slide post up inside notice only
-  if(feed && wrap){
-    feed.scrollTo({top: feed.scrollHeight, behavior:'smooth'});
-  }
-  // 2. WhatsApp scroll inside chat only
-  if(list){
-    list.scrollTo({top:list.scrollHeight, behavior:'smooth'});
-  }
-}, 100);
-
+  setTimeout(()=>{ const list=document.getElementById('dtChatList'); if(list) list.scrollTo({top:list.scrollHeight, behavior:'smooth'}); }, 100);
 }
+function hideChatSmooth(){
+  const w=document.getElementById('dtChatWrap'); if(!w||!chatVisible) return;
+  if(w.classList.contains('dt-fs-active')) return;
+  if(Date.now() < chatActiveUntil) return;
+  w.style.maxHeight='0px'; w.style.opacity='0'; w.style.transform='translateY(-20px)'; w.style.pointerEvents='none'; chatVisible=false;
+}
+
 function hideChatSmooth(){
   const w=document.getElementById('dtChatWrap'); if(!w||!chatVisible) return;
   w.style.maxHeight='0px'; w.style.opacity='0'; w.style.transform='translateY(-20px)'; w.style.pointerEvents='none'; chatVisible=false;
@@ -159,26 +159,30 @@ function scrollToLatest(){ const l=document.getElementById('dtChatList'); if(l) 
 function showTyping(s=true){ const el=document.getElementById('dtTypingIndicator'); const h=document.getElementById('dtTypingHead'); if(el) el.style.display=s?'block':'none'; if(h) h.style.display=s?'block':'none'; if(s) scrollToLatest(); }
 
 function appendBubble(c,isTemp=false){
-  if(isExpired(c.created_at)) return; // USER ONLY HIDE
+  if(isExpired(c.created_at)) return;
   const list=document.getElementById('dtChatList'); if(!list) return;
   if(!isTemp && lastChatIds.has(c.id)) return;
   const {uid}=getRealUser();
   if(c.is_admin==1 && c.reply_to_user_id && String(c.reply_to_user_id)!==String(uid)) return;
-  if(!isTemp && c.is_admin!=1 && c.message===lastSentContent){ document.querySelectorAll('#dtChatList [data-id^="tmp-"]').forEach(el=>{ if(el.textContent.includes(c.message.substring(0,8))) el.remove(); }); }
   if(!isTemp) lastChatIds.add(c.id);
   const isCreator=c.is_admin==1; if(isCreator) showTyping(false);
-  const div=document.createElement('div'); div.dataset.id=c.id; div.dataset.ts=c.created_at; div.className='dt-chat-item';
+  const div=document.createElement('div'); 
+  div.dataset.id=c.id; 
+  div.dataset.ts=c.created_at; 
+  div.className='dt-chat-item';
   if(isCreator){
     div.style.cssText='align-self:flex-start;max-width:85%;display:flex;gap:8px';
-    div.innerHTML=`<div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#0d3bff,#ff1a2e);display:flex;align-items:center;justify-content:center;color:#fff;font-size:7px;font-weight:800">CR</div><div style="background:linear-gradient(135deg,#15152a,#0f0f1e);border:1px solid #0d3bff44;border-left:2px solid #0d3bff;color:#e6e9ff;padding:10px 14px;border-radius:18px 18px 18px 4px;font-size:13px;white-space:pre-wrap;word-break:break-word"><div style="font-size:7px;color:#6d7bff;font-weight:800;margin-bottom:3px">Creators • private ${c.fallback? '• fallback caution' : ''}</div>${escapeHtml(c.message)}<div style="font-size:9px;color:#555;margin-top:5px">${new Date(c.created_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div></div>`;
+    div.innerHTML=`<div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#0d3bff,#ff1a2e);display:flex;align-items:center;justify-content:center;color:#fff;font-size:7px;font-weight:800">CR</div><div style="background:linear-gradient(135deg,#15152a,#0f0f1e);border:1px solid #0d3bff44;border-left:2px solid #0d3bff;color:#e6e9ff;padding:10px 14px;border-radius:18px 18px 18px 4px;font-size:13px;white-space:pre-wrap;word-break:break-word"><div style="font-size:7px;color:#6d7bff;font-weight:800;margin-bottom:3px">Creators • private</div>${escapeHtml(c.message)}<div style="font-size:9px;color:#555;margin-top:5px">${new Date(c.created_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div></div>`;
   }else{
     div.style.cssText='align-self:flex-end;max-width:80%;display:flex;gap:8px;flex-direction:row-reverse';
     div.innerHTML=`<div style="width:28px;height:28px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;color:#000;font-size:9px;font-weight:900">${escapeHtml((c.user_name||'F')[0].toUpperCase())}</div><div style="background:linear-gradient(135deg,#0d3bff,#2a3fff);border:1px solid #3a5bff;border-right:2px solid #ff1a2e;color:#fff;padding:10px 14px;border-radius:18px 18px 4px 18px;font-size:13px;font-weight:600;box-shadow:0 4px 20px rgba(13,59,255,.45)">${escapeHtml(c.message)}<div style="font-size:9px;color:#b9c4ff;text-align:right;margin-top:4px">${new Date(c.created_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})} ✓✓</div></div>`;
   }
-  list.appendChild(div); scrollToLatest();
+  list.appendChild(div); 
+  scrollToLatest();
   setTimeout(()=> hideUserOnly(div), ttlLeft(c.created_at));
   if(isCreator && String(c.reply_to_user_id)===String(uid)) showChatSmooth();
 }
+
 
 
 // ============ v5 PRO AI SYSTEM - PST STYLE RENDER ============
@@ -366,39 +370,49 @@ async function getGiantReply(userText){
 async function showAutoReply(userText){
   const {uid}=getRealUser();
   showTyping(true);
+  const wrap = document.getElementById('dtChatWrap');
+  const list = document.getElementById('dtChatList');
+  if(wrap) wrap.scrollIntoView({behavior:'smooth', block:'center'});
+
   const msg = await getGiantReply(userText || lastSentContent);
+  
+  // FAST - 200ms only
   setTimeout(()=>{
     showTyping(false);
-    appendBubble({id:'auto-'+Date.now(), user_name:'Dope Tone Creators', user_id:'admin', message:msg, is_admin:1, reply_to_user_id:uid, created_at:new Date().toISOString(), fallback: msg.toLowerCase().includes('caution') });
-    scrollToLatest();
-  }, 700);
+    appendBubble({id:'auto-'+Date.now(), user_name:'Dope Tone Creators', user_id:'admin', message:msg, is_admin:1, reply_to_user_id:uid, created_at:new Date().toISOString() });
+    if(list) list.scrollTo({top:list.scrollHeight, behavior:'smooth'});
+  }, 200);
 }
 
 async function sendChat(){
   if(isSending) return;
   const t=INPUT?.value.trim();
   if(!t) return;
-  if(t===lastSentContent && (Date.now()-lastSentTime)<3000) return;
+  if(t===lastSentContent && (Date.now()-lastSentTime)<2000) return;
   isSending=true;
   const {name,email,uid}=getRealUser();
   INPUT.value='';
+  const fsClone = document.getElementById('dtFsInputClone');
+  if(fsClone) fsClone.value = '';
   lastSentContent=t;
   lastSentTime=Date.now();
   appendBubble({id:'tmp-'+Date.now(),user_name:name,user_id:uid,message:t,is_admin:0,created_at:new Date().toISOString()},true);
   showChatSmooth();
-  scrollToLatest();
+  const wrap = document.getElementById('dtChatWrap');
+  const list = document.getElementById('dtChatList');
+  if(wrap) wrap.scrollIntoView({behavior:'smooth', block:'start'});
+  if(list) list.scrollTo({top:list.scrollHeight, behavior:'smooth'});
+
   if(SEND) SEND.disabled=true;
-  try{
-    await fetch(`${DROP_API}/api/chat`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_name:name,user_id:uid,email,message:t,is_admin:0})});
-  }catch{}
+  try{ await fetch(`${DROP_API}/api/chat`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_name:name,user_id:uid,email,message:t,is_admin:0})}); }catch{}
   if(SEND) SEND.disabled=false;
   isSending=false;
-  setTimeout(async ()=>{
-    await pollChat();
-    scrollToLatest();
-    setTimeout(()=> showAutoReply(t), 500);
-  }, 500);
+  
+  // FAST - no 500ms wait
+  pollChat();
+  showAutoReply(t);
 }
+
 
 async function loadDrops() {
   if (!FEED) return;
@@ -457,7 +471,15 @@ async function loadDrops() {
 }
 
 
-async function pollChat(){ try{ const {uid}=getRealUser(); const r=await fetch(`${DROP_API}/api/chat?uid=${uid}&t=${Date.now()}`,{cache:'no-store'}); const chats=await r.json(); chats.filter(c=>!isExpired(c.created_at)).forEach(c=>appendBubble(c)); }catch{} }
+async function pollChat(){ 
+  try{ 
+    const {uid}=getRealUser(); 
+    const r=await fetch(`${DROP_API}/api/chat?uid=${uid}&t=${Date.now()}`,{cache:'no-store'}); 
+    let chats=await r.json(); 
+    // ONLY AI replies from server - your own messages stay local only (DB still saves)
+    chats.filter(c=> c.is_admin==1 && !isExpired(c.created_at)).forEach(c=>appendBubble(c)); 
+  }catch{} 
+}
 
 buildLayout(); loadDrops(); pollChat();
 if(INPUT){
@@ -478,8 +500,36 @@ setInterval(()=>{
 }, 20000);
 
 
+// WHATSAPP MAGNET INPUT - mobile only
+(function(){
+  if(!window.visualViewport) return;
+  const mobBar = ()=>document.getElementById('dtMobileInputBar');
+  let lastH = window.visualViewport.height;
+  window.visualViewport.addEventListener('resize', ()=>{
+    const bar = mobBar(); if(!bar || !bar.classList.contains('active')) return;
+    const diff = window.innerHeight - window.visualViewport.height;
+    if(diff > 100){ // keyboard open
+      bar.style.bottom = diff + 'px';
+      const list = document.getElementById('dtChatList');
+      if(list){ setTimeout(()=> list.scrollTo({top:list.scrollHeight, behavior:'smooth'}), 100); }
+    } else {
+      bar.style.bottom = '0px';
+    }
+    lastH = window.visualViewport.height;
+  });
+  window.visualViewport.addEventListener('scroll', ()=>{
+    const bar = mobBar(); if(!bar) return;
+    if(window.visualViewport.offsetTop > 0){
+      bar.style.transform = `translateY(-${window.visualViewport.offsetTop}px)`;
+    } else {
+      bar.style.transform = 'translateY(0)';
+    }
+  });
+})();
 
-loadProAI();
+
+
+
 
 
 
