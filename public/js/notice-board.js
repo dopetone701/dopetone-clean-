@@ -8,6 +8,16 @@ if (INPUT) { INPUT.placeholder = "Try: I need EDM 145 bpm Cm or what you have? �
 if (SEND) SEND.style.display='flex';
 
 let activeBeat = null, activeBeatsList = [], lastChatIds = new Set(), dropsHash = '', chatVisible = true, chatActiveUntil = Date.now()+60000, lastSentContent='', lastSentTime=0, isSending=false;
+// USER-ONLY 1HR HIDE - DB SAFE
+const TTL = 60*60*1000;
+const isExpired = (t) => Date.now() - new Date(t||Date.now()).getTime() > TTL;
+const ttlLeft = (t) => Math.max(0, TTL - (Date.now() - new Date(t||Date.now()).getTime()));
+const hideUserOnly = (el) => {
+  if(!el || !el.parentElement) return;
+  el.style.transition='all .4s ease'; el.style.opacity='0'; el.style.transform='translateY(-10px)';
+  setTimeout(()=>el.remove(),400);
+};
+
 window._dropsCache = window._dropsCache || [];
 window._aiDropsCache = []; // virtual drops for AI beats
 
@@ -149,6 +159,7 @@ function scrollToLatest(){ const l=document.getElementById('dtChatList'); if(l) 
 function showTyping(s=true){ const el=document.getElementById('dtTypingIndicator'); const h=document.getElementById('dtTypingHead'); if(el) el.style.display=s?'block':'none'; if(h) h.style.display=s?'block':'none'; if(s) scrollToLatest(); }
 
 function appendBubble(c,isTemp=false){
+  if(isExpired(c.created_at)) return; // USER ONLY HIDE
   const list=document.getElementById('dtChatList'); if(!list) return;
   if(!isTemp && lastChatIds.has(c.id)) return;
   const {uid}=getRealUser();
@@ -156,7 +167,7 @@ function appendBubble(c,isTemp=false){
   if(!isTemp && c.is_admin!=1 && c.message===lastSentContent){ document.querySelectorAll('#dtChatList [data-id^="tmp-"]').forEach(el=>{ if(el.textContent.includes(c.message.substring(0,8))) el.remove(); }); }
   if(!isTemp) lastChatIds.add(c.id);
   const isCreator=c.is_admin==1; if(isCreator) showTyping(false);
-  const div=document.createElement('div'); div.dataset.id=c.id;
+  const div=document.createElement('div'); div.dataset.id=c.id; div.dataset.ts=c.created_at; div.className='dt-chat-item';
   if(isCreator){
     div.style.cssText='align-self:flex-start;max-width:85%;display:flex;gap:8px';
     div.innerHTML=`<div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#0d3bff,#ff1a2e);display:flex;align-items:center;justify-content:center;color:#fff;font-size:7px;font-weight:800">CR</div><div style="background:linear-gradient(135deg,#15152a,#0f0f1e);border:1px solid #0d3bff44;border-left:2px solid #0d3bff;color:#e6e9ff;padding:10px 14px;border-radius:18px 18px 18px 4px;font-size:13px;white-space:pre-wrap;word-break:break-word"><div style="font-size:7px;color:#6d7bff;font-weight:800;margin-bottom:3px">Creators • private ${c.fallback? '• fallback caution' : ''}</div>${escapeHtml(c.message)}<div style="font-size:9px;color:#555;margin-top:5px">${new Date(c.created_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div></div>`;
@@ -165,8 +176,10 @@ function appendBubble(c,isTemp=false){
     div.innerHTML=`<div style="width:28px;height:28px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;color:#000;font-size:9px;font-weight:900">${escapeHtml((c.user_name||'F')[0].toUpperCase())}</div><div style="background:linear-gradient(135deg,#0d3bff,#2a3fff);border:1px solid #3a5bff;border-right:2px solid #ff1a2e;color:#fff;padding:10px 14px;border-radius:18px 18px 4px 18px;font-size:13px;font-weight:600;box-shadow:0 4px 20px rgba(13,59,255,.45)">${escapeHtml(c.message)}<div style="font-size:9px;color:#b9c4ff;text-align:right;margin-top:4px">${new Date(c.created_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})} ✓✓</div></div>`;
   }
   list.appendChild(div); scrollToLatest();
+  setTimeout(()=> hideUserOnly(div), ttlLeft(c.created_at));
   if(isCreator && String(c.reply_to_user_id)===String(uid)) showChatSmooth();
 }
+
 
 // ============ v5 PRO AI SYSTEM - PST STYLE RENDER ============
 let proAIReady = false;
@@ -442,7 +455,9 @@ async function loadDrops() {
     }).join('');
   } catch(e){ console.log('drops error', e); }
 }
-async function pollChat(){ try{ const {uid}=getRealUser(); const r=await fetch(`${DROP_API}/api/chat?uid=${uid}&t=${Date.now()}`,{cache:'no-store'}); const chats=await r.json(); chats.forEach(c=>appendBubble(c)); }catch{} }
+
+
+async function pollChat(){ try{ const {uid}=getRealUser(); const r=await fetch(`${DROP_API}/api/chat?uid=${uid}&t=${Date.now()}`,{cache:'no-store'}); const chats=await r.json(); chats.filter(c=>!isExpired(c.created_at)).forEach(c=>appendBubble(c)); }catch{} }
 
 buildLayout(); loadDrops(); pollChat();
 if(INPUT){
@@ -455,5 +470,151 @@ setInterval(loadDrops,10000); setInterval(pollChat,3000);
 setInterval(()=>{ if(Date.now()>chatActiveUntil&&chatVisible) hideChatSmooth(); },1000);
 document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeBeatModal(); });
 
+
+setInterval(()=>{
+  document.querySelectorAll('.dt-chat-item[data-ts]').forEach(el=>{
+    if(isExpired(el.dataset.ts)) hideUserOnly(el);
+  });
+}, 20000);
+
+
+
 loadProAI();
+
+
+
+// ============ MOBILE FULLSCREEN FIX - SURGICAL ============
+(function(){
+  if(document.getElementById('dtMobileFSStyle')) return;
+  const style = document.createElement('style');
+  style.id='dtMobileFSStyle';
+  style.textContent = `
+  @media (max-width: 768px){
+    body.dt-chat-fs { overflow:hidden !important; position:fixed; width:100%; }
+    #dtChatWrap.dt-fs-active{
+      position:fixed !important; inset:0 !important;
+      z-index:9999999 !important;
+      max-height:100dvh !important;
+      height:100dvh !important;
+      width:100% !important;
+      margin:0 !important; border-radius:0 !important;
+      display:flex !important; flex-direction:column !important;
+      transform:none !important; opacity:1 !important;
+      background:#000 !important;
+    }
+    #dtChatWrap.dt-fs-active #dtChatList{ flex:1 !important; height:auto !important; max-height:none !important; }
+    #dtChatWrap.dt-fs-active #dtChatList{ padding-bottom:90px !important; }
+    #dtMobileInputBar{
+      position:fixed; left:0; right:0; bottom:0;
+      z-index:10000000; background:#0a0a0a;
+      border-top:1px solid #1e1e2e; padding:10px 10px calc(10px + env(safe-area-inset-bottom));
+      display:none; gap:8px; align-items:center;
+    }
+    #dtMobileInputBar.active{ display:flex; }
+    #dtMobileInputBar input{
+      flex:1; background:#151515; border:1px solid #282828; color:#fff;
+      padding:12px 14px; border-radius:99px; font-size:16px !important; outline:none;
+    }
+    #dtFsMinBtn{
+      width:32px; height:32px; border-radius:50%; background:#1e1e1e; border:1px solid #333;
+      color:#fff; display:flex; align-items:center; justify-content:center;
+      cursor:pointer; flex-shrink:0;
+    }
+  }
+  `;
+  document.head.appendChild(style);
+
+  const isMobile = () => window.matchMedia('(max-width: 768px)').matches;
+  let originalInputParent = null;
+  let originalSendNext = null;
+  let bodyTop = 0;
+
+  function ensureFsUI(){
+    const chatWrap = document.getElementById('dtChatWrap');
+    if(!chatWrap) return;
+    // add minimize btn to header
+    let header = chatWrap.querySelector('div');
+    if(header && !document.getElementById('dtFsMinBtn')){
+      const minBtn = document.createElement('button');
+      minBtn.id='dtFsMinBtn';
+      minBtn.innerHTML='⌄';
+      minBtn.style.cssText='margin-left:auto;background:#1e1e1e;border:1px solid #333;color:#fff;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:16px;display:none';
+      minBtn.onclick = exitFS;
+      header.appendChild(minBtn);
+    }
+    // create mobile bottom bar
+    if(!document.getElementById('dtMobileInputBar')){
+      const bar = document.createElement('div');
+      bar.id='dtMobileInputBar';
+      const cloneInput = document.createElement('input');
+      cloneInput.id='dtFsInputClone';
+      cloneInput.placeholder = INPUT?.placeholder || 'Message...';
+      const minBtn2 = document.createElement('button');
+      minBtn2.id='dtFsMinBtn2';
+      minBtn2.innerHTML='✕';
+      minBtn2.style.cssText='width:40px;height:40px;border-radius:50%;background:#232323;border:1px solid #333;color:#fff;cursor:pointer';
+      minBtn2.onclick = exitFS;
+      bar.appendChild(cloneInput);
+      bar.appendChild(document.getElementById('noticeBoardSend') ? document.getElementById('noticeBoardSend').cloneNode(true) : Object.assign(document.createElement('button'),{textContent:'➤'}));
+      bar.insertBefore(minBtn2, bar.firstChild);
+      document.body.appendChild(bar);
+      
+      // sync clone -> real
+      cloneInput.addEventListener('input', ()=>{ if(INPUT) INPUT.value = cloneInput.value; });
+      cloneInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); if(INPUT) INPUT.value = cloneInput.value; sendChat(); setTimeout(()=>{ cloneInput.value=''; cloneInput.focus(); },100); } });
+      bar.lastChild.onclick = ()=>{ if(INPUT) INPUT.value = cloneInput.value; sendChat(); cloneInput.value=''; cloneInput.focus(); };
+    }
+  }
+
+  function enterFS(){
+    if(!isMobile()) return;
+    const chatWrap = document.getElementById('dtChatWrap');
+    const mobBar = document.getElementById('dtMobileInputBar');
+    if(!chatWrap) return;
+    ensureFsUI();
+    
+    bodyTop = window.scrollY;
+    document.body.classList.add('dt-chat-fs');
+    document.body.style.top = `-${bodyTop}px`;
+    
+    chatWrap.classList.add('dt-fs-active');
+    document.getElementById('dtFsMinBtn').style.display='flex';
+    if(mobBar){
+      mobBar.classList.add('active');
+      const clone = document.getElementById('dtFsInputClone');
+      if(clone){ clone.value = INPUT?.value || ''; setTimeout(()=>clone.focus(), 150); }
+    }
+    // hide original input row on mobile to avoid double
+    if(INPUT?.parentElement) INPUT.parentElement.style.display='none';
+    scrollToLatest();
+  }
+
+  function exitFS(){
+    const chatWrap = document.getElementById('dtChatWrap');
+    const mobBar = document.getElementById('dtMobileInputBar');
+    document.body.classList.remove('dt-chat-fs');
+    document.body.style.top='';
+    window.scrollTo(0, bodyTop);
+    if(chatWrap) chatWrap.classList.remove('dt-fs-active');
+    if(mobBar) mobBar.classList.remove('active');
+    if(INPUT?.parentElement) INPUT.parentElement.style.display='';
+    const minBtn = document.getElementById('dtFsMinBtn');
+    if(minBtn) minBtn.style.display='none';
+  }
+
+  // hook input focus
+  const attach = () => {
+    if(!INPUT) return;
+    INPUT.addEventListener('focus', ()=>{ if(isMobile()) enterFS(); }, {passive:true});
+    INPUT.addEventListener('click', ()=>{ if(isMobile()) enterFS(); }, {passive:true});
+    // prevent your hideChatSmooth from collapsing it
+    const origHide = window.hideChatSmooth || hideChatSmooth;
+    window.hideChatSmooth = function(){ if(document.getElementById('dtChatWrap')?.classList.contains('dt-fs-active')) return; origHide(); };
+  };
+
+  const iv = setInterval(()=>{ if(document.getElementById('dtChatWrap') && INPUT){ clearInterval(iv); ensureFsUI(); attach(); } }, 500);
+  window.addEventListener('resize', ()=>{ if(!isMobile()) exitFS(); });
+  window.exitMobileChatFS = exitFS; // global for you
+})();
+
 console.log("DopeAI NOTICE BOARD v5 PRO PST STYLE - playable + disappear on select");
