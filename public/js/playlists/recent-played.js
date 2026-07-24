@@ -2,6 +2,17 @@
 // 🎵 RP UNIQUE - NO CONFLICTS
 // ===============================
 
+const PLAY_SVG = `
+<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+    <path d="M8 5.14v14l11-7-11-7z"/>
+</svg>`;
+
+const PAUSE_SVG = `
+<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+    <path d="M6 19h4V5H6zm8-14v14h4V5z"/>
+</svg>`;
+
+
 const RECENT_KEY = 'recent_played';
 const MAX_RECENT = 10;
 let isScrolling = false;
@@ -80,7 +91,8 @@ export function renderRecentPlayed(silent = false) {
       <div class="rp-cover">
         <img src="${beat.cover_url || 'images/logo.png'}" alt="${beat.title}" loading="lazy" />
         <button class="rp-playbtn" data-beat-id="${beat.id}">
-          <span class="rp-icon">▶</span>
+         <span class="rp-icon">${PLAY_SVG}</span>
+
         </button>
       </div>
       <div class="rp-title">${beat.title || 'Untitled'}</div>
@@ -89,24 +101,42 @@ export function renderRecentPlayed(silent = false) {
     // PLAY BUTTON - BLOCK ON DRAG
     const playBtn = card.querySelector('.rp-playbtn');
     playBtn.onclick = (e) => {
-      e.stopPropagation();
-      
-      // If we dragged, don't play
-      if (isDragging) {
+
+    e.stopPropagation();
+
+    if (isDragging) {
         e.preventDefault();
         return;
-      }
-      
-      const currentBeat = window.__CURRENT_BEAT__;
-      const currentList = window.__CURRENT_LIST__;
-      const isPlaying = window.globalPlayer?.isPlaying();
-     
-      if (currentBeat?.id === beat.id && currentList === 'recent' && isPlaying) {
-        window.globalPlayer?.pause();
-      } else {
-        window.globalPlayer?.play(index, beats, 'recent');
-      }
-    };
+    }
+
+    const audio =
+        window.__PLAYER__ ||
+        window.__DOPE_TONE_AUDIO__ ||
+        document.querySelector("audio");
+
+    const currentBeat = window.__CURRENT_BEAT__;
+
+    const sameBeat =
+        String(currentBeat?.id) === String(beat.id);
+
+    if (sameBeat && audio && !audio.paused) {
+
+        audio.pause();
+
+    } else if (sameBeat && audio && audio.paused) {
+
+        audio.play().catch(() => {});
+
+    } else {
+
+        window.globalPlayer?.play(index, beats, "recent");
+
+    }
+
+    setTimeout(syncPlayButtons, 50);
+
+};
+
 
     // CARD CLICK - SCROLL TO CENTER - BLOCK ON DRAG
     card.onclick = (e) => {
@@ -172,35 +202,44 @@ function slideToFirst() {
 // 🔄 SYNC PLAY BUTTONS
 // ===============================
 function syncPlayButtons() {
-  const buttons = document.querySelectorAll('.rp-playbtn');
- 
-  if (!window.globalPlayer) {
+
+    const buttons = document.querySelectorAll(".rp-playbtn");
+
     buttons.forEach(btn => {
-      const icon = btn.querySelector('.rp-icon');
-      if (icon) icon.textContent = '▶';
-      btn.classList.remove('rp-active');
+        btn.classList.remove("rp-active");
+
+        const icon = btn.querySelector(".rp-icon");
+
+        if (icon)
+            icon.innerHTML = PLAY_SVG;
     });
-    return;
-  }
 
-  const currentBeat = window.__CURRENT_BEAT__;
-  const currentList = window.__CURRENT_LIST__;
-  const isPlaying = window.globalPlayer?.isPlaying() ||!window.__DOPE_TONE_AUDIO__?.paused;
+    const audio =
+        window.__PLAYER__ ||
+        window.__DOPE_TONE_AUDIO__ ||
+        document.querySelector("audio");
 
-  buttons.forEach(btn => {
-    const beatId = btn.dataset.beatId;
-    const icon = btn.querySelector('.rp-icon');
-    if (!icon) return;
-   
-    if (currentBeat?.id === beatId && currentList === 'recent' && isPlaying) {
-      icon.textContent = '⏸';
-      btn.classList.add('rp-active');
-    } else {
-      icon.textContent = '▶';
-      btn.classList.remove('rp-active');
-    }
-  });
+    if (!audio || audio.paused)
+        return;
+
+    const currentBeat = window.__CURRENT_BEAT__;
+
+    buttons.forEach(btn => {
+
+        if (String(btn.dataset.beatId) === String(currentBeat?.id)) {
+
+            btn.classList.add("rp-active");
+
+            const icon = btn.querySelector(".rp-icon");
+
+            if (icon)
+                icon.innerHTML = PAUSE_SVG;
+        }
+
+    });
+
 }
+
 
 // ===============================
 // 🎯 SCROLL HIGHLIGHT
@@ -320,6 +359,23 @@ document.addEventListener('DOMContentLoaded', () => {
     
     container.scrollLeft = scrollLeft - walk;
   });
+
+
+  const audio =
+    window.__PLAYER__ ||
+    window.__DOPE_TONE_AUDIO__ ||
+    document.querySelector("audio");
+
+if (audio) {
+
+    audio.addEventListener("play", syncPlayButtons);
+
+    audio.addEventListener("pause", syncPlayButtons);
+
+    audio.addEventListener("ended", syncPlayButtons);
+
+}
+
 });
 
 // STORAGE SYNC

@@ -585,5 +585,59 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 
+
+<!-- ================= NAVBAR LOADER - SCOFIELD FIXED + CART REDIRECT ================= -->
+<script>
+function redirectToLicencePage(e){
+  if(e) e.preventDefault();
+  const cart = JSON.parse(localStorage.getItem("dopetone_cart")||"[]");
+  if(cart.length === 0){
+    window.location.href = "licence-page.html";
+  } else {
+    window.location.href = `licence-page.html?id=${cart[0].id}`;
+  }
+}
+
+function bindCartButtons(){
+  const selectors = ["#cartBtn", "#mobileCartBtn", ".cart-btn", "[data-action='cart']", ".fa-shopping-cart", ".fa-bag-shopping"];
+  selectors.forEach(sel=>{
+    document.querySelectorAll(sel).forEach(btn=>{
+      const parent = btn.closest('a, button');
+      const target = parent || btn;
+      target.style.cursor = 'pointer';
+      target.onclick = redirectToLicencePage;
+      // if it's an <a> remove its href so it doesn't conflict
+      if(target.tagName === 'A'){ target.removeAttribute('href'); }
+    });
+  });
+}
+
+fetch("navbar.html")
+.then(res => res.text())
+.then(html => {
+    document.getElementById("navbarMount").innerHTML = html
+    setTimeout(() => {
+        if (typeof initMobileMenu === 'function') { initMobileMenu() }
+        window.dispatchEvent(new Event('navbarLoaded'));
+        bindCartButtons();
+    }, 100)
+})
+
+// Re-bind when cart updates
+window.addEventListener('navbarLoaded', bindCartButtons);
+document.addEventListener('cartUpdated', bindCartButtons);
+document.addEventListener('click', (e)=>{
+  if(e.target.closest('#cartBtn, #mobileCartBtn, .cart-btn')){
+    e.preventDefault();
+    redirectToLicencePage();
+  }
+}, true);
+
+// Also bind every 1s for late injected icons
+setInterval(bindCartButtons, 1000);
+</script>
+
+
+
 </body>
 </html>

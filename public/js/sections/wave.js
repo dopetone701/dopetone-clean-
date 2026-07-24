@@ -282,3 +282,16 @@ window.addEventListener('load', () => {
 window.renderWave = renderWave;
 window.handleDownload = handleDownload;
 window.triggerDownload = triggerDownload;
+
+
+
+// paste this once in beats.js
+const pills = document.querySelector('.pills-scroll');
+if(pills){
+  let isDown=false, startX, scrollLeft;
+  pills.addEventListener('mousedown', e=>{isDown=true; pills.style.cursor='grabbing'; startX=e.pageX - pills.offsetLeft; scrollLeft=pills.scrollLeft;});
+  pills.addEventListener('mouseleave', ()=>{isDown=false; pills.style.cursor='grab';});
+  pills.addEventListener('mouseup', ()=>{isDown=false; pills.style.cursor='grab';});
+  pills.addEventListener('mousemove', e=>{ if(!isDown) return; e.preventDefault(); const x=e.pageX - pills.offsetLeft; const walk=(x-startX)*1.5; pills.scrollLeft=scrollLeft-walk; });
+  pills.addEventListener('wheel', e=>{ if(Math.abs(e.deltaY) < 10) return; if(e.deltaY!==0){ e.preventDefault(); pills.scrollLeft+=e.deltaY; } }, {passive:false});
+}

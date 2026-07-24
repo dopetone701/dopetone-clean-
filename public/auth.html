@@ -182,10 +182,11 @@
       <h3 id="panelName">User</h3>
       <p id="panelEmail" class="panel-email">user@example.com</p>
       <div class="account-divider"></div>
-      <button class="account-action" data-action="playlists"><i class="fa-solid fa-music"></i><span>Playlists</span></button>
-      <button class="account-action" data-action="liked"><i class="fa-solid fa-heart"></i><span>Liked Beats</span></button>
-      <button class="account-action" data-action="downloads"><i class="fa-solid fa-download"></i><span>Downloads</span></button>
-      <button class="account-action" data-action="settings"><i class="fa-solid fa-gear"></i><span>Settings</span></button>
+      <a href="playlists.html" class="account-action">Playlists</a>
+<a href="playlists.html?tab=liked_playlist" class="account-action">Liked Beats</a>
+<a href="playlists.html?tab=downloads_playlist" class="account-action">Downloads</a>
+<a href="control-center.html" id="controlCenterBtn" class="account-action">Control Center</a>
+   <button class="account-action" data-action="settings"><i class="fa-solid fa-gear"></i><span>Settings</span></button>
 
       <!-- CONTROL CENTER - ADMIN ONLY -->
       <button id="controlCenterBtn" class="account-action" data-action="control-center" style="display:none;">

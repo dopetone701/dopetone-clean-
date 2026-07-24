@@ -818,3 +818,48 @@ body{
     overflow-x:hidden !important;
   }
 }
+
+
+#similarTrack.dragging,
+#similarTrack.dragging * {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -ms-user-select: none !important;
+  -webkit-touch-callout: none !important;
+}
+#similarTrack {
+  user-select: none;
+  -webkit-user-select: none;
+}
+#similarTrack .featured-title,
+#similarTrack .featured-meta,
+#similarTrack .featured-price {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* keep buttons selectable if needed */
+#similarTrack button {
+  user-select: none !important;
+}
+
+
+#similarTrack {
+  cursor: grab;
+  cursor: -webkit-grab;
+}
+
+#similarTrack.dragging {
+  cursor: grabbing !important;
+  cursor: -webkit-grabbing !important;
+}
+
+#similarTrack .featured-card,
+#similarTrack .recent-card {
+  cursor: grab;
+}
+
+#similarTrack.dragging .featured-card,
+#similarTrack.dragging .recent-card {
+  cursor: grabbing !important;
+}

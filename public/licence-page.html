@@ -1,5 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -15,18 +13,42 @@
   <link rel="stylesheet" href="styles/auth.css">
   <link rel="stylesheet" href="styles/playlist-modal.css">
   <link rel="stylesheet" href="styles/playlists.css">
-
-
+  <link rel="stylesheet" href="styles/navbar.css">
 
   <script type="module">
-import { createPaypalCheckout } from "./js/licence/checkout-paypal.js";
-window.createStripeCheckout = createPaypalCheckout;
-window.createPaypalCheckout = createPaypalCheckout;
-</script>
+    import { createPaypalCheckout } from "./js/licence/checkout-paypal.js";
+    window.createStripeCheckout = createPaypalCheckout;
+    window.createPaypalCheckout = createPaypalCheckout;
+  </script>
 
-  
-
-
+  <style>
+    #navbarMount{
+      position:relative;
+      z-index:99999;
+    }
+    #authMount{
+      position:fixed!important;
+      inset:0!important;
+      z-index:1000000!important;
+      pointer-events:none!important;
+      display:contents!important;
+    }
+    #authMount>*{
+      pointer-events:auto!important;
+    }
+    #globalPlayerUI.global-player{
+      filter:none!important;
+      backdrop-filter:none!important;
+      background:#0a0e1a!important;
+      opacity:1!important;
+      z-index:99998!important;
+    }
+    body.licence-page{
+      filter:none!important;
+      backdrop-filter:none!important;
+      background:#05070d!important;
+    }
+  </style>
 </head>
 
 <body class="empty-mode licence-page">
@@ -100,7 +122,7 @@ window.createPaypalCheckout = createPaypalCheckout;
     <span id="likeCount">0</span>
   </button>
 
-  
+ 
 <!-- Add Button -->
 <button id="addBtn" class="action-btn">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -175,8 +197,13 @@ window.createPaypalCheckout = createPaypalCheckout;
   </div>
   <div id="cartBeatRow" class="cart-beat-row"></div>
 
+  <!-- ================= NAVBAR ================= -->
+<div id="navbarMount"></div>
+
+<!-- ================= AUTH ================= -->
+<div id="authMount"></div>
+
   <!-- ACTIVE STATE ONLY -->
-   <!-- ACTIVE STATE ONLY -->
   <div class="selected-licence">
     <div class="selected-top">
       <h3>Selected Licence</h3>
@@ -200,7 +227,6 @@ window.createPaypalCheckout = createPaypalCheckout;
       <button id="checkoutBtn" onclick="createStripeCheckout()">Checkout</button>
     </div>
   </div>
-
 
   <section class="similar-section">
     <div class="section-head">
@@ -252,7 +278,7 @@ window.createPaypalCheckout = createPaypalCheckout;
             <div class="gp-controls">
                <button id="gpShuffle" class="player-btn" title="Enable shuffle">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M10.59 9.17L5.41 4L4 5.41l5.17 5.17l1.42-1.41zM14.5 4l2.04 2.04L4 18.59L5.41 20L17.96 7.46L20 9.5V4h-5.5zm.33 9.41l-1.41 1.41l3.13 3.13L14.5 20H20v-5.5l-2.04 2.04l-3.13-3.13z"/>
+                        <path d="M10.59 9.17L5.41 4L4 5.41l5.17 5.17l1.42-1.41zM14.5 4l2.04 2.04L4 18.59L5.41 20L17.96 7.46L20 9.5V4h-5.5zm.33 9.41l-1.41 1.41l3.13 3.13L14.5 20H20v-5.5l-2.04 2.04l-3.13z"/>
                     </svg>
                 </button>
 
@@ -380,17 +406,13 @@ window.createPaypalCheckout = createPaypalCheckout;
     </svg>
 </button>
 
-
-
             <button id="mpMore">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                    <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2-.9 2-2-.9-2-2-2z"/>
                 </svg>
             </button>
         </div>
     </div>
-
-
  
   <script type="module" src="js/app.js"></script>
   <script src="https://unpkg.com/wavesurfer.js"></script>
@@ -411,7 +433,6 @@ window.createPaypalCheckout = createPaypalCheckout;
   <div id="footerMount"></div>
   <script src="js/footer-loader.js"></script>
   <script src="js/more-btn-override.js"></script>
-  <script type="module"></script>
 
   <!-- ================= PLAYLIST SYSTEM ================= -->
   <div id="playlistModalMount"></div>
@@ -419,6 +440,68 @@ window.createPaypalCheckout = createPaypalCheckout;
   <script type="module" src="js/playlists/playlist-engine.js"></script>
   <script type="module" src="js/playlists/playlist-render.js"></script>
   <script type="module" src="js/playlists/playlist-modal.js"></script>
+
+<!-- ================= NAVBAR + AUTH LOADER - FIXED FOR YOUR NEW NAV IDS ================= -->
+<script type="module">
+async function bootApp() {
+  try {
+    // 1. NAV
+    const navRes = await fetch('navbar.html');
+    const navHtml = await navRes.text();
+    document.getElementById('navbarMount').innerHTML = navHtml;
+
+    // 2. AUTH
+    const authRes = await fetch('auth.html');
+    const authHtml = await authRes.text();
+    document.getElementById('authMount').innerHTML = authHtml;
+
+    // 3. AUTH JS
+    await import('./js/auth.js');
+    
+    // 4. FIXED MENU - supports BOTH old (.mobile-panel/.overlay) AND new (#navPanel/#navOverlay)
+    initMenu();
+    window.initMobileMenu?.();
+    bindCart();
+
+    window.dispatchEvent(new Event('navbarLoaded'));
+    console.log('✅ nav + auth booted');
+  } catch(e){ console.error('Boot failed', e); }
+}
+
+function initMenu(){
+  const toggle = document.querySelector(".menu-toggle");
+  const panel = document.getElementById("navPanel") || document.querySelector(".mobile-panel");
+  const overlay = document.getElementById("navOverlay") || document.querySelector(".overlay");
+  const closeBtn = document.getElementById("panelCloseBtn");
+  if(!toggle || !panel || !overlay) return;
+  if(panel.dataset.navReady==="true") return;
+  panel.dataset.navReady="true";
+
+  const open = ()=>{ panel.classList.add("active"); overlay.classList.add("active"); document.body.classList.add("menu-open","panel-open"); document.body.style.overflow='hidden'; };
+  const close = ()=>{ panel.classList.remove("active"); overlay.classList.remove("active"); document.body.classList.remove("menu-open","panel-open"); document.body.style.overflow=''; panel.style.transform=""; };
+
+  toggle.addEventListener("click", (e)=>{ e.preventDefault(); panel.classList.contains("active")?close():open(); });
+  closeBtn?.addEventListener("click", close);
+  overlay.addEventListener("click", close);
+  panel.addEventListener("click", (e)=>{ if(e.target.closest("a")) close(); });
+  document.addEventListener("keydown", (e)=>{ if(e.key==="Escape") close(); });
+}
+
+function bindCart(){
+  const go = (e)=>{
+    if(e) e.preventDefault();
+    const cart = JSON.parse(localStorage.getItem("dopetone_cart")||"[]");
+    window.location.href = cart.length===0 ? "licence-page.html" : `licence-page.html?id=${cart[0].id}`;
+  };
+  document.querySelectorAll("#cartBtn, #mobileCartBtn, .cart-btn").forEach(b=>{
+    const t = b.closest('a,button')||b;
+    t.onclick = go;
+    if(t.tagName==='A') t.removeAttribute('href');
+  });
+}
+
+document.addEventListener('DOMContentLoaded', bootApp);
+</script>
 
 </body>
 </html>

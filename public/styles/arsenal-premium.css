@@ -189,4 +189,42 @@
 
 
 
+/* ARSENAL HERO - PORTRAIT VS LANDSCAPE FIX */
+.arsenal-hero{
+  position:relative !important;
+  overflow:hidden !important;
+}
+.arsenal-hero::before{
+  content:"" !important;
+  position:absolute !important;
+  inset:0 !important;
+  background-image: url("/images/beats-wav-bg.png") !important;
+  background-repeat:no-repeat !important;
+  background-position:center center !important;
+  opacity:0.85 !important;
+  z-index:0 !important;
+}
+.arsenal-hero > *{ z-index:2 !important; position:relative !important; }
+
+/* PC + LANDSCAPE PHONE (when you tilt) */
+@media (min-width: 769px), (orientation: landscape){
+  .arsenal-hero::before{
+    background-size:100% auto !important;
+  }
+}
+
+/* PORTRAIT PHONE - MAKE WAVE 2.5X BIGGER SO YOU SEE IT */
+@media (max-width: 768px) and (orientation: portrait){
+  .arsenal-hero{
+    min-height:180px !important;
+  }
+  .arsenal-hero::before{
+    background-size:220% auto !important; /* 220% not 100% */
+    background-position:center 50% !important;
+    opacity:0.9 !important;
+  }
+  .arsenal-hero::after{
+    background: radial-gradient(ellipse at center, transparent 30%, rgba(10,18,48,0.88) 100%) !important;
+  }
+}
 

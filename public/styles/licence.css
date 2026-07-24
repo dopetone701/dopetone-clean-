@@ -5259,3 +5259,122 @@ body.licence-page #waveList .wave-row:not(.explore-row){
 #globalPlayerUI #gpNext {
   margin: 0 4px !important; /* Extra 8px total between them */
 }
+
+/* ===== FIX 2: MOBILE PANEL SLIDE FROM RIGHT + DISAPPEAR ON CLICK - ALL DEVICES ===== */
+#navPanel, .mobile-panel {
+  position: fixed !important;
+  top: 0 !important;
+  right: 0 !important;
+  left: auto !important;
+  width: 300px !important;
+  max-width: 85vw !important;
+  height: 100dvh !important;
+  background: #0a0e1a !important;
+  z-index: 100001 !important;
+  transform: translateX(100%) !important;
+  transition: transform 0.32s cubic-bezier(0.4,0,0.2,1) !important;
+  overflow-y: auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  visibility: visible !important;
+}
+
+#navPanel.active, .mobile-panel.active {
+  transform: translateX(0) !important;
+}
+
+#navOverlay, .overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  background: rgba(0,0,0,0.6) !important;
+  backdrop-filter: blur(4px) !important;
+  z-index: 100000 !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transition: all 0.3s ease !important;
+  pointer-events: none !important;
+}
+
+#navOverlay.active, .overlay.active {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+
+/* ===== FIX 1: AVATAR FIT CIRCLE - PC ONLY ===== */
+@media (min-width: 769px) {
+  #userAvatar, #panelAvatar, #mobileProfileAvatar,
+  .avatar-btn img, .panel-profile img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    border-radius: 50% !important;
+    display: block !important;
+  }
+
+  .avatar-btn {
+    width: 38px !important;
+    height: 38px !important;
+    border-radius: 50% !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+    border: 2px solid rgba(0,234,255,0.5) !important;
+    background: #0a0a14 !important;
+    flex-shrink: 0 !important;
+  }
+
+  .panel-profile button {
+    width: 42px !important;
+    height: 42px !important;
+    border-radius: 50% !important;
+    overflow: hidden !important;
+  }
+
+  #panelAvatar, #mobileProfileAvatar {
+    width: 42px !important;
+    height: 42px !important;
+  }
+}
+
+
+/* ===== CAMERA ICON FIX - PC ONLY ===== */
+@media (min-width: 769px) {
+  .panel-avatar-wrap, .account-card .panel-avatar-wrap {
+    position: relative !important;
+    width: 90px !important;
+    height: 90px !important;
+    margin: 0 auto 14px !important;
+    display: block !important;
+  }
+
+  #panelAvatar {
+    width: 90px !important;
+    height: 90px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    display: block !important;
+  }
+
+  .panel-edit-avatar, label.panel-edit-avatar {
+    position: absolute !important;
+    bottom: -2px !important;
+    right: -2px !important;
+    width: 32px !important;
+    height: 32px !important;
+    background: #0a0e1a !important;
+    border: 2px solid #00eaff !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    z-index: 2 !important;
+  }
+
+  .panel-edit-avatar i {
+    font-size: 13px !important;
+    color: #00eaff !important;
+  }
+}

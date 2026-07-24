@@ -1,6 +1,9 @@
-// playlist-similar.js - FULL FIXED - PRO FILTERED + PRO DOWNLOAD LIKE FEATURED
+// playlist-similar.js - FULL FIXED - PRO FILTERED + PRO DOWNLOAD LIKE FEATURED + SVG TOGGLE
 const API_URL = 'https://api.dopetonevault.com';
 const STATS_API = 'https://dopetone-stats.dopetone701.workers.dev';
+
+const PLAY_SVG = `<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="display:block"><path d="M8 5.14v14l11-7-11-7z"/></svg>`;
+const PAUSE_SVG = `<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="display:block"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
 
 const activeDownloadsSimilar = new Set();
 
@@ -26,7 +29,7 @@ function fixPrice(p){
 function normalizeBeat(b){
   if(!b) return null;
   return {
-  ...b,
+ ...b,
     id: b.id || b.beat_id || b._id,
     audio: b.audio || b.mp3_url,
     mp3_url: b.mp3_url || b.audio,
@@ -52,7 +55,6 @@ function getD1UserKey() {
   return window.Auth?.user?.id || localStorage.getItem('dopetone_user_id') || `anon_${localStorage.getItem('dopetone_device_id')}`;
 }
 
-// === SAME DOWNLOAD LOGIC AS FEATURED ===
 async function trackDownloadSimilar(beat){
   try{
     const dlEl = document.getElementById('totalDownloads');
@@ -80,7 +82,7 @@ async function proDownloadSimilar(beat, btn){
       window.dispatchEvent(new CustomEvent('cc_cart_updated', {detail:{beat_id:beat.id, count: cart.length, action:'download'}}));
     }catch{}
 
-    const url = beat.mp3_url || beat.audio_url || beat.audio;
+    const url = beat.mp3_url || beat.audio;
     if(!url) throw new Error('No audio url');
     const res = await fetch(url, {mode:'cors', cache:'no-store'});
     if(!res.ok) throw new Error('Fetch failed');
@@ -124,7 +126,7 @@ window.proDownloadSimilar = proDownloadSimilar;
 
 if(!document.getElementById('dt-spin-style')){
   const s=document.createElement('style'); s.id='dt-spin-style';
-  s.textContent='@keyframes spin{to{transform:rotate(360deg)}}';
+  s.textContent='@keyframes spin{to{transform:rotate(360deg)}} #similarTrack{cursor:grab} #similarTrack.dragging{cursor:grabbing} #similarTrack img{pointer-events:none}.play-icon{display:flex;align-items:center;justify-content:center}.featured-play{display:flex;align-items:center;justify-content:center} #similarTrack{user-select:none;-webkit-user-select:none} #similarTrack.dragging *{user-select:none!important}';
   document.head.appendChild(s);
 }
 
@@ -144,7 +146,8 @@ function addToRecentlyViewed(beat) {
 }
 
 export async function renderRecentTracks() {
-    const ids = ["recentTrack", "rpTrackMount", "recentPlayedMount", "recentPlayedWrap"];
+// AFTER - LET RP FILE OWN rpTrackMount
+const ids = ["recentTrack"];
     const containers = ids.map(id => document.getElementById(id)).filter(Boolean);
     if(!containers.length) return;
     let recent = (JSON.parse(localStorage.getItem("dopetone_recent")) || []).map(normalizeBeat);
@@ -162,12 +165,26 @@ export async function renderRecentTracks() {
             const mode=getMode(beat);
             const card = document.createElement("div"); card.className = "recent-card"; card.dataset.index = index;
             card.innerHTML = `
-                <div style="position: relative;"><img src="${beat.cover}"><button class="play-overlay featured-play"><span class="play-icon">▶</span></button>${mode==='free'?'<span style="position:absolute;top:6px;left:6px;background:linear-gradient(90deg,#4da6ff,#fff,#ff4d94);color:#000;font-size:9px;font-weight:800;padding:2px 5px;border-radius:3px">FREE</span>':''}</div>
+                <div style="position: relative;"><img src="${beat.cover}"><button class="play-overlay featured-play"><span class="play-icon">${PLAY_SVG}</span></button>${mode==='free'?'<span style="position:absolute;top:6px;left:6px;background:linear-gradient(90deg,#4da6ff,#fff,#ff4d94);color:#000;font-size:9px;font-weight:800;padding:2px 5px;border-radius:3px">FREE</span>':''}</div>
                 <div class="featured-content"><div class="featured-title">${beat.title}</div><div class="featured-meta">${beat.genre} • ${beat.bpm} BPM</div><div class="featured-price" style="cursor:pointer">${getPriceHTML(beat)}</div><button class="featured-buy ${mode==='free'?'is-free':''}" style="cursor:pointer">${getBuyLabel(beat)}</button></div>`;
             card.querySelector(".featured-play").onclick = (e) => {
-                e.stopPropagation(); addToRecentlyViewed(beat);
-                const audio = window.__PLAYER__; const isSameTrack = window.__CURRENT_LIST__ === "playlist-recent" && window.__CURRENT_INDEX__ === index;
-                if (isSameTrack && audio) { if (audio.paused) audio.play(); else audio.pause(); } else { window.globalPlayer?.play(index, recent, "playlist-recent"); }
+                e.stopPropagation();
+                const audio = document.querySelector('audio') || window.__PLAYER__;
+                const isSame = window.__CURRENT_LIST__ === "playlist-recent" && window.__CURRENT_INDEX__ === index;
+                if (isSame && audio && audio.src) {
+                    if (audio.paused) {
+                        audio.play().catch(()=>{});
+                        e.currentTarget.querySelector('.play-icon').innerHTML = PAUSE_SVG;
+                    } else {
+                        audio.pause();
+                        e.currentTarget.querySelector('.play-icon').innerHTML = PLAY_SVG;
+                    }
+                } else {
+                    addToRecentlyViewed(beat);
+                    window.__CURRENT_LIST__ = "playlist-recent";
+                    window.__CURRENT_INDEX__ = index;
+                    window.globalPlayer?.play(index, recent, "playlist-recent");
+                }
             };
             const viewBtn = card.querySelector(".featured-buy"); updateCartButtonState(viewBtn, beat);
             viewBtn.onclick = (e) => { e.stopPropagation(); handleCartToggle(viewBtn, beat); };
@@ -234,12 +251,26 @@ export async function renderPlaylistSimilarTracks(currentBeatId = null) {
             const mode=getMode(beat);
             const card = document.createElement("div"); card.className = "featured-card"; card.dataset.index = index;
             card.innerHTML = `
-                <div style="position: relative;"><img src="${beat.cover_url || "images/studio.jpg"}"><button class="play-overlay featured-play"><span class="play-icon">▶</span></button>${mode==='free'?'<span style="position:absolute;top:8px;left:8px;background:linear-gradient(90deg,#4da6ff,#fff,#ff4d94);color:#000;font-size:10px;font-weight:800;padding:3px 6px;border-radius:4px">FREE</span>':''}</div>
+                <div style="position: relative;"><img src="${beat.cover_url || "images/studio.jpg"}"><button class="play-overlay featured-play"><span class="play-icon">${PLAY_SVG}</span></button>${mode==='free'?'<span style="position:absolute;top:8px;left:8px;background:linear-gradient(90deg,#4da6ff,#fff,#ff4d94);color:#000;font-size:10px;font-weight:800;padding:3px 6px;border-radius:4px">FREE</span>':''}</div>
                 <div class="featured-content"><div class="featured-title">${beat.title || "Untitled"}</div><div class="featured-meta">${beat.genre || "Trap"} • ${beat.bpm || 140} BPM</div><div class="featured-price" style="cursor:pointer">${getPriceHTML(beat)}</div><button class="featured-buy ${mode==='free'?'is-free':''}" style="cursor:pointer">${getBuyLabel(beat)}</button></div>`;
             card.querySelector(".featured-play").onclick = (e) => {
-                e.stopPropagation(); addToRecentlyViewed(beat);
-                const audio = window.__PLAYER__; const isSameTrack = window.__CURRENT_LIST__ === "playlist-similar" && window.__CURRENT_INDEX__ === index;
-                if (isSameTrack && audio) { if (audio.paused) audio.play(); else audio.pause(); } else { window.globalPlayer?.play(index, beats, "playlist-similar"); }
+                e.stopPropagation();
+                const audio = document.querySelector('audio') || window.__PLAYER__;
+                const isSame = window.__CURRENT_LIST__ === "playlist-similar" && window.__CURRENT_INDEX__ === index;
+                if (isSame && audio && audio.src) {
+                    if (audio.paused) {
+                        audio.play().catch(()=>{});
+                        e.currentTarget.querySelector('.play-icon').innerHTML = PAUSE_SVG;
+                    } else {
+                        audio.pause();
+                        e.currentTarget.querySelector('.play-icon').innerHTML = PLAY_SVG;
+                    }
+                } else {
+                    addToRecentlyViewed(beat);
+                    window.__CURRENT_LIST__ = "playlist-similar";
+                    window.__CURRENT_INDEX__ = index;
+                    window.globalPlayer?.play(index, beats, "playlist-similar");
+                }
             };
             const viewBtn = card.querySelector(".featured-buy"); updateCartButtonState(viewBtn, beat);
             viewBtn.onclick = (e) => { e.stopPropagation(); handleCartToggle(viewBtn, beat); };
@@ -282,25 +313,91 @@ async function handleCartToggle(btn, beat) {
 }
 
 function syncPlayButtons() {
-    document.removeEventListener("playerPlay", updatePlayIcons); document.removeEventListener("playerPause", updatePauseIcons);
-    document.addEventListener("playerPlay", updatePlayIcons); document.addEventListener("playerPause", updatePauseIcons); updateIconsFromGlobalState();
+    document.removeEventListener("playerPlay", updatePlayIcons);
+    document.removeEventListener("playerPause", updatePauseIcons);
+    document.removeEventListener("playerEnded", updateEndedIcons);
+
+    document.addEventListener("playerPlay", updatePlayIcons);
+    document.addEventListener("playerPause", updatePauseIcons);
+    document.addEventListener("playerEnded", updateEndedIcons);
+
+    const audio = window.__PLAYER__ || document.querySelector("audio");
+
+    if (audio) {
+        audio.removeEventListener("play", updateIconsFromGlobalState);
+        audio.removeEventListener("pause", updateIconsFromGlobalState);
+        audio.removeEventListener("ended", updateEndedIcons);
+
+        audio.addEventListener("play", updateIconsFromGlobalState);
+        audio.addEventListener("pause", updateIconsFromGlobalState);
+        audio.addEventListener("ended", updateEndedIcons);
+    }
+
+    updateIconsFromGlobalState();
 }
+
+function resetPlayIcons() {
+    document.querySelectorAll(
+        "#similarTrack .play-icon, #recentTrack .play-icon, #rpTrackMount .play-icon"
+    ).forEach(icon => {
+        icon.innerHTML = PLAY_SVG;
+    });
+}
+
 function updatePlayIcons(e) {
-    const { index, listId } = e.detail||{};
-    document.querySelectorAll("#similarTrack.play-icon, #recentTrack.play-icon, #rpTrackMount.play-icon").forEach(icon => { icon.textContent = "▶"; });
-    if (listId === "playlist-similar") { const card = document.querySelector(`#similarTrack.featured-card[data-index="${index}"]`); if (card) card.querySelector(".play-icon").textContent = "⏸"; }
-    if (listId === "playlist-recent") { const card = document.querySelector(`#recentTrack.recent-card[data-index="${index}"], #rpTrackMount.recent-card[data-index="${index}"]`); if (card) card.querySelector(".play-icon").textContent = "⏸"; }
-}
-function updatePauseIcons() {
-    if (window.__CURRENT_LIST__ === "playlist-similar") { const card = document.querySelector(`#similarTrack.featured-card[data-index="${window.__CURRENT_INDEX__}"]`); if (card) card.querySelector(".play-icon").textContent = "▶"; }
-    if (window.__CURRENT_LIST__ === "playlist-recent") { const card = document.querySelector(`#recentTrack.recent-card[data-index="${window.__CURRENT_INDEX__}"], #rpTrackMount.recent-card[data-index="${window.__CURRENT_INDEX__}"]`); if (card) card.querySelector(".play-icon").textContent = "▶"; }
-}
-function updateIconsFromGlobalState() {
-    if (!window.__PLAYER__?.paused) {
-        if (window.__CURRENT_LIST__ === "playlist-similar") { const card = document.querySelector(`#similarTrack.featured-card[data-index="${window.__CURRENT_INDEX__}"]`); if (card) card.querySelector(".play-icon").textContent = "⏸"; }
-        if (window.__CURRENT_LIST__ === "playlist-recent") { const card = document.querySelector(`#recentTrack.recent-card[data-index="${window.__CURRENT_INDEX__}"], #rpTrackMount.recent-card[data-index="${window.__CURRENT_INDEX__}"]`); if (card) card.querySelector(".play-icon").textContent = "⏸"; }
+    resetPlayIcons();
+
+    const { index, listId } = e.detail || {};
+
+    if (listId === "playlist-similar") {
+        const icon = document.querySelector(
+            `#similarTrack .featured-card[data-index="${index}"] .play-icon`
+        );
+        if (icon) icon.innerHTML = PAUSE_SVG;
+    }
+
+    if (listId === "playlist-recent") {
+        document.querySelectorAll(
+            `#recentTrack .recent-card[data-index="${index}"] .play-icon,
+             #rpTrackMount .recent-card[data-index="${index}"] .play-icon`
+        ).forEach(icon => icon.innerHTML = PAUSE_SVG);
     }
 }
+
+function updatePauseIcons() {
+    updateIconsFromGlobalState();
+}
+
+function updateEndedIcons() {
+    resetPlayIcons();
+}
+
+function updateIconsFromGlobalState() {
+
+    resetPlayIcons();
+
+    const audio = window.__PLAYER__ || document.querySelector("audio");
+
+    if (!audio || audio.paused) return;
+
+    const index = window.__CURRENT_INDEX__;
+    const list = window.__CURRENT_LIST__;
+
+    if (list === "playlist-similar") {
+        const icon = document.querySelector(
+            `#similarTrack .featured-card[data-index="${index}"] .play-icon`
+        );
+        if (icon) icon.innerHTML = PAUSE_SVG;
+    }
+
+    if (list === "playlist-recent") {
+        document.querySelectorAll(
+            `#recentTrack .recent-card[data-index="${index}"] .play-icon,
+             #rpTrackMount .recent-card[data-index="${index}"] .play-icon`
+        ).forEach(icon => icon.innerHTML = PAUSE_SVG);
+    }
+}
+
 function enableCinematic(container) {
   const cards = container.querySelectorAll(".featured-card,.recent-card");
   cards.forEach(card => {
@@ -309,18 +406,79 @@ function enableCinematic(container) {
   });
 }
 function initSimilarDragScroll(){
-    const slider = document.getElementById("similarTrack"); if(!slider || slider.dataset.dragInit) return; slider.dataset.dragInit="1";
-    let isDown = false, startX, scrollLeft, hasDragged = false;
-    slider.addEventListener("mousedown", (e) => { isDown = true; hasDragged = false; slider.classList.add("dragging"); startX = e.pageX - slider.offsetLeft; scrollLeft = slider.scrollLeft; });
+    const slider = document.getElementById("similarTrack");
+    if(!slider || slider.dataset.dragInit) return;
+    slider.dataset.dragInit="1";
+    slider.style.touchAction = "pan-y";
+    slider.style.webkitOverflowScrolling = "touch";
+
+    let isDown = false, startX = 0, scrollLeft = 0, hasDragged = false;
+    let startY = 0, isHorizontal = null;
+
+    // MOUSE
+    slider.addEventListener("mousedown", (e) => {
+      if(e.target.closest('button')) return;
+      isDown = true; hasDragged = false; isHorizontal = true;
+      slider.classList.add("dragging");
+      startX = e.pageX - slider.offsetLeft;
+      scrollLeft = slider.scrollLeft;
+    });
     slider.addEventListener("mouseleave", () => { isDown = false; slider.classList.remove("dragging"); });
-    slider.addEventListener("mouseup", () => { isDown = false; slider.classList.remove("dragging"); setTimeout(()=> hasDragged = false, 100); });
-    slider.addEventListener("mousemove", (e) => { if(!isDown) return; e.preventDefault(); const x = e.pageX - slider.offsetLeft; const walk = (x - startX) * 1.6; if(Math.abs(walk) > 5) hasDragged = true; slider.scrollLeft = scrollLeft - walk; });
-    slider.addEventListener("click", (e) => { if(hasDragged){ e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); } }, true);
-    let touchStartX = 0, touchScrollLeft = 0, touchHasDragged = false;
-    slider.addEventListener("touchstart", e => { touchStartX = e.touches[0].clientX; touchScrollLeft = slider.scrollLeft; touchHasDragged = false; }, {passive:true});
-    slider.addEventListener("touchmove", e => { const diff = Math.abs(e.touches[0].clientX - touchStartX); if(diff > 5) touchHasDragged = true; if(touchHasDragged) slider.classList.add("dragging"); }, {passive:true});
-    slider.addEventListener("touchend", (e) => { slider.classList.remove("dragging"); if(touchHasDragged){ const handler = (ev) => { ev.stopPropagation(); ev.preventDefault(); document.removeEventListener('click', handler, true); }; document.addEventListener('click', handler, true); setTimeout(()=> touchHasDragged = false, 100); } });
+    slider.addEventListener("mouseup", () => {
+      isDown = false; slider.classList.remove("dragging");
+      setTimeout(()=> hasDragged = false, 100);
+    });
+    slider.addEventListener("mousemove", (e) => {
+      if(!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - slider.offsetLeft;
+      const walk = (x - startX) * 1.2;
+      if(Math.abs(walk) > 3) hasDragged = true;
+      slider.scrollLeft = scrollLeft - walk;
+    });
+
+    // TOUCH
+    slider.addEventListener("touchstart", e => {
+      if(e.target.closest('button')) return;
+      isDown = true; hasDragged = false; isHorizontal = null;
+      startX = e.touches[0].pageX - slider.offsetLeft;
+      startY = e.touches[0].pageY;
+      scrollLeft = slider.scrollLeft;
+    }, {passive:true});
+
+    slider.addEventListener("touchmove", e => {
+      if(!isDown) return;
+      const x = e.touches[0].pageX - slider.offsetLeft;
+      const y = e.touches[0].pageY;
+      const walkX = x - startX;
+      const walkY = y - startY;
+
+      if(isHorizontal === null){
+        isHorizontal = Math.abs(walkX) > Math.abs(walkY);
+      }
+      if(isHorizontal){
+        if(e.cancelable) e.preventDefault();
+        if(Math.abs(walkX) > 3) hasDragged = true;
+        slider.scrollLeft = scrollLeft - walkX;
+      }
+    }, {passive:false});
+
+    slider.addEventListener("touchend", (e) => {
+      isDown = false;
+      slider.classList.remove("dragging");
+      if(hasDragged){
+        e.preventDefault();
+        const blocker = (ev) => { ev.stopPropagation(); ev.preventDefault(); };
+        document.addEventListener('click', blocker, {capture:true, once:true});
+        setTimeout(()=> hasDragged = false, 100);
+      }
+    });
+
+    slider.addEventListener("click", (e) => {
+      if(hasDragged){ e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); }
+    }, true);
 }
+
 window.addEventListener('cc_monetize_changed', (e)=>{
   const {beatId,mode,price}=e.detail||{}; if(!beatId) return;
   try{
